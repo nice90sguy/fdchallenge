@@ -121,6 +121,7 @@ You manage to get a couple of hours sleep, but she's in there in your dreams. Th
     A woman sits in the next seat to you.  She's very nice-looking, with a big smile and great legs, which you notice while untangling your seatbelt from hers.  You end up talking with her. Her name's {msg_name(ANGIE)}. She's a recruitmant consultant for an agency you sometimes use.  You watch a couple of inflight movies together, laughing at the same places in the movie.  You're obviously suited, with the same sense of humor; and she wants to exchange numbers. 
     -> J(->slug_airplane_no_phone) -> 
     You get her to write down her number in your notepad, old-school.
+    ~ events += met_angie_on_plane
     // {hint()} Don't lose that number!
     // -> cont ->
     Before you know it, you've landed.  You've even forgotten all about that woman you met last night.  Until now, when you realise that subconsciously, you've never stopped thinking about her since you first set eyes on her. Who the fuck was she?  And what was her name? You gotta find out as soon as you get home.
@@ -325,17 +326,19 @@ You look up and see that she's holding your phone.
 ~ temp starting_bid = 50
 -> haggle("my ass", reserve, starting_bid) ->
 
-+  {HAGGLE_RESULT == RESERVE_NOT_REACHED} ->
++  {HAGGLE_RESULT == RESERVE_NOT_REACHED or HAGGLE_RESULT == WELSHED} ->
 
     "You really have no idea of the value of a dollar, do you?" She says, looking down at you with pity.
     "Tell you what, as it's your first time playing..."
     She taps on your phone, and your hear it make a "Ding!" sound...
-    -> cc.receive(BELLA_FULL_NAME, HAGGLE_LAST_BID, true) ->
+    {HAGGLE_RESULT==RESERVE_NOT_REACHED:-> cc.receive(BELLA_FULL_NAME, HAGGLE_LAST_BID, true) ->}
     "Try again. And don't be a cheapskate this time."
     ~ reserve += 50
     ~ starting_bid = starting_bid + 50
+
     -> haggle("my amazing ass", reserve, starting_bid) ->
-    + + {HAGGLE_RESULT == RESERVE_NOT_REACHED} ->
+
+    + + (fucked_up_first_haggle_game) {HAGGLE_RESULT == RESERVE_NOT_REACHED} ->
     -> cc.pay(BELLA_FULL_NAME, 100, false) ->
     "Looks like you still have a lot to learn. Here's your first lesson:"
     She taps on your phone angrily, then throws it on the sofa. She pulls off her heels, puts her jeans and tee shirt back on, and slides her feet into her shoes quickly, and walks out.
@@ -348,6 +351,22 @@ You look up and see that she's holding your phone.
     ~ incstat(obedience)
     "<i>Now</i> you're getting it," she says.
     -> sold_ass
+    + +  {HAGGLE_RESULT == WELSHED}
+        -> cont ->
+        ~ setstat(confidence, confidence.min)
+        ~ setstat(obedience, obedience.max)
+        ~ decstat(addiction)
+        She turns around and looks down at you.
+        "Okay, that's how you want to play it, is it?" She says, quietly, tapping on your phone.
+        -> cont ->
+        You're not sure what she's doing, but she's swiping and tapping away.
+        ~ temp punishment_amount = 1000
+        {punishment_amount > _cc:
+            ~ punishment_amount = _cc
+        }
+        -> cc.pay(BELLA_FULL_NAME, punishment_amount, false) -> 
+        -> fucked_up_first_haggle_game
+        
     + + ->
     - - 
     
@@ -355,6 +374,8 @@ You look up and see that she's holding your phone.
     "Good Boy. My ass is definitely worth {print_number(HAGGLE_LAST_BID)} dollars."
 
     -> slug_ass_kissing ->
+
++ ->
 
 -
 -> ffa(hour, 1) ->
@@ -368,7 +389,7 @@ you can't survive without me.  I've already taken over your mind, your will, and
 I own you now, completely.  You know it.  Every minute of the day you'll think of Me now.  No woman \
 will ever come close to me. xxx \
 "
--> wa.m(long_message, WAM_MISS) ->
+-> wa.m(long_message, WAM_MISS+cmd_increase_addiction+cmd_increase_obedience) ->
 -> ffa(minute,5) ->
 
 ~ long_message = "I'm now in charge of your finances.  You will be much happier this way.\
@@ -377,10 +398,14 @@ I will control when, and how much you spend on everything. Everything you earn, 
 
 ~ long_message = "You will send money, buy me gifts\
 whenever I demand it, and do it immediately. \
-Start your new life now, by replying \"Yes {BELLA_NAME} \" to this message, and transferring $100 to me "
-//  {_DEBUG:>>> TESTING, changed from WAM_MISS to WAM_READ}
--> wa.m(long_message, WAM_MISS + cmd_tribute + cmd_yes + num2trib(100)) ->
-//  {_DEBUG:>>> TESTING}
+Start your new life now, by replying \"Yes {BELLA_NAME} \" to this message."
+
+-> wa.m(long_message, WAM_MISS + cmd_yes) ->
+
+~ long_message = "And transfer $100 to me."
+-> wa.m(long_message, WAM_MISS + cmd_tribute + num2trib(100)) ->
+
+
 -> cont ->
 
 -> ffa(minute,2) ->

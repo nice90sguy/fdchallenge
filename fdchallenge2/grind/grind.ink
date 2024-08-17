@@ -9,11 +9,11 @@ After every activity, builds a list of options
 
 
 === grind
-LIST grind_location = (location_home), location_gym, location_park, location_pub, location_cafe
+LIST grind_location = (location_home), location_gym, location_park, location_bar, location_cafe
 
 // Note to dev: Don't check against this list, use the VARS below
 // depending on your location
-LIST _all_activities = sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, swim, weights, running_machine, running, walking, pub_with_al, coffee_with_angie, pub_regulars, return_home, socialize
+LIST _all_activities = sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, swim, weights, running_machine, running, walking, return_home, socialize
 
 
 VAR home_activities = ()
@@ -30,15 +30,6 @@ VAR park_activities = ()
 VAR exercise_activites = ()
 ~ exercise_activites = gym_activities + park_activities
 
-VAR pub_activities = ()
-~ pub_activities = (pub_with_al, pub_regulars, messages, return_home)
-
-VAR cafe_activities = ()
-~ cafe_activities = (coffee_with_angie, messages, return_home)
-
-// Socialising is self-esteem improving
-VAR social_activites = ()
-~ social_activites = pub_activities +  cafe_activities
 
 // When you have your phone with you
 VAR with_phone_activites = ()
@@ -53,7 +44,7 @@ VAR morning_only_activites = (breakfast,full_days_work)
 VAR afternoon_only_activites = ()
 
 
-VAR evening_only_activites = (pub_with_al, pub_regulars, dinner , takeout)
+VAR evening_only_activites = (socialize, dinner , takeout)
 
 VAR night_only_activites = (introspect, sleep)
 
@@ -84,7 +75,7 @@ VAR final_stat = ()
    ~ grind_start_t = now()
    ~ starting_stat = stat_snapshot()
    ~ set_interval_cb(3600,->on_the_hour)
-   ~ set_timer_cb(FAR_FUTURE-epoch_time,->taunt)
+   ~ set_timer_cb(FAR_FUTURE-epoch_time,->grind_messages.taunt)
 
 }
 // {grind}
@@ -118,7 +109,7 @@ Starting stat:-> stats.display ->
 ~ load_snapshot(final_stat)
 Final stat: -> stats.display ->
  {_DEBUG:>>> END GRIND (TBC)}
-->tbc
+->one_week_later
 
 
 = day_rollover
@@ -154,7 +145,7 @@ VAR prev_interval = FAR_FUTURE
         -0:
             -> day_rollover -> update_hunger_sleepiness ->
         -6: -> update_hunger_sleepiness ->
-        -7: -> morning_alarm ->
+        -7: {current_activity==sleep:-> morning_alarm ->}
         -12: -> update_hunger_sleepiness ->
         -18: -> update_hunger_sleepiness ->
     }
@@ -174,7 +165,17 @@ VAR prev_interval = FAR_FUTURE
     {(possible_activities ^ forced_activities) == ():
         { grind_location != location_home:
         {_DEBUG:>>> Need to go home: None of {forced_activities} available at {grind_location}.}
-        You run home as quick as you can, and...
+        {grind_location:
+            - location_gym:
+                You run home as quick as you can, and...
+            - location_park:
+                You run home as quick as you can, and...
+            - location_bar:
+                {forced_activities == sleep:You're too tired to socialize anymore.} You say goodbye and leave the bar, and stagger home...
+            - else:
+                You have to go home now.
+        }
+                
     }
     -> cont ->
             ~ grind_location = location_home
@@ -184,9 +185,15 @@ VAR prev_interval = FAR_FUTURE
     {(LIST_COUNT(possible_activities) == 1) and (possible_activities != current_activity):
         -> opts
     }
-    // Randomly taunt some time in the next hour
-    {RANDOM(1, 100) < 10:
-        ~ _next_timer = now() + RANDOM(10,50) * 60
+    // Randomly taunt some time in the next hour, more often if on sub path
+    {path == sub:
+        {RANDOM(1, 100) <= 50:
+            ~ _next_timer = now() + RANDOM(10,50) * 60
+        }
+    - else:
+        {RANDOM(1, 100) <= 5 * LIST_VALUE(obedience):
+            ~ _next_timer = now() + RANDOM(10,50) * 60
+        }    
     }
 
 ->->
@@ -217,7 +224,7 @@ VAR prev_interval = FAR_FUTURE
 {_DEBUG: >>> (REMOVE STAT DISPLAY) <-grind_stat.display}
 
 // Bella's work proposition, after 2 days, before evening, and she hasn't propositioned you already
-{day_rollover>=2 and (current_period < evening) and (not work_proposition_bella):
+{path==adventure and day_rollover>=2 and (current_period < evening) and (not work_proposition_bella):
 -> work_proposition_bella -> build_opts
 }
 
@@ -233,10 +240,6 @@ VAR prev_interval = FAR_FUTURE
         ~ possible_activities = gym_activities
     - location_park: 
         ~ possible_activities = park_activities
-    - location_pub: 
-        ~ possible_activities = pub_activities
-    - location_cafe: 
-        ~ possible_activities = cafe_activities
 }
 
 // Restrict activites based on time of day
@@ -294,6 +297,13 @@ VAR prev_interval = FAR_FUTURE
         ~ possible_activities -= exercise
     }
 }
+// Prevent socializing more than once a day
+{possible_activities ? socialize:
+    {(activities_done_today ? socialize):
+        You can't socialize any more.
+        ~ possible_activities -= socialize
+    }
+}
 // Prevent working beyond the afternoon
 {current_period > afternoon:
 
@@ -349,7 +359,7 @@ VAR prev_interval = FAR_FUTURE
 // Sleepiness high, unable to work, exercise, go out
 {sleepiness >= sleepiness.high:
     You're too tired to go out, or work...
-    ~ possible_activities -= (exercise, work)
+    ~ possible_activities -= (exercise, work, socialize)
 
 }
 
@@ -481,6 +491,13 @@ You stare into space. Just then, you get a phone call. It's your friend Al, call
             -> grind_dinner.do
         -else:
             <- grind_dinner.opt
+        }
+    }
+    { possible_activities ? socialize:
+        {force_grind_activity:
+            -> grind_bar.do
+        -else:
+            <- grind_bar.opt
         }
     }
     { possible_activities ? logon_fansite:
@@ -622,8 +639,9 @@ Each of them return to after_activity when done.
 {stat_snapshot() ^ (hunger.max, lust.max, sleepiness.max, addiction.max) != ():
     ~ tmp_poss_act = ()
     {
-
-    - hunger == hunger.max: 
+    
+    // Hack. Ignore your hunger when you're in the bar
+    - hunger == hunger.max and grind_location != location_bar: 
         
         { confidence > confidence.min:
             { 
@@ -647,10 +665,10 @@ Each of them return to after_activity when done.
         You need release <i>now.<><br><>
         ~ tmp_poss_act += jerk_off
         
-    // If after 9 pm  and max sleepiness, you have to sleep
-    - sleepiness == sleepiness.max and tm_hour >= 21:
+    // If max sleepiness, you have to sleep
+    - sleepiness == sleepiness.max :
         ~ tmp_poss_act += sleep
-    - addiction == addiction.max and confidence == confidence.min and current_activity != sleep:
+    - addiction == addiction.max and confidence == confidence.min and current_activity != sleep and (path == adventure):
         ~ tmp_poss_act += logon_fansite
 
     }
@@ -668,7 +686,7 @@ Each of them return to after_activity when done.
     - location_home: 🏠 Your apartment
     - location_gym: 🏋🏻‍♂️ Local gym
     - location_park: 🏞️Local park
-    - location_pub: 🍻Prince of Wales Pub
+    - location_bar: 🍻Prince of Wales Pub
     - location_cafe: ☕Better Caffe Latte Than Never
 }<>
 

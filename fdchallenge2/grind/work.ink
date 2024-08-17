@@ -99,7 +99,10 @@ VAR available_employers = ()
 = select_employer 
 
 // No choice?
-{LIST_COUNT(available_employers) == 1:->->}
+{LIST_COUNT(available_employers) == 1:
+~ employer = available_employers
+->->
+}
 
 + {available_employers ? silverman} [{employer==silverman:Keep working for} Silverman]
     ~ employer = silverman
@@ -109,11 +112,12 @@ VAR available_employers = ()
     ~ employer = own_project
 + {available_employers ? bella_org} [{employer==bella_org:Keep working for|Work for } {BELLA_NAME}]
     ~ employer = bella_org
++ -> 
+    ~ employer = ()
 -
 ->->
 
-= grind_work_silverman
-->->
+
 === grind_full_days_work
 = opt
 
@@ -125,7 +129,7 @@ VAR available_employers = ()
 
 
     -> ffa(second, next_hm(18,00)-now()) ->
-    ~ incstat(confidence)
+    ~ deltastat(confidence, 3)
     You carry on  working until...
     -> cont ->
     You look at time. Wow, {ampm_hm(tm_hour, 0)} already!

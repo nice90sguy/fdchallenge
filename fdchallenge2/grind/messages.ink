@@ -12,7 +12,7 @@ You have {unread_message_count:{print_number(unread_message_count)}|no} unread m
     ->ffa(minute, 10)->
     -> grind.after_activity
     
-=== taunt
+=taunt
 LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction, taunt_humiliate
 
     ~ temp response_type = WAM_MISS
@@ -47,13 +47,13 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 
 
     {LIST_RANDOM(LIST_ALL(taunts)):
-        {
+        
         - taunt_send_pic_and_repeat_after_me: ->do_taunt_send_pic_and_repeat_after_me(response_type) ->
         // - taunt_haggle_game: -> do_taunt_haggle_game(response_type) ->
         - taunt_tribute: -> do_taunt_tribute(response_type) ->
         - taunt_addiction: -> do_taunt_addiction(response_type) ->
         - taunt_humiliate: -> do_taunt_humiliate(response_type) ->
-        }
+        
     }
     ~ decstat(confidence)
     {current_activity == sleep and response_type != WAM_MISS:You manage to get back to sleep.}
@@ -75,24 +75,24 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 
         You can't help it, but the message triggers you.
         ~incstat(lust)
-         You can't help it, but the message triggers you.
-        ~decstat(confidence)       
+    
     }
     
 
 ->->        
 // Bella sends you a pic, then does "repeat" commands
 = do_taunt_send_pic_and_repeat_after_me(response_type)
-    
-    ~ temp available_photos = search(photo, available_items, match_any)
+    // HACK:  All possible items minus available items will give a media item which, when looked up,
+    // won't be found.  The default for media items that are not in the index is to categorized as a photo.  See the -else statement in the long "switch" statement in lookup_media.
+    ~ temp available_photos = LIST_INVERT(available_items)
     
     { available_photos == ():
 >>> Bella has no more photos to send!
         ->->
     }
-    -> wa.m("💋", response_type + cmd_send_item + LIST_MIN(available_photos) + cmd_increase_lust) ->
+    -> wa.m("💋", response_type + cmd_send_item + LIST_RANDOM(available_photos) +  photo  + cmd_increase_lust) ->
     {response_type ? WAM_READ:
-        -> wa.m("{How hot?|lol i bet your drooling 🤤|Stare and go dumb|So weak...}", WAM_CONTPAUSE) ->
+        -> wa.m("{How hot?|lol i bet your drooling 🤤|Stare and go dumb|So weak...}", WAM_CONTPAUSE + cmd_increase_obedience) ->
 
         -> wa.m("{thank you|I love you|no escape|\{BELLA_NAME\}}", WAM_CONTINUOUS + cmd_repeat_after_me) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
@@ -100,7 +100,7 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
         {not obeyed_cmd: ->taunt_disobeyed->->}
         -> wa.m("{Good boy. Again|Keep going|repeat 💋}", WAM_CONTINUOUS + cmd_again + cmd_increase_obedience) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
-        -> wa.m("{Again!|more|and again}", WAM_CONTINUOUS + cmd_again) ->
+        -> wa.m("{Again!|more|and again}", WAM_CONTINUOUS + cmd_again + cmd_increase_obedience) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
         -> wa.m("{Good boy.|You 😍 me lol}", WAM_CONTPAUSE + cmd_increase_obedience + cmd_increase_lust + cmd_decrease_confidence) ->
         
@@ -111,9 +111,9 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 
 ->->
 = taunt_disobeyed
--> wa.m("{~Ah sweet, trying to resist 💋|lol You know you can't win|So weak...|Your cock is mine, don't fight it lol|Resistance is fuile lol}", WAM_CONTPAUSE) ->
+-> wa.m("{~Ah sweet, trying to resist 💋|lol You know you can't win|So weak...|Your cock is mine, don't fight it lol|Resistance is futile lol}", WAM_CONTPAUSE) ->
     ~ decstat(obedience)
-    ~ decstat(confidence)
+    ~ incstat(confidence)
 ->->
 
 // Bella sends you a pic, then does "repeat" commands
@@ -127,10 +127,10 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 
 = do_taunt_tribute(response_type)
 
-    ~ temp cmd = cmd_tribute
+    ~ temp cmd = cmd_tribute+cmd_increase_obedience
     ~ temp v = RANDOM(1,2 * LIST_VALUE(obedience)) * 50
     ~ temp msg = "Show me how obedient you are. Send me {v} now"
-
+    ~incstat(addiction)
  -> wa.m(msg, response_type + num2trib(v) + cmd) ->
  ->->
  

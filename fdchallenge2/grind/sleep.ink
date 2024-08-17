@@ -37,6 +37,8 @@ VAR sleep_hours = 0
         - sleepiness.medium:, but you don't think you've had enough sleep
         - sleepiness.high: after a disturbed night
     }<>.
+    // Note: Needed to remove it because of edge case of alarm "waking" you after you're asleep
+    ~ current_activity -= sleep
 -> grind.after_activity
 
 

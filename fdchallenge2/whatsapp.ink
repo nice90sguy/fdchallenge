@@ -68,7 +68,6 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 + (readit)[{response_type ? WAM_READ:Read it now|👠 Read it now! }]
 
     -> ffa(second,10) ->
-    
      -> respond_to_msg(msg, args, t) ->
 
     ~ DID_READ_MESSAGE = true
@@ -79,18 +78,22 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 + (ignoreit){response_type ? WAM_CHOOSE}[Read Later]
     // Add to missed messages
         // remove all commands from the message, you've missed it
-    {_DEBUG:>>> MISSED COMMAND(s): {args ^ LIST_ALL(commands)}}
-    ~ args = args - LIST_ALL(commands)
+    // {_DEBUG:>>> MISSED COMMAND(s): {args ^ LIST_ALL(commands)}}
+    // ~ args = args - LIST_ALL(commands)
     -> unread_message_log.add(msg, args) ->
     ~ decstat(obedience)
 
 -
 
 // Allow option to read old messages, if any, if WAM_READ_MISSED
-{unread_message_count and response_type ? WAM_READ_MISSED:
+
    
-        -> read_missed_messages ->
-}
++ {unread_message_count and response_type ? WAM_READ_MISSED} [Read them] -> read_missed_messages ->
++ {obedience <= obedience.medium and addiction <= addiction.medium and unread_message_count and response_type ? WAM_READ_MISSED} [Delete them without reading] -> unread_message_log.clear ->
+
++ ->
+-
+
 // Restore speech type
 ~ speech_type = old_speech_type
 ->->
@@ -112,7 +115,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
   +  + {unread_message_count > 1}[Yes (Newest first)] -> 
         -> unread_message_log.pop_newest(msg, arg, t) ->
          -> respond_to_msg(msg, arg, t) -> loop_missed_msgs
-  +  + {unread_message_count}[No, not now]
+  +  + {unread_message_count}[I've changed my mind]
     ->->
 
 -
@@ -121,12 +124,13 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 ->->
 
 = respond_to_msg(ref msg, ref args, ref t)
-
+{_DEBUG:>>> RESPOND TO MESSAGE: {msg}, {t} {args}}
 // Do nothing if the time is zero (no message in slot)
 {t:
     // If the message contains any commands, dispatch to command handler,
     // Which may or may not emit the message
     {(args ^ LIST_ALL(commands)) != ():
+
         -> intent.respond(msg, t, args) ->
     -else: 
          {_DEBUG:>>> respond_to_msg NO_COMMAND_IN_MESSAGE}

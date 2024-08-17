@@ -34,6 +34,7 @@ INCLUDE grind/fansite.ink
 INCLUDE grind/work.ink
 INCLUDE grind/sleep.ink
 INCLUDE grind/breakfast.ink
+INCLUDE grind/bar.ink
 
 INCLUDE fansite/fansite.ink
 INCLUDE fansite/add_credits.ink
@@ -42,19 +43,25 @@ INCLUDE grind/messages.ink
 INCLUDE grind/stat.ink
 INCLUDE fansite/shop.ink
 
-INCLUDE generated/shop_items.ink
+INCLUDE bar/bar.ink
+INCLUDE generated/media_items.ink
 INCLUDE work.ink
 INCLUDE work_proposition.ink
+INCLUDE one_week_later.ink
+
 
 
 
 # author nice90sguy@gmail.com
 # theme dark
 
+VAR _DEBUG = false
+VAR _LITEROTICA_EXPORT = true
+
 ~ SEED_RANDOM(857)
 
 // TESTING
-//-> lookup_media(14, false)-> END
+// -> tag_a_video(7) ->
 // -> TEST -> END
 // === TEST
 
@@ -86,9 +93,8 @@ INCLUDE work_proposition.ink
 // ->->
 // END TESTING
 
-VAR _DEBUG = false
-VAR _LITEROTICA_EXPORT = false
-(Version 0.036)
+
+(Version 0.041)
 -> main
 
 == main
@@ -107,6 +113,7 @@ VAR _LITEROTICA_EXPORT = false
         ~ path = sub
     * * [Adventure Path]
         ~ path = adventure
+        ~ events += met_angie_on_plane
     - -
     ~ _DEBUG = false
     -> cc.deposit(1000) ->

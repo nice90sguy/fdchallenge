@@ -39,6 +39,7 @@ VAR num_times_actually_did_exercise = 0
          ~ current_activity = prev_activity
     - -
 -
+    
     -> grind.after_activity
     
 === grind_park_running

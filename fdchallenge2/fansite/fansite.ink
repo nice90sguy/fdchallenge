@@ -129,7 +129,11 @@ VAR bella_online_now = false
         {warn()} You can't log out until you read your offline messages!
         -> fansite.after_activity
     }
-
+    // If you have any credits, you have to tribute her once per day
+    {credits and not (activities_done_today? fsa_tribute):
+        {warn()} You can't end your first session of the day without tributing her first!
+        -> fansite.after_activity
+    }
     ~ force_fansite_activity = false
     
     -> grind.after_activity
@@ -140,8 +144,8 @@ VAR bella_online_now = false
 ~ temp tx_result = ()
 ~ temp price = 0
 + + (do) [Tribute 💵] ->
-    + + + [100 credits] -> 
-        ~ price = 100
+    + + + [{100 * LIST_VALUE(addiction)} credits] -> 
+        ~ price = 100 * LIST_VALUE(addiction)
     + + +  {credits} [All your credits] -> 
         ~ price = credits
 
@@ -150,8 +154,13 @@ VAR bella_online_now = false
     {tx_result ? FS_TX_SUCCESS:
         {That felt good.|You want to that again.|Pay more.}
         ~ incstat(addiction)
-        ~ incstat(lust)
+        
+        {addiction >= addiction.high:
+            ~ incstat(lust)
+        }
+
     }
+    ~ activities_done_today = fsa_tribute
     -> fansite.after_activity
     
 

@@ -103,7 +103,7 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, YOU
      {t == now(): ->ffa(second, 5) ->}
      
     ~ temp formatted_msg = "{from!=YOU:💬 }{from==YOU:({credits-cost_per_message})} {e_o}{msg}{e_e}{from==YOU: 🗨️}"
-    {current_activity == fsa_chat:
+    {current_activity ? fsa_chat:
         {from == YOU:
             ~ temp tx_result = ()
             -> fansite_credits.pay(cost_per_message, tx_result) ->
@@ -117,9 +117,12 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, YOU
             ~ chat_offline_messages += "{formatted_msg}<br>"
         }
     }
-    ~ chat_last_args = args
-    ~ chat_last_t = t
-    ~ chat_last_msg = msg
+    // She 
+    {from != YOU and not (current_activity ? fsa_chat):
+        ~ chat_last_args = args
+        ~ chat_last_t = t
+        ~ chat_last_msg = msg
+    }
 ->->
 
 

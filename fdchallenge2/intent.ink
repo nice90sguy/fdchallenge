@@ -71,8 +71,15 @@ VAR obeyed_cmd = false
 = command_send_item(msg, t, args)
 -> M(msg, t, args+BELLA) ->
 ~ temp item = args ^ LIST_ALL(media)
+
+
+ 
 {item == ():>>> ASSERT !!! args contains an item: {args}}
-~ temp is_photo = has_tag(item, photo)
+
+-> lookup_media(item, item) ->
+ // Item now contains tags and media type
+ 
+~ temp is_photo = (item ? photo)
 {is_photo:{camera()}|{videocam()}} {BELLA_NAME} has sent you a {is_photo:photo|video}!
 -> cont ->
 
@@ -80,7 +87,7 @@ VAR obeyed_cmd = false
 {current_activity == fsa_chat:
     ->command_unlock_item(msg, t, args) ->->
 - else:
-    {You gaze at it...|Wow.|You feel that in your balls.|No escape.}
+    {She's just incredible...|You gaze at it...|Triggered.|You need more.|More.|You're so fucked.|You almost cum looking at it.|Wow.|You feel that in your balls.|OMFG...|No escape.}
     // It's titled "<> 
     // -> lookup_media(item, true) ->
     // <>".
@@ -99,16 +106,16 @@ VAR obeyed_cmd = false
         ~ tribute_amount = previous_tribute
     - else:
         {msg=="":
-            msg = {~Pay me |Send |Tribute |} {tribute_amount}.
+            ~ msg = "{~Pay me |Send |Tribute |} {tribute_amount}."
         }
     }
 
     
-    {obedience>=obedience.high: -> do_tribute}
+    {obedience>=obedience.high or addiction>=addiction.high: -> do_tribute}
 
     + (do_tribute) [Send ${tribute_amount}]
         -> cc.pay(BELLA_FULL_NAME, tribute_amount, true) ->
-        {You get a slight thrill when you pay her.|You get that weird rush...|You feel that in your balls.|You feel like paying more.|"Good boy", she says.|You want to keeping paying.|She's ruining you, and you love it.|Your're just an ATM.|No escape.}
+        {You get a slight thrill when you pay her.|You get that weird rush...|You feel that in your balls.|You feel like paying more.|<i>"Good boy"</i>, she says in your head.|You want to keeping paying.|She's ruining you, and you love it.|Your're just an ATM.|No escape.}
         ~ incstat(addiction)
         ~ incstat(lust)
         ~ previous_tribute = tribute_amount
@@ -132,8 +139,9 @@ VAR obeyed_cmd = false
 
 
 -> haggle("{sniffing my panties|the privilege of holding my {?used|} knickers up to your nose|kissing my {?beautiful|perfect|amazing||} feet}", trib2num(args), 20) ->
-
+{_DEBUG:>>> HAGGLE RESULT: {HAGGLE_RESULT}}
 {HAGGLE_RESULT:
+
  - SOLD:
     -> M_B("{Good boy. {?Expect them in the post.|}|Inhale them and surrender.}") ->
     ~ incstat(lust)

@@ -50,24 +50,32 @@ That seems to be the end of that conversation.
 VAR payment_for_correct_video_tag = 100
 
 ==  tag_a_video(video_)
+~ temp lum_arg = ()
 
-~ temp actual_tags = get_tags(video_, LIST_ALL(search_tags))-video
+->lookup_media(video_, lum_arg) ->
+>>> lum_arg = {lum_arg}
+~ temp actual_tags = (lum_arg ^ LIST_ALL(search_tags))-video
 
 {_DEBUG:>>> Video: ({video_})}
     -> ffa(minute, 5) ->
-    It's titled: "<> ->lookup_media(video_, false) ->
+    ~ lum_arg = lum_desc
+    It's titled: "<> ->lookup_media(video_, lum_arg) ->
     <>"
 + [Make a wild guess at the tags]
+    -> ffa(minute, 5) ->
 + [Watch the video first]
-    ->lookup_media(video_, true) ->
+    ~ lum_arg = lum_narr
+    ->lookup_media(video_, lum_arg) ->
+    -> ffa(minute, 15) ->
     ~ incstat(lust)
 + [Come back to this one later] ->
     -> list_utils.move_item(video_, untagged_videos, skipped_videos) ->-> 
 -
+-> ffa(minute, 5) ->
 ~ temp guessed_tags = ()
 ~ temp num_actual_tags = LIST_COUNT(actual_tags)
 
-The video has {print_number(num_actual_tags)} tags.
+The video has {print_number(num_actual_tags)} tag{num_actual_tags!=1:s}.
 -> multiselect(LIST_ALL(search_tags)-photo-video, guessed_tags, num_actual_tags, num_actual_tags, "tag") ->
 ~ temp matched_tags = actual_tags ^ guessed_tags
 ~ temp num_wrong_tags = num_actual_tags - LIST_COUNT(matched_tags)
@@ -83,7 +91,7 @@ The video has {print_number(num_actual_tags)} tags.
         ~decstat(confidence)
         You were way off the mark with your guesses!     
      -else:
-        You got {list_with_commas(matched_tags)} right, but the other {print_number(num_wrong_tags)} {num_wrong_tags==1:was|were} wrong.
+        You got {list_with_commas(matched_tags)} right, but the other {print_number(num_wrong_tags)} {num_wrong_tags==1:was|were} wrong. You'll need to come back to it later.
 
 }
 // only reach here if not all correct   

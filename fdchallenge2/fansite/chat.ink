@@ -3,6 +3,7 @@ VAR chat_last_args = ()
 VAR chat_last_t = 0
 VAR chat_last_msg = ""
 
+LIST fsa_chat_activities = fsa_chat_greet
 == fansite_chat
 = opt
 + + (do) [Chat with Me 💬] 
@@ -34,12 +35,21 @@ VAR chat_last_msg = ""
     }    
     
     {not bella_online(): {BELLA_NAME} isn't online right now. ({ampm()})}
-    + + + {not bella_online()}  [Wait for her to come online]
+    // Don't wait if we haven't set up the hourly callback, otherwise we might wait forever
+    + + + {not bella_online() and grind.on_the_hour}  [Wait for her to come online]
         ~ incstat(obedience)
         -> ff2h(1) -> do ->
     + + + [Leave Chat]    
     + + + [Say Hello]
-       //  ~ intent.respond(
+            -> M_Y("hello") ->
+            You know what you have to do:
+     
+-> cont ->
+     -> intent.respond("{~Send.|Tribute Me|}", now(), cmd_tribute + num2trib(10*LIST_VALUE(addiction))) ->
+       {bella_online():
+            -> taunt ->
+        }
+
     - - -
         
     ~ activities_done_today += fsa_chat
@@ -118,6 +128,48 @@ You type
 , and notice that it only cost you one credit, as she promised.
 You sit back, wondering even more than ever who she is, and leave the chat, to explore the rest of her site.
 -> ffa(second, 30) ->
+->->
+
+
+= taunt
+{RANDOM(1,4):
+    -1:
+        -> intent.respond("{Jerk and goon 🤤|UNLOCK IT||Go on.|Uulock}", now(), cmd_send_item+LIST_RANDOM(available_items)) ->
+    -2: 
+        -> intent.respond("I will obey {BELLA_NAME}", now(), cmd_repeat_after_me) ->
+    -3:
+        -> intent.respond("I will obey {BELLA_NAME}", now(), cmd_repeat_after_me) ->
+    -4:
+        -> M_B("Take off your pants,and get on your knees.") ->
+        -> p1e("You do as she says") ->
+        <><i>, and go down on your knees.
+        -> cont ->
+        -> M_B("now, start stroking.") -> 
+        
+        -> intent.respond("I live for {BELLA_NAME}", now(), cmd_repeat_after_me) ->
+        -> M_B("now, start stroking faster.") -> 
+        ->p1("speed up") ->
+        -> M_B("Faster!") -> 
+        ->p1e("You feel you're about to cum") ->      
+        <><i>, but just as you're about to, she types:
+        ~ temp ad_hoc_tribute = 20*LIST_VALUE(addiction)
+        ~ temp tx_result = FS_TX_FAIL
+        -> M_B("Pay your cum tax, if you want to cum. {ad_hoc_tribute} credits.") ->
+        You take your hand off your dick and type furiously on the keyboard, rushing to do as you're told:
+        -> fansite_credits.pay(ad_hoc_tribute, tx_result) -> 
+        {tx_result ? FS_TX_SUCCESS:
+            You cum.
+            ~ incstat(addiction)
+            
+            {addiction >= addiction.high:
+                ~ incstat(lust)
+            }
+        - else:
+            You don't cum.
+        }
+
+    
+}
 ->->
 
 

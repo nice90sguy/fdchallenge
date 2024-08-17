@@ -428,11 +428,12 @@ The barman is looking at you.  You fumble for your credit card.  Then you change
 
 ~ bar_bill += 1 * LIST_VALUE(bouillabaise)
 ~ bar_bill += 1 * LIST_VALUE(oysters)
-~ bar_bill += 3 * LIST_VALUE(shellfish_platter)
+~ bar_bill += 1 * LIST_VALUE(shellfish_platter)
 ~ bar_bill += 2 * LIST_VALUE(ace_of_spades)
+~ bar_bill += 2 * LIST_VALUE(jack_daniels)
 ~ bar_bill = INT(bar_bill * 1.15)
 
-He looks at the check and says, "No, that's right, three JDs, two Shigoku Oysters, One Armand de Brignac Blanc de Noirs."
+He looks at the check and says, "No, that's right, two JDs, one Bouillabaise, one Oysters, one Shellfish Platter, Two Armand de Brignac Blanc de Noirs. Plus fifteen percent cover charge. {print_number_c(bar_bill)} dollars."
 
 "You're sure that's right? {print_number_c(LIST_VALUE(ace_of_spades))} bucks? for a fucking <i>bottle of fizzy wine</i>?
 
@@ -446,11 +447,11 @@ He looks at the check and says, "No, that's right, three JDs, two Shigoku Oyster
 
 ->cont ->
 
-You wish you could turn back the clock and start the evening again. You don't know what you did worng, but whatever it was, you'd do it differntly this time.
+You wish you could turn back the clock and start the evening again. You don't know what you did worng, but whatever it was, you'd do it differently this time.
 
 {hint()} Maybe you should have ordered something other than the Bouillabaise...
 
--> tbc
+-> END
 ->->
 
 // Slugs --------------------------------------------------------

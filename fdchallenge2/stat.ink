@@ -24,7 +24,7 @@ VAR _flt_addiction = 0.0
 ~ _flt_addiction = LIST_VALUE(addiction)
 
 // This value is set by a function that maps the amount of money in your account to the list values
-LIST wealth = ruined, dont_ask, in_debt, barely_keeping_afloat, doing_ok, flush, rich
+LIST wealth = ruined, dont_ask, in_debt, barely_keeping_afloat, (doing_ok), flush, rich
 
 // Increases every six hours (day+night), goes to low after eating
 LIST hunger = min, (low), medium, high, max
@@ -79,15 +79,15 @@ VAR _flt_fitness = 0.0
         ~ setstat(addiction,addiction.high)
         ~ setstat(hunger,hunger.low)
         ~ setstat(confidence,confidence.high)
-        ~ setstat(obedience,obedience.medium)
+        ~ setstat(obedience,obedience.low)
         ~ setstat(fitness,fitness.medium)
 - sub:
         ~ setstat(sleepiness,sleepiness.min)
         ~ setstat(lust,lust.low)
         ~ setstat(hunger,hunger.low)
-        ~ setstat(addiction,addiction.high)
+        ~ setstat(addiction,addiction.low)
         ~ setstat(confidence,confidence.low)
-        ~ setstat(obedience,obedience.high)
+        ~ setstat(obedience,obedience.medium)
         ~ setstat(fitness,fitness.low)
 
 }
@@ -137,7 +137,7 @@ VAR _flt_fitness = 0.0
 == function decstat(_stat)
 ~ return deltastat(_stat, -1)
 
-VAR SHOW_STAT_CHANGES = true
+VAR SHOW_STAT_CHANGES = false
 // each stat has its own "speed" for inc and dec, which is it's "delta"
 // e.g. if delta is 0.1, it takes 10 increments to actually change to the 
 // next highest state
@@ -149,19 +149,19 @@ VAR SHOW_STAT_CHANGES = true
         ~ _deltastat_sub1(sleepiness, _flt_sleepiness, 1.0 * amount)
   - lust:  
 {SHOW_STAT_CHANGES:<>🌶️ {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
-        ~ _deltastat_sub1(lust, _flt_lust, 0.2 * amount)
+        ~ _deltastat_sub1(lust, _flt_lust, 0.1 * amount)
   - hunger:  
 {SHOW_STAT_CHANGES:<>🍕 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
         ~ _deltastat_sub1(hunger, _flt_hunger, 1.0 * amount)
   - addiction:  
 {SHOW_STAT_CHANGES:<>💉 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
-        ~ _deltastat_sub1(addiction, _flt_addiction, 0.1 * amount)
+        ~ _deltastat_sub1(addiction, _flt_addiction, 0.05 * amount)
   - confidence:  
 {SHOW_STAT_CHANGES:<>🦚 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
-        ~ _deltastat_sub1(confidence, _flt_confidence, 0.1 * amount)
+        ~ _deltastat_sub1(confidence, _flt_confidence, 0.05 * amount)
   - obedience:  
 {SHOW_STAT_CHANGES:<>🙏🏻 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}}} <>
-        ~ _deltastat_sub1(obedience, _flt_obedience, 0.1 * amount)
+        ~ _deltastat_sub1(obedience, _flt_obedience, 0.05 * amount)
   - fitness:  
 {SHOW_STAT_CHANGES:<>💪🏻 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}}} <>
         ~ _deltastat_sub1(fitness, _flt_fitness, 0.1 * amount)
