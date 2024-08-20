@@ -54,7 +54,7 @@ VAR payment_for_correct_video_tag = 100
 ~ temp lum_arg = ()
 
 ->lookup_media(video_, lum_arg) ->
->>> (CHEAT)<i> Media Info = {lum_arg}
+{_DEBUG:>>> (CHEAT)<i> Media Info = {lum_arg}}
 ~ temp actual_tags = (lum_arg ^ LIST_ALL(search_tags))-video
 
 {_DEBUG:>>> Video: ({video_})}
