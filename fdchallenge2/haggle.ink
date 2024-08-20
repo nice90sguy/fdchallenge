@@ -59,7 +59,7 @@ VAR initial_bid = 0
 = endplay
     {haggle == 1: {hint()} {BELLA_NAME} has learned something about you from this!}
     
-    -> cc.pay(BELLA_FULL_NAME, HAGGLE_LAST_BID, true) ->
+    -> cc.pay(BELLA_FULL_NAME(), HAGGLE_LAST_BID, true) ->
     {TX_RESULT == TX_SUCCESS:
     - else: // Transaction failed
     

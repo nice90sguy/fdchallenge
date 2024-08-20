@@ -89,7 +89,7 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
     ~ temp available_photos = LIST_INVERT(available_items)
     
     { available_photos == ():
->>> Bella has no more photos to send!
+>>> {BELLA_NAME} has no more photos to send!
         ->->
     }
     -> wa.m("💋", response_type + cmd_send_item + LIST_RANDOM(available_photos) +  photo  + Lust) ->

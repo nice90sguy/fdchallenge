@@ -71,8 +71,8 @@
     ~ temp ex_days_missed = day_num - num_times_actually_did_exercise
      ~ temp good_exercise = true
     {ex_days_missed:
-        -0: You're keeping {~diligently|} to {~your|a great} {~exercise|fitness} {~regime |routine }
-        -1: You're doing {~pretty|} well with maintaining your {~fitness |health |exercise {~regime |routine }}
+        -0: You're keeping {~diligently|} to {~your|a great} {~exercise |fitness } {~regime |routine }
+        -1: You're doing {~pretty|} well with maintaining your {~fitness|exercise {~regime |routine }}
         - else:
             ~ good_exercise = false
             You're not keeping up {ex_days_missed > 2:at all|very} well with your daily {~work-outs |exercise }
@@ -80,15 +80,15 @@
     <>
     {sq(fitness):
         - max: 
-            {good_exercise:and it's paying off. Your vital signs are great|but {?against the odds|} it's not affecting your health at all, which is perfect}
+            {good_exercise: and it's paying off. Your vital signs are great|but {?against the odds|} it's not affecting your health at all, which is perfect}
         - high: 
-            {good_exercise:and it's maintaining your health.|but your health isn't suffering}
+            {good_exercise: and it's keeping you healthy.|but your health isn't suffering}
        - medium: 
-            {good_exercise:which is keeping you reasonably fit|and your health could improve}
+            {good_exercise: which is keeping you reasonably fit|and your health could improve}
        - low: 
-            {good_exercise:but you still need to improve your lifestyle; you're pretty unhealthy|and your health has suffered}
+            {good_exercise: but you still need to improve your lifestyle; you're pretty unhealthy|and your health has suffered}
        - min: 
-            {good_exercise:but to no avail. You're not at all healthy|and your health has suffered a lot because of it}
+            {good_exercise: but to no avail. You're not at all healthy|and your health has suffered a lot because of it}
     }
     <>.
 {think()}

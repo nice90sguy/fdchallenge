@@ -34,7 +34,7 @@ LIST TX_RESULT = (TX_FAILED), TX_SUCCESS
 {_cc - amount < _limit:
      {_DEBUG:>>> Transaction failed (Balance {_cc} - Amount {amount} < overdraft limit {_limit})}
     {warn()} Your bank has declined your transaction.
-    {to==BELLA_FULL_NAME:
+    {to==BELLA_FULL_NAME():
 
     ~otr("There are serious consequences if you can't pay {BELLA_NAME}!")
 

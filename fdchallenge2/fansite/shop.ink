@@ -28,12 +28,15 @@ VAR favourite_items = ()
         + + + + [Yes]
             ~ favourite_items += found_items
         + + + + [No]
-        - - - -
-        
+        - - - - -> do
+        -> ffa(minute, 6) ->
     + + + [Browse]
         {hint()} (Cumming soon)
+        -> ffa(minute, 41) -> do
     + + + [Fap to some of your unlocked items]   
         {hint()} (Cumming soon)
+        -> ffa(minute, 43) -> do
+        
     + + + [Back to My Page]
     - - - -> fansite.after_activity
     ~ activities_done_today += fsa_shop

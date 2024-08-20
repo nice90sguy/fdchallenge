@@ -88,21 +88,25 @@ The page is asking you for a "pin code" -- wtf is that supposed to mean?
 Woah, that gave you a reality check:
 {print_number_c(FAN_CLUB_SIGNON_FEE)} dollars!?
 
-You shut the laptop and stand up.  You notice that your dick is really hard!  You weren't aware that you were so turned on until just now.  It's like your dick is voting "Do it", like in the old cartoons, with the devil and angel on your shoulders.
-But you don't seem to have an angel on your other shoulder.  "C'mon, angel, say something, snap me out of this!" you say aloud.
-Maybe the angel has nothing to say about this because it agrees with your dick... you should pay up. Stop fighting reality, you know {BELLA_NAME}'s right.  Do what she says; become her "super-fan".  And if you don't, you know what will happen, don't you.  You'll just go on with your stupid, meaningless life. 
+You shut the laptop and stand up.  Your post-orgasm bliss fades, and you start to recover your senses.  You're conflicted as to what to do:
+{devil_happy()}Just stop fighting the truth about who you are, you know {BELLA_NAME}'s right.  Do what she says; become her "super-fan".
+
+{angel()} But she's so obviously trying to scam you!
+
+{devil_happy()}So what? You know what will happen to you if ignore her, don't you?
+{devil_happy()} Precisely zip.  You'll just go on with your stupid, meaningless life. 
 And you'll never see her again.
-{hint()} This your last chance to choose!
-+ [Do it 😈]
+
++ [Do it {devil_happy()}]
  {bella()} As if you had a choice {_emo("(laugh)")} ...
  ~incstat(addiction)
  ~incstat(obedience)
-+ [.......... 👼🏻]
++ [.......... {angel()}]
     {bella()} You don't have a choice. {_emo("(laugh)")} That's right, it's not up to you, I've decided for you.
 -
 
 -> ffa(minute,5) ->
--> cc.pay(BELLA_FULL_NAME, FAN_CLUB_SIGNON_FEE, true) ->
+-> cc.pay(BELLA_FULL_NAME(), FAN_CLUB_SIGNON_FEE, true) ->
 // Bella sends an offline chat message to you.
 TODO Make her onboarding message
 -> M_chat("Whenever you enter My chat room, always greet Me, and always respond to any offline messages I may have left you.  And do it immediately.  That will notify me that you're online.", now(), ()) ->

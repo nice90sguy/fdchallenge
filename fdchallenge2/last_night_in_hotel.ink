@@ -118,7 +118,7 @@ Maybe.
 You manage to get a couple of hours sleep, but she's in there in your dreams. There's no escape from her now.    
 
 - adventure:
-    A woman sits in the next seat to you.  She's very nice-looking, with a big smile and great legs, which you notice while untangling your seatbelt from hers.  You end up talking with her. Her name's {msg_name(ANGIE)}. She's a recruitmant consultant for an agency you sometimes use.  You watch a couple of inflight movies together, laughing at the same places in the movie.  You're obviously suited, with the same sense of humor; and she wants to exchange numbers. 
+    A woman sits in the next seat to you.  She's very nice-looking, with a big smile and great legs, which you notice while untangling your seatbelt from hers.  You end up talking with her. Her name's {msg_name(ANGIE)}. You watch a couple of inflight movies together, laughing at the same places in the movie.  You're obviously suited, with the same sense of humor; and she wants to exchange numbers. 
     -> J(->slug_airplane_no_phone) -> 
     You get her to write down her number in your notepad, old-school.
     ~ events += met_angie_on_plane
@@ -332,7 +332,7 @@ You look up and see that she's holding your phone.
     "You really have no idea of the value of a dollar, do you?" She says, looking down at you with pity.
     "Tell you what, as it's your first time playing..."
     She taps on your phone, and your hear it make a "Ding!" sound...
-    {HAGGLE_RESULT==RESERVE_NOT_REACHED:-> cc.receive(BELLA_FULL_NAME, HAGGLE_LAST_BID, true) ->}
+    {HAGGLE_RESULT==RESERVE_NOT_REACHED:-> cc.receive(BELLA_FULL_NAME(), HAGGLE_LAST_BID, true) ->}
     "Try again. And don't be a cheapskate this time."
     ~ reserve += 50
     ~ starting_bid = starting_bid + 50
@@ -340,7 +340,7 @@ You look up and see that she's holding your phone.
     -> haggle("my amazing ass", reserve, starting_bid) ->
 
     + + (fucked_up_first_haggle_game) {HAGGLE_RESULT == RESERVE_NOT_REACHED} ->
-    -> cc.pay(BELLA_FULL_NAME, 100, false) ->
+    -> cc.pay(BELLA_FULL_NAME(), 100, false) ->
     "Looks like you still have a lot to learn. Here's your first lesson:"
     She taps on your phone angrily, then throws it on the sofa. She pulls off her heels, puts her jeans and tee shirt back on, and slides her feet into her shoes quickly, and walks out.
     You stand up and walk over to the wardrobe mirror and look at your boner, which is still pulsing hopefully.
@@ -365,7 +365,7 @@ You look up and see that she's holding your phone.
         {punishment_amount > _cc:
             ~ punishment_amount = _cc
         }
-        -> cc.pay(BELLA_FULL_NAME, punishment_amount, false) -> 
+        -> cc.pay(BELLA_FULL_NAME(), punishment_amount, false) -> 
         -> fucked_up_first_haggle_game
         
     + + ->

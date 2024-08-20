@@ -77,6 +77,9 @@ VAR last_displayed_year = 0
 == function devil_angry
 👿 <i><>
 
+== function angel
+ 👼🏻<i><>
+
 == function devil_happy
 😈 <i><>
 
@@ -88,6 +91,12 @@ VAR last_displayed_year = 0
 
 == function videocam
 📹 <i><>
+
+== function bella_chat
+💬<>
+
+== function you_chat
+<>🗨️
 
 VAR DISPLAY_ANALOG_CLOCK=true
 == function analog_clk

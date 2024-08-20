@@ -11,13 +11,22 @@ Your last activity: <b>{current_activity:{current_activity}|(none)}</b><br><>
 \----------------------------------------------------<br><>
 -> cc.disp_balance ->
 
-{DispStat(lust)} <br><>
+Long-term stats:<p><>
 {DispStat(confidence)}<br><>
 {DispStat(obedience)}<br><>
-{DispStat(addiction)}<br><>
 {DispStat(fitness)}<br><>
+{DispStat(addiction)}<br><>
+</p>
+Short-term stats:<p><>
 {DispStat(hunger)}<br><>
 {DispStat(sleepiness)}<br><>
+{DispStat(lust)} <br><>
+</p>
+// Relationship stats:<p><>
+
+// {path==adventure:{DispStat(angie_relationship)}<br><>}
+// {DispStat(melanie_relationship)}<br><>
+// </p>
 \----------------------------------------------------<br><>
 
 ->->
@@ -35,6 +44,8 @@ Your last activity: <b>{current_activity:{current_activity}|(none)}</b><br><>
         ~ setstat(confidence,low)
         ~ setstat(obedience,low)
         ~ setstat(fitness,medium)
+        ~ setstat(angie_relationship,medium)
+        ~ setstat(melanie_relationship,low)        
 - sub:
         ~ setstat(sleepiness,min)
         ~ setstat(lust,low)
@@ -72,7 +83,7 @@ LIST quantized_stat_val = min=10, low=30, medium=50, high=70, max=90
 
 LIST _stat_dm = _stat_dm_0=0,_stat_dm_1,_stat_dm_2,_stat_dm_3,_stat_dm_4,_stat_dm_5,_stat_dm_6,_stat_dm_7,_stat_dm_8,_stat_dm_9,_stat_dm_10,_stat_dm_11,_stat_dm_12,_stat_dm_13,_stat_dm_14,_stat_dm_15,_stat_dm_16,_stat_dm_17,_stat_dm_18,_stat_dm_19,_stat_dm_20,_stat_dm_whole_step=20
 
-LIST stat_t = Sleepiness, Hunger, Lust, Submissiveness, Addiction, Confidence, Fitness
+LIST stat_t = Sleepiness, Hunger, Lust, Submissiveness, Addiction, Confidence, Fitness, AngieRelationship, MelanieRelationship
 // Add stat_name to each var so that for a given stat, when passed to a function, we know what stat we're dealing with, (for display funcs)
 VAR sleepiness = (Sleepiness, _stat_dm_whole_step)
 VAR hunger = (Hunger, _stat_dm_whole_step)
@@ -81,7 +92,14 @@ VAR obedience = (Submissiveness, _stat_dm_1)
 VAR addiction = (Addiction, _stat_dm_1)
 VAR confidence = (Confidence, _stat_dm_1)
 VAR fitness = (Fitness, _stat_dm_2)
+VAR angie_relationship = (AngieRelationship, _stat_dm_whole_step)
+VAR melanie_relationship = (MelanieRelationship, _stat_dm_whole_step)
 
+// stat value
+=== function sv(p_stat)
+~ return list2num(p_stat)
+
+// stat quantized value (i.e. one of min..max)
 === function sq(p_stat)
 ~ return p_stat ^ LIST_ALL(quantized_stat_val)
 
@@ -153,13 +171,17 @@ VAR SHOW_STATS=false
     - Lust:  
         Horniness
     - Addiction:  
-        Findom addiction
+        Findom addiction ({BELLA_NAME})
     - Confidence:  
         Self-esteem
     - Fitness:  
-        Health
+        Physical fitness
     - Submissiveness:  
         Submissiveness
+    - AngieRelationship:  
+       Closeness to {msg_name(ANGIE)} (Yandere)       
+    - MelanieRelationship:  
+       Closeness to {girlfriend_name} (Love Interest)      
 }
 == function stat_icon(_stat)
 {stat_type(_stat):
@@ -177,12 +199,17 @@ VAR SHOW_STATS=false
         💪
     - Submissiveness:  
         🙏
+    - AngieRelationship: 
+        👩🏻‍🦰
+    - MelanieRelationship:
+        🧍🏻‍♀️
+        
 }
 === function DispDelta(_stat, delta)
 {SHOW_STATS:
     {stat_icon(_stat)}
     <>{delta > 0:{delta > 1: ⏫|🔼}|{delta < -1: ⏬|🔽}}
-}
+}<>
 
 === function DispStat(_stat)
 {SHOW_STATS:

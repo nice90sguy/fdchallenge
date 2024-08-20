@@ -246,9 +246,9 @@ She sends you a third message!  {unread_message_count:This time you can't ignore
 
 -> wa.m("<u>htpps:\/\/bit\/ly\/467738", WAM_READ) ->  
 
-"\"{BELLA_FULL_NAME}\".  Nice name. Ok, I'll take a look at your site later," You say.
+"\"{BELLA_FULL_NAME()}\".  Nice name. Ok, I'll take a look at your site later," You say.
 "Yes, you will."  
-Bella's three word response is slightly weird and unsettling.  Like she's giving you an order.  What's even weirder about it, is that it made your dick twitch.
+{BELLA_NAME}'s three word response is slightly weird and unsettling.  Like she's giving you an order.  What's even weirder about it, is that it made your dick twitch.
 -> cont -> 
 -> slug_seafood_platter ->
 -> cont ->
@@ -257,7 +257,7 @@ Bella's three word response is slightly weird and unsettling.  Like she's giving
 ->->
 
 = didnt_ignore_first_message
-So that's her name:  {BELLA_FULL_NAME}.
+So that's her name:  {BELLA_FULL_NAME()}.
 ~ knowledge += bella_name
 You respond:
 ->wa.r3choices("Hi!", "Hello {BELLA_NAME}", "🍆 😆",)->
@@ -447,7 +447,7 @@ He looks at the check and says, "No, that's right, two JDs, one Bouillabaise, on
 
 "You mean you didn't recognize her?" says the bartender.
 
-"That was {BELLA_FULL_NAME}."
+"That was {BELLA_FULL_NAME()}."
 
 ->cont ->
 

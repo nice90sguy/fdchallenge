@@ -103,7 +103,7 @@ VAR final_stat = ()
 - else: -> build_opts
 }
 
-Final stat: 
+Final stat ({path} path): 
 ~ temp current_show_stats = SHOW_STATS
 ~ SHOW_STATS = true
 -> stats.display ->
@@ -675,7 +675,10 @@ Each of them return to after_activity when done.
     // If max sleepiness, you have to sleep
     - sq(sleepiness) == max :
         ~ tmp_poss_act += sleep
-    - sq(addiction) == max and sq(confidence) == min and current_activity != sleep and (path == adventure):
+        
+    // Over-complex:
+    // max addiction and min confidence, not sleeping, and not doing a fansite activity, and evening or night
+    - sq(addiction) == max and sq(confidence) == min and current_activity != sleep and (path == adventure) and ("{current_activity}" !? "fsa_" and period_of_day() >= evening):
         ~ tmp_poss_act += logon_fansite
 
     }

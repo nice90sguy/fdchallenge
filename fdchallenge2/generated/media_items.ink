@@ -129,7 +129,7 @@ You explode...
  // Goon to My Shiny Heels
 <i>Her red-nailed fingers caress the sides of her shiny black stilletto-heeled shoe, with scarlet undersoles.
 "Goon to my shiny heels."
-<i>She's sitting on an office chair, turned sideways from a desk.  She pulls her show part-way off so that it dangles from her toe. She sets it rocking like a pendulum, making the bright light reflecting off it into the camera flash on and off like a slow beacon.
+<i>She's sitting on an office chair, turned sideways from a desk.  She pulls her shoe part-way off so that it dangles from her toe. She sets it rocking like a pendulum, making the bright light reflecting off it into the camera flash on and off like a slow beacon.
 "Keep stroking, keep gooning."
 -> p1("Goon") ->
 <i>Minutes pass...

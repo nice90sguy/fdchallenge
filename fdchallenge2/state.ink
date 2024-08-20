@@ -7,7 +7,8 @@ LIST become_my_fan_password = bella857,slave31, here2play, Bella587, slave875, S
 LIST knowledge = bella_name,usernamed,initial_tribute
 
 CONST BELLA_NAME = "Bella"
-CONST BELLA_FULL_NAME = "Bella Banks"
+=== function BELLA_FULL_NAME()
+~ return BELLA_NAME + " Banks"
 CONST YOUR_NAME = "Joe"
 CONST FAN_CLUB_SIGNON_FEE = 850
 

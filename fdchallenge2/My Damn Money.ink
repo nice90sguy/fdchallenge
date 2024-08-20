@@ -61,6 +61,10 @@ VAR _LITEROTICA_EXPORT = true
 ~ DISPLAY_ANALOG_CLOCK = true
 
 // TESTING
+// ~ speech_type = speech_type_chat
+// ~ set_bella_online(true)
+// ~ current_activity = fsa_chat
+// -> fansite_chat.lines_game -> END
 // -> stats.reset(adventure) ->
 // -> stats.display ->
 // ~SHOW_STATS = true
@@ -83,7 +87,7 @@ VAR _LITEROTICA_EXPORT = true
 // ~ path = adventure
 // -> stats.reset(path) ->
 // -> stats.display ->
-// -> one_week_later 
+// -> one_week_later
 // === TEST
 
 // ~ set_dMy(26,July,2024)
@@ -115,7 +119,7 @@ VAR _LITEROTICA_EXPORT = true
 // END TESTING
 
 
-(Version 0.046)
+(Version 0.049)
 -> main
 
 == main
@@ -126,7 +130,15 @@ VAR _LITEROTICA_EXPORT = true
 * [Become My Fan 😍] Good boy. Let's see if you're worthy...
     -> cont -> J(->meeting_bella) -> S("Your Apartment", ->back_home) -> tbc
 
+
++ [Options ⚙️]
+    + +(opt_stats) [{SHOW_STATS:Hide|Show} Stat Changes]
+        ~ SHOW_STATS = not SHOW_STATS
+        {SHOW_STATS: {hint()} You'll see changes to your stats as they occur. {opt_stats==1:{warn()} This will clutter the output with lots of icons, especially during the grind phase of the game! You might want to play through the game first without this option.}|{hint()} You won't see any stat changes.}
+    - - -> main
+
 * [I don't want to play your mind games 😁] Ok bye -> END
+
 
 * {_DEBUG} [(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
     * * [Sub Path]
