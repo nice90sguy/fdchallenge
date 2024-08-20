@@ -14,13 +14,13 @@ VAR sleep_hours = 0
     // leaving you still sleepy
     -> ffa(hour, 2) ->
     ~ sleep_hours += 2
-    {decstat(sleepiness) == sleepiness.min:-> wake_up}
+    {decstat(sleepiness) == min:-> wake_up}
     -> ffa(hour, 2) ->
     ~ sleep_hours += 2
-    {decstat(sleepiness) == sleepiness.min:-> wake_up}
+    {decstat(sleepiness) == min:-> wake_up}
     -> ffa(hour, 2) ->
     ~ sleep_hours += 2
-    {decstat(sleepiness) == sleepiness.min:-> wake_up}
+    {decstat(sleepiness) == min:-> wake_up}
     -> ffa(hour, 2) ->
     ~ sleep_hours += 2
     ~deltastat(lust, -2)
@@ -31,11 +31,11 @@ VAR sleep_hours = 0
 
 - - (wake_up)
     You wake up <>
-    {sleepiness:
-        - sleepiness.min: feeling refreshed
-        - sleepiness.low: feeling ok
-        - sleepiness.medium:, but you don't think you've had enough sleep
-        - sleepiness.high: after a disturbed night
+    {sq(sleepiness):
+        - min: feeling refreshed
+        - low: feeling ok
+        - medium:, but you don't think you've had enough sleep
+        - high: after a disturbed night
     }<>.
     // Note: Needed to remove it because of edge case of alarm "waking" you after you're asleep
     ~ current_activity -= sleep

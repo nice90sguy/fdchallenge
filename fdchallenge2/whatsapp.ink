@@ -20,7 +20,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
     ~ args += BELLA
 }
 
-~ temp old_speech_type = speech_type
+~ temp _old_speech_type = speech_type
 ~ speech_type = speech_type_wa
 ~ temp response_type = args ^ LIST_ALL(WAM_RESPONSE_TYPE)
 
@@ -34,7 +34,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 ~ DID_READ_MESSAGE = false
 
 // Must respond if you're very obedient
-{response_type ? WAM_CHOOSE and obedience >= obedience.high:
+{response_type ? WAM_CHOOSE and sq(obedience) >= high:
     ~ response_type -= WAM_CHOOSE
     ~ response_type += WAM_READ
 }
@@ -89,13 +89,13 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 
    
 + {unread_message_count and response_type ? WAM_READ_MISSED} [Read them] -> read_missed_messages ->
-+ {obedience <= obedience.medium and addiction <= addiction.medium and unread_message_count and response_type ? WAM_READ_MISSED} [Delete them without reading] -> unread_message_log.clear ->
++ {sq(obedience) <= medium and sq(addiction) <= medium and unread_message_count and response_type ? WAM_READ_MISSED} [Delete them without reading] -> unread_message_log.clear ->
 
 + ->
 -
 
 // Restore speech type
-~ speech_type = old_speech_type
+~ speech_type = _old_speech_type
 ->->
 
 = read_missed_messages

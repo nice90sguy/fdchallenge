@@ -12,3 +12,4 @@ CONST YOUR_NAME = "Joe"
 CONST FAN_CLUB_SIGNON_FEE = 850
 
 LIST angie_affection = hate, dislike, like, love
+

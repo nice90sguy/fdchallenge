@@ -9,7 +9,7 @@
 + + (do) [Eat breakfast]
     ~ current_activity = breakfast
     You eat a delicious breakfast. The coffee perks you up.
-    ~ setstat(hunger,hunger.min)
+    ~ setstat(hunger,min)
     ~ decstat(sleepiness)
     -> ffa(minute, 30) ->
     ~ activities_done_today += breakfast
@@ -19,9 +19,9 @@
 = why
 You haven't had breakfast yet<>
 {
-- hunger <= hunger.low: , but you're not really hungry. Still, it's the most important meal of the day.
-- hunger < hunger.medium:, not that you're particularly hungry.
-- else: , and you're {hunger == hunger.max:desperate to eat something!|{hunger == hunger.high:very|pretty} hungry}.
+- sq(hunger) <= low: , but you're not really hungry. Still, it's the most important meal of the day.
+- sq(hunger) < medium:, not that you're particularly hungry.
+- else: , and you're {sq(hunger) == max:desperate to eat something!|{sq(hunger) == high:very|pretty} hungry}.
 }
 <><br><>
 ->->
@@ -35,7 +35,7 @@ You haven't had breakfast yet<>
  {_DEBUG:>>> ASSERT {->opt}: activities_done_today ? dinner}}
 
 LIST meal_type = meal_type_unhealthy, meal_type_healthy
-You really ought to eat something{tm_hour >= 21: before it gets too late| now} {hunger < hunger.medium:, even though you're not particulalry hungry}.
+You really ought to eat something{tm_hour >= 21: before it gets too late| now} {sq(hunger) < medium:, even though you're not particulalry hungry}.
 <><br><>
 + + (do) [Dinner]
 // If fit and high confidence, eat healthy
@@ -45,9 +45,9 @@ You really ought to eat something{tm_hour >= 21: before it gets too late| now} {
     ~ current_activity = dinner
     ~ temp what_to_eat = ()
     {
-    - fitness > fitness.medium and confidence > confidence.medium:
+    - sq(fitness) > medium and sq(confidence) > medium:
         ~ what_to_eat = meal_type_healthy
-    - fitness < fitness.medium and confidence < confidence.medium:
+    - sq(fitness) < medium and sq(confidence) < medium:
         ~ what_to_eat = meal_type_unhealthy
     - else: 
         ~ what_to_eat = LIST_RANDOM((meal_type_unhealthy, meal_type_healthy))

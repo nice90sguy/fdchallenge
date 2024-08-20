@@ -1,7 +1,9 @@
-LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, YOU
+LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, YOU, AL
 
 == function msg_name(person)
 {person:
+    - AL:
+        ~ return "Al"
     - BELLA: 
         ~ return BELLA_FULL_NAME
     - MELANIE:

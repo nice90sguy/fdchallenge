@@ -324,6 +324,7 @@ You look up and see that she's holding your phone.
 = haggling
 ~ temp reserve = 200
 ~ temp starting_bid = 50
+~ speech_type = speech_type_voice
 -> haggle("my ass", reserve, starting_bid) ->
 
 +  {HAGGLE_RESULT == RESERVE_NOT_REACHED or HAGGLE_RESULT == WELSHED} ->
@@ -353,8 +354,8 @@ You look up and see that she's holding your phone.
     -> sold_ass
     + +  {HAGGLE_RESULT == WELSHED}
         -> cont ->
-        ~ setstat(confidence, confidence.min)
-        ~ setstat(obedience, obedience.max)
+        ~ setstat(confidence, min)
+        ~ setstat(obedience, max)
         ~ decstat(addiction)
         She turns around and looks down at you.
         "Okay, that's how you want to play it, is it?" She says, quietly, tapping on your phone.
@@ -389,7 +390,7 @@ you can't survive without me.  I've already taken over your mind, your will, and
 I own you now, completely.  You know it.  Every minute of the day you'll think of Me now.  No woman \
 will ever come close to me. xxx \
 "
--> wa.m(long_message, WAM_MISS+cmd_increase_addiction+cmd_increase_obedience) ->
+-> wa.m(long_message, WAM_MISS+Addiction+Submissiveness) ->
 -> ffa(minute,5) ->
 
 ~ long_message = "I'm now in charge of your finances.  You will be much happier this way.\
@@ -403,7 +404,7 @@ Start your new life now, by replying \"Yes {BELLA_NAME} \" to this message."
 -> wa.m(long_message, WAM_MISS + cmd_yes) ->
 
 ~ long_message = "And transfer $100 to me."
--> wa.m(long_message, WAM_MISS + cmd_tribute + num2trib(100)) ->
+-> wa.m(long_message, WAM_MISS + cmd_tribute + num2list(100)) ->
 
 
 -> cont ->
@@ -432,7 +433,7 @@ When she lets you go, you collape onto the floor.  You were unaware of it at the
 "Have a safe flight," you hear her say, but you're unable to respond.
 
 -> ffa(minute, 30) ->
-~ setstat(lust, lust.min)
+~ setstat(lust, min)
 You manage to crawl into your bed.
 
 ->->

@@ -24,7 +24,7 @@ LIST search_match_type = match_all, match_any
 CONST _SEPARATOR="_"
 
 
-=== function search(tags, list, match_type)
+=== function Asearch(tags, list, match_type)
 ~ temp result = ()
 {match_type:
      - match_any:
@@ -94,11 +94,6 @@ CONST _SEPARATOR="_"
     ~ _get_tags(item, possible_tags-tag, item_tags)
 }
 
-=== list_utils
-= move_item(item, ref from, ref to)
-    ~ from -= item
-    ~ to += item
-->->
 
 
 

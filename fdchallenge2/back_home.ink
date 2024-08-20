@@ -17,8 +17,8 @@ You take a long, hot shower, which relaxes you.
 
 You go bed without even looking at your phone, and forget all about her.
 -> cont ->
-    ~setstat(sleepiness, sleepiness.min)
-    ~setstat(hunger, hunger.medium)
+    ~setstat(sleepiness, min)
+    ~setstat(hunger, medium)
     ~current_activity = sleep
 ~ _ffh(7)
     -> grind.morning_alarm
@@ -113,9 +113,9 @@ TODO Make her onboarding message
 -> later(true) ->
 <> your phone alerts you.
 -> ffa(minute, 2) ->
--> wa.m("Good boy", WAM_CONTINUOUS + cmd_increase_addiction) ->
--> wa.m("The pin code to My Fan Site is 78284.", WAM_CONTINUOUS + cmd_increase_addiction) ->
--> wa.m("Logon now, and read my chat message there.", WAM_CONTINUOUS + cmd_increase_addiction) ->
--> wa.m("Respond immediately to it, even if I'm not online.", WAM_READ + cmd_increase_addiction + cmd_do_activity + logon_fansite)
+-> wa.m("Good boy", WAM_CONTINUOUS + Addiction) ->
+-> wa.m("The pin code to My Fan Site is 78284.", WAM_CONTINUOUS + Addiction) ->
+-> wa.m("Logon now, and read my chat message there.", WAM_CONTINUOUS + Addiction) ->
+-> wa.m("Respond immediately to it, even if I'm not online.", WAM_READ + Addiction + cmd_do_activity + logon_fansite)
 
 // NOTE: Does not tunnel-on!

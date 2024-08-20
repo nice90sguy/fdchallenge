@@ -23,7 +23,7 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
     // -> ffa(minute, 3) ->
     // ->->
     // Dont wake from deep sleep
-    {current_activity == sleep and sleepiness >= sleepiness.medium:
+    {current_activity == sleep and sq(sleepiness) >= medium:
         ~ response_type = WAM_MISS
     }
 
@@ -61,8 +61,9 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 ->->
 
 = do_taunt_addiction(response_type)
-    {response_type ? WAM_READ:
-     -> wa.m("{You love me|No escape|Good boy|💋|😈|welcome to My world|your reprogrammed|human atm|good slave|hi slave}", WAM_CONTPAUSE+ cmd_increase_addiction) ->
+
+    {response_type ^ (WAM_READ + WAM_CHOOSE):
+     -> wa.m("{You love me|No escape|Good boy|💋|😈|welcome to My world|your reprogrammed|human atm|good slave|hi slave}", response_type+ Addiction) ->
         You feel an aching desire for her.
         ~incstat(lust)
     }
@@ -70,8 +71,9 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 
 ->-> 
 = do_taunt_humiliate(response_type)
-    {response_type ? WAM_READ:
-     -> wa.m("{kneel|jerk to my pics|youre pathetic|kiss my shoes|worship|{~i want to|beg me to|im gonna} {~piss|shit|spit} in your mouth}", WAM_CONTPAUSE+cmd_decrease_confidence + cmd_increase_addiction) ->
+
+    {response_type ^ (WAM_READ + WAM_CHOOSE):
+     -> wa.m("{kneel|jerk to my pics|youre pathetic|kiss my shoes|worship|{~i want to|beg me to|im gonna} {~piss|shit|spit} in your mouth}", response_type + Confidence + Addiction) ->
 
         You can't help it, but the message triggers you.
         ~incstat(lust)
@@ -90,19 +92,19 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 >>> Bella has no more photos to send!
         ->->
     }
-    -> wa.m("💋", response_type + cmd_send_item + LIST_RANDOM(available_photos) +  photo  + cmd_increase_lust) ->
-    {response_type ? WAM_READ:
-        -> wa.m("{How hot?|lol i bet your drooling 🤤|Stare and go dumb|So weak...}", WAM_CONTPAUSE + cmd_increase_obedience) ->
+    -> wa.m("💋", response_type + cmd_send_item + LIST_RANDOM(available_photos) +  photo  + Lust) ->
+    {response_type ^ (WAM_READ + WAM_CHOOSE):
+        -> wa.m("{How hot?|lol i bet your drooling 🤤|Stare and go dumb|So weak...|Complete surrender.}", WAM_CONTPAUSE + Submissiveness) ->
 
-        -> wa.m("{thank you|I love you|no escape|\{BELLA_NAME\}}", WAM_CONTINUOUS + cmd_repeat_after_me) ->
+        -> wa.m("{thank you|I love you|I'm {BELLA_NAME}'s loser|No escape.|\{BELLA_NAME\}}", WAM_CONTINUOUS + cmd_repeat_after_me + Confidence) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
-        -> wa.m("Again.", WAM_CONTINUOUS + cmd_again + cmd_increase_obedience) ->
+        -> wa.m("Again.", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
-        -> wa.m("{Good boy. Again|Keep going|repeat 💋}", WAM_CONTINUOUS + cmd_again + cmd_increase_obedience) ->
+        -> wa.m("{Good boy. Again|Keep going|repeat 💋}", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
-        -> wa.m("{Again!|more|and again}", WAM_CONTINUOUS + cmd_again + cmd_increase_obedience) ->
+        -> wa.m("{Again!|more|and again|Again.}", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
-        -> wa.m("{Good boy.|You 😍 me lol}", WAM_CONTPAUSE + cmd_increase_obedience + cmd_increase_lust + cmd_decrease_confidence) ->
+        -> wa.m("{Good boy.|You 😍 me lol|So fuckin pathetic}", WAM_CONTPAUSE + Submissiveness + Lust + Confidence) ->
         
         ~incstat(lust)
         ~incstat(addiction)
@@ -114,6 +116,7 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 -> wa.m("{~Ah sweet, trying to resist 💋|lol You know you can't win|So weak...|Your cock is mine, don't fight it lol|Resistance is futile lol}", WAM_CONTPAUSE) ->
     ~ decstat(obedience)
     ~ incstat(confidence)
+    ~ decstat(addiction)
 ->->
 
 // Bella sends you a pic, then does "repeat" commands
@@ -122,15 +125,15 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
     ~ temp v = RANDOM(10,25) * 10
     ~ temp msg = "It's crazy deal time!"
 
- -> wa.m(msg, response_type + num2trib(v) + cmd) ->
+ -> wa.m(msg, response_type + num2list(v) + cmd) ->
 ->->
 
 = do_taunt_tribute(response_type)
 
-    ~ temp cmd = cmd_tribute+cmd_increase_obedience
+    ~ temp cmd = cmd_tribute+Submissiveness
     ~ temp v = RANDOM(1,2 * LIST_VALUE(obedience)) * 50
     ~ temp msg = "Show me how obedient you are. Send me {v} now"
     ~incstat(addiction)
- -> wa.m(msg, response_type + num2trib(v) + cmd) ->
+ -> wa.m(msg, response_type + num2list(v) + cmd) ->
  ->->
  

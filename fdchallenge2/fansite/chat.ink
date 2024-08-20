@@ -11,6 +11,13 @@ LIST fsa_chat_activities = fsa_chat_greet
     ~ current_activity = fsa_chat
     ~ speech_type = speech_type_chat
 
+    // Set cost per message based on addiction
+    
+    {sq(addiction) < max: 
+            ~ cost_per_message = 1
+    - else: 
+            ~ cost_per_message = 10
+    }
 
     //     ~ nmsg()
     //     ~ amsg("<b>💋 Welcome to My Chat!</b>")
@@ -25,12 +32,12 @@ LIST fsa_chat_activities = fsa_chat_greet
         ~ chat_offline_messages = ""
     }
     // First convo if first time chatting
-    {do == 1:-> adventure_initial_convo -> fansite.after_activity}
+    {do == 1 and fansite_return_to == ->grind.after_activity:-> adventure_initial_convo -> fansite.after_activity}
     // Check the last_args for any command
     
     {chat_last_args != ():
         -> p1("Respond") ->
-        -> intent.respond(chat_last_msg, chat_last_t, chat_last_args) ->
+        -> intent.respond(chat_last_msg, chat_last_t, chat_last_args+cmd_noecho) ->
         ~ chat_last_args = ()
     }    
     
@@ -45,7 +52,7 @@ LIST fsa_chat_activities = fsa_chat_greet
             You know what you have to do:
      
 -> cont ->
-     -> intent.respond("{~Send.|Tribute Me|}", now(), cmd_tribute + num2trib(10*LIST_VALUE(addiction))) ->
+     -> intent.respond("{~Send.|Tip Me|}", now(), cmd_tribute + Confidence + num2list(sqi(addiction))) ->
        {bella_online():
             -> taunt ->
         }
@@ -89,7 +96,7 @@ She doesn't continue after that, and you're stumped for what to say.  She's not 
 You wonder if she'd be annoyed if you just quit the chat and logged off.
 {hint()} (She would be very annoyed!)
 
-Maybe should ask what you're actually getting from her for your ${FAN_CLUB_SIGNON_FEE}.  But somehow you don't feel like offending her.
+Maybe you should ask what you're actually getting from her for your ${FAN_CLUB_SIGNON_FEE}.  But somehow you don't feel like offending her.
 You notice that every time you've been sending her chat messages, there's been a little number next to your message:
 
 -> M_YP("There's a number next to my chat messages") ->
@@ -161,7 +168,7 @@ You sit back, wondering even more than ever who she is, and leave the chat, to e
             You cum.
             ~ incstat(addiction)
             
-            {addiction >= addiction.high:
+            {sq(addiction) >= high:
                 ~ incstat(lust)
             }
         - else:

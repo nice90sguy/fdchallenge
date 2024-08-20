@@ -1,4 +1,4 @@
-LIST search_tags = photo, video, Addiction, Ass,  ATM, Brat, Breasts, CEI, Chastity, Edging, Feet, Goon, Heels, Homewrecker, Humiliation, Hypnosis, Intox, Joi, Kneel, Legs, Lingerie, Lips, Nude, Praise, Worship
+LIST search_tags = photo, video, Addict, Ass,  ATM, Brat, Breasts, CEI, Chastity, Edging, Feet, Goon, Heels, Homewrecker, Humiliation, Hypnosis, Intox, Joi, Kneel, Legs, Lingerie, Lips, Nude, Praise, Worship
 
 LIST media = media_1_=30, media_2_=30, media_3_=50, media_4_=40, media_5_=45, media_6_=60, media_7_=120, media_8_=120, media_9_=120, media_10_=200, media_11_=120, media_12_=120, media_13_=120, media_14_=120, media_15_=120, media_16_=120, media_17_=120, media_18_=120, media_19_=120, media_20_=120, media_21_=120, media_22_=120 
 
@@ -20,14 +20,15 @@ VAR available_items = (media_1_, media_2_, media_3_, media_4_, media_5_, media_6
 ~ return _media_from_id(id, media_list-media_item)
 
 LIST lookup_media_arg_t = lum_desc, lum_narr
-=== lookup_media(ref id, ref arg)
+
+=== lookup_media(id, ref arg)
 ~ temp p_media = media_from_id(id)
 ~ arg += p_media
 
 {p_media:
 
 	-media_1_: 
-        ~ arg += (video, Ass, Hypnosis, Legs, Edging, Lingerie, Addiction, Kneel,Worship, Praise, Heels)
+        ~ arg += (video, Ass, Hypnosis, Legs, Edging, Lingerie, Addict, Kneel,Worship, Praise, Heels)
         {arg ? lum_desc:Goddess Mind-Fuck}
         {arg ? lum_narr:
  <i>She's wearing red lace underwear. She glides casually around her living room; her  red stilletto heels make a clicking sound on the wooden parquet floor.
@@ -59,7 +60,7 @@ LIST lookup_media_arg_t = lum_desc, lum_narr
 -> ffa(minute, 45) ->	  
 }
 	-media_2_:
-        ~ arg += (video, Hypnosis, Edging, Addiction)
+        ~ arg += (video, Hypnosis, Edging, Addict)
         {arg ? lum_desc:Fall deeper under my spell}
         {arg ? lum_narr:
 <i>A red and green rotating spiral...
@@ -88,7 +89,7 @@ LIST lookup_media_arg_t = lum_desc, lum_narr
         ~ arg += (video, Hypnosis, Breasts, Joi, Kneel)
         {arg ? lum_desc:Your new purpose}
         {arg ? lum_narr:
-<i>A close-up of her cleavage, with a gold heart-pending nestling there.  Her middle-finger slides up and down between her round breasts.
+<i>A close-up of her cleavage, with a gold heart pendant nestling between her smooth, round breasts. She's slowly sliding middle-finger up and down, between them.
 "This is your challenge for today, my mindless gooners," <i>she says.
 
 "Stare at them..."
@@ -117,11 +118,11 @@ LIST lookup_media_arg_t = lum_desc, lum_narr
 -> p1("Seven...") ->
 ~incstat(lust)
 You explode...
-~setstat(lust, lust.min)
+~setstat(lust, min)
 <i>Fuck...
 }
 	-media_4_: 
-        ~ arg += (video, Hypnosis, Edging, Heels)
+        ~ arg += (video, Hypnosis, Edging, Goon, Heels)
         {arg ? lum_desc:Goon to My Shiny Heels}
         {arg ? lum_narr:	
  // Hypnosis_Edging_Heels_
@@ -140,6 +141,7 @@ You explode...
 <i>Ten minutes later...
 "Now.  I want you to replay this video for me.  Do it now, gooner.  You know you have to..."
 <i>She smiles, waiting for you to restart the video from the beginning again...
+-> ffa(minute, 30) ->
 
 }
 	-media_5_: 
@@ -226,7 +228,7 @@ You explode...
 // TODO media_11_
 }
 	-media_6_: 
-        ~ arg += (video, Chastity, Humiliation, Joi, Addiction)
+        ~ arg += (video, Chastity, Humiliation, Joi, Addict)
         {arg ? lum_desc:You don't need Sex, You have Me}
         {arg ? lum_narr:
 <i>She's wearing tight jeans and a black tee shirt.  She's sitting crossed legged at the foot of a stairwell, wearing trainers.
@@ -267,4 +269,27 @@ You explode...
         {arg ? lum_narr:{p_media} has no narrative yet}
     
 }
+->->
+-> ffa(minute, 30) ->
+// returns all media in "list" that are tagged with every tag in "tags"
+
+=== search_media(tags, list, ref ret)
+{list != ():
+    ~ temp m = LIST_MIN(list)
+    ~ temp media_info = ()
+    -> lookup_media(m, media_info) ->
+    {media_info ? tags:
+
+        ~ ret += m
+    }
+    -> search_media(tags, list-m, ret) ->
+}
+->->
+// Needs search.ink
+=== search_media_dialog(terms, list, ref result)
+~ terms = ()
+
+-> multiselect(LIST_ALL(terms), terms, 0, MULTISELECT_MAX, "search term") ->
+
+-> search_media(terms, list, result) ->
 ->->

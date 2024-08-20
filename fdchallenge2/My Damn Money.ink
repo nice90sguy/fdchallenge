@@ -3,7 +3,6 @@ INCLUDE ../lib/gmtime.ink
 INCLUDE ../lib/time.ink
 INCLUDE ../lib/utils.ink
 INCLUDE ../lib/multiselect.ink
-INCLUDE ../lib/search.ink
 
 INCLUDE utils.ink
 INCLUDE state.ink
@@ -48,8 +47,7 @@ INCLUDE generated/media_items.ink
 INCLUDE work.ink
 INCLUDE work_proposition.ink
 INCLUDE one_week_later.ink
-
-
+INCLUDE ../lib/list2num.ink
 
 
 # author nice90sguy@gmail.com
@@ -59,10 +57,33 @@ VAR _DEBUG = false
 VAR _LITEROTICA_EXPORT = true
 
 ~ SEED_RANDOM(857)
+~ SHOW_STATS = false
+~ DISPLAY_ANALOG_CLOCK = true
 
 // TESTING
-// -> tag_a_video(7) ->
-// -> TEST -> END
+// -> stats.reset(adventure) ->
+// -> stats.display ->
+// ~SHOW_STATS = true
+
+// ~ setstat(obedience, medium)
+
+// {DispStat(obedience)}
+// FOO <>
+// ~ incstat(obedience)
+// <> BAR
+// {DispStat(obedience)}
+// ~ deltastat(obedience, 7)
+// {DispStat(obedience)}
+// ~ deltastat(obedience, 1000)
+// {DispStat(obedience)}
+// -> stats.display ->
+// -> END
+// ~ _DEBUG = false
+// ~ set_dMy(29,July,2024)
+// ~ path = adventure
+// -> stats.reset(path) ->
+// -> stats.display ->
+// -> one_week_later 
 // === TEST
 
 // ~ set_dMy(26,July,2024)
@@ -94,7 +115,7 @@ VAR _LITEROTICA_EXPORT = true
 // END TESTING
 
 
-(Version 0.041)
+(Version 0.046)
 -> main
 
 == main
@@ -104,7 +125,6 @@ VAR _LITEROTICA_EXPORT = true
 
 * [Become My Fan 😍] Good boy. Let's see if you're worthy...
     -> cont -> J(->meeting_bella) -> S("Your Apartment", ->back_home) -> tbc
-
 
 * [I don't want to play your mind games 😁] Ok bye -> END
 
@@ -123,11 +143,10 @@ VAR _LITEROTICA_EXPORT = true
 
     ~ timestamp_backhome = now()-SECS_DAY
     -> stats.reset(path) ->
-    ~ setstat(sleepiness, sleepiness.min)
+    ~ setstat(sleepiness, min)
     ~ current_activity = sleep
     -> grind.morning_alarm ->
     -> END
-
 
 == fanlogin
 {bella()} The [Fan Login] option is for Fan Club members Only!  <br>Not in My Fan Club yet? You know what to do!
@@ -138,5 +157,3 @@ VAR _LITEROTICA_EXPORT = true
     ->->
 -
 ->->
-
-

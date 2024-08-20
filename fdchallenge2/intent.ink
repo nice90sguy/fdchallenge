@@ -4,19 +4,16 @@ Manage commands (illocutionary forces, e.g. greet, comma)
 and purposes (perlocutionary forces -- stat-changing effects of Bella's actions/words)
 
 */
-LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_increase_addiction, cmd_increase_obedience, cmd_increase_sleepiness, cmd_increase_lust, cmd_decrease_confidence, cmd_again, cmd_tribute_more, cmd_double_it,cmd_send_item, cmd_repeat_after_me, cmd_haggle_game, cmd_greet, cmd_unlock_item, cmd_do_activity
+LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_again, cmd_tribute_more, cmd_double_it,cmd_send_item, cmd_repeat_after_me, cmd_haggle_game, cmd_greet, cmd_unlock_item, cmd_do_activity, cmd_noecho
 
 // Some commands may change stats, but the stat_changing_commands are available too,
 // and are meant to be use as a mixin for other commands to boost/decrease stats in addition to the 
 // command's hard-coded effect on stats.
 //
-VAR stat_changing_commands = (cmd_increase_addiction, cmd_increase_obedience, cmd_increase_sleepiness, cmd_increase_lust, cmd_decrease_confidence)
+
 
 LIST responses = resp_obedient
 
-LIST standard_tributes = trib5=5, trib10=10, trib20=20, trib50=50, trib100=100,trib200=200,trib250=250,trib500=500,trib1000=1000,trib5000=5000,trib10000=10000,trib100000=100000
-
-LIST all_binary_tributes = trib1=1, trib2=2, trib4=4, trib8=8, trib16=16,trib32=32,trib64=64,trib128=128,trib256=256,trib512=512,trib1024=1024,trib2048=2048,trib4096=4096,trib8192=8192,trib16384=16384,trib32768=32768
 
 VAR previous_tribute = 10
 
@@ -26,23 +23,25 @@ VAR last_args = ()
 // For cmd_repeat_after_me
 VAR last_phrase_to_repeat = ""
 
-// Set by allow_disobey_if_low_obedience
+// Set by allow_disobey_below_obedience_threshold
 VAR obeyed_cmd = false
 === intent
 
 
-= allow_disobey_if_low_obedience
+= cmd_adhoc(msg, obedience_threshold)
 
-+ [Obey Her]
++ [{msg}]
     ~ obeyed_cmd = true
     ~incstat(obedience)
-+ {obedience < obedience.high}[Ignore Her]
++ {obedience < obedience_threshold}[Ignore Her]
     ~decstat(obedience)
-    ~decstat(confidence)
-    ~decstat(confidence)
     ~ obeyed_cmd = false
 -
 ->->
+
+= allow_disobey_below_obedience_threshold(threshold)
+-> cmd_adhoc("Obey Her", threshold)
+
 
 = command_repeat_after_me(phrase, t, args)
 // If it's an order to repeat a second time, e.g. "Say it again", the phrase is the order, 
@@ -51,7 +50,7 @@ VAR obeyed_cmd = false
 
 {args ? cmd_again: 
     -> M_B(phrase) ->
-    -> allow_disobey_if_low_obedience ->
+    -> allow_disobey_below_obedience_threshold(medium) ->
     {obeyed_cmd:-> M_Y(last_phrase_to_repeat+"{||!|!!||}") ->}
 -else:
     {phrase == "\{BELLA_NAME\}":
@@ -60,7 +59,7 @@ VAR obeyed_cmd = false
     - else:
         -> M_B("{~Say,|repeat after me:|type }\"{phrase}\"") ->
     }
-    -> allow_disobey_if_low_obedience ->
+    -> allow_disobey_below_obedience_threshold(medium) ->
     {obeyed_cmd:-> M_Y(phrase) ->}
     ~ last_phrase_to_repeat = phrase
 }
@@ -101,17 +100,17 @@ VAR obeyed_cmd = false
 
 = command_tribute(msg, t, args)
 
-    ~ temp tribute_amount = trib2num(args)
+    ~ temp tribute_amount = list2num(args)
     {tribute_amount == 0: // You repeat your previous tribute!
         ~ tribute_amount = previous_tribute
     - else:
         {msg=="":
-            ~ msg = "{~Pay me |Send |Tribute |} {tribute_amount}."
+            ~ msg = "{~Pay me |Send |Send me|Tip|Tip me|} {tribute_amount}."
         }
     }
 
     
-    {obedience>=obedience.high or addiction>=addiction.high: -> do_tribute}
+    {sq(obedience) >= high or sq(addiction) >= high: -> do_tribute}
 
     + (do_tribute) [Send ${tribute_amount}]
         -> cc.pay(BELLA_FULL_NAME, tribute_amount, true) ->
@@ -119,7 +118,7 @@ VAR obeyed_cmd = false
         ~ incstat(addiction)
         ~ incstat(lust)
         ~ previous_tribute = tribute_amount
-    + {obedience <= obedience.medium}[Ignore]
+    + {sq(obedience) <= medium}[Ignore]
         You ignore her demand.
         ~ decstat(confidence)
 
@@ -129,7 +128,7 @@ VAR obeyed_cmd = false
 
  = command_haggle_game(msg, t, args)
  
- -> allow_disobey_if_low_obedience ->
+ -> allow_disobey_below_obedience_threshold(medium) ->
  {not obeyed_cmd:->->}
  
  ~ speech_type = speech_type_wa
@@ -137,8 +136,8 @@ VAR obeyed_cmd = false
     
  ~incstat(lust)
 
-
--> haggle("{sniffing my panties|the privilege of holding my {?used|} knickers up to your nose|kissing my {?beautiful|perfect|amazing||} feet}", trib2num(args), 20) ->
+~ speech_type = speech_type_wa
+-> haggle("{sniffing my panties|the privilege of holding my {?used|} knickers up to your nose|kissing my {?beautiful|perfect|amazing||} feet}", list2num(args), 20) ->
 {_DEBUG:>>> HAGGLE RESULT: {HAGGLE_RESULT}}
 {HAGGLE_RESULT:
 
@@ -154,10 +153,10 @@ VAR obeyed_cmd = false
 ->->
 
  = command_unlock_item(msg, t, args)
- ~ temp price = trib2num(args)
+ ~ temp price = list2num(args)
  ~ temp item = args ^ LIST_ALL(media)
  {price == 0:
-    ~ price = LIST_VALUE(item)
+    ~ price = LIST_VALUE(item) * sqi(addiction) / 10
  }
  + [Unlock for {not price:free|{price} credits} now]
     -> inventory.unlock_item(item, price) ->
@@ -190,27 +189,27 @@ triggers command_greet("Hello", now(), (BELLA))
 // Stat-changing commands
 
 // DEBUG
-{(cmds ^ stat_changing_commands) != ():
-     {_DEBUG:>>> COMMAND STATUS BOOST(s): {cmds ^ stat_changing_commands}}
+{(cmds ^ LIST_ALL(stat_t)) != ():
+     {_DEBUG:>>> COMMAND STATUS BOOST(s): {cmds ^ LIST_ALL(stat_t)}}
 }
 // END DEBUG
 
-{cmds ? cmd_increase_obedience:
+{cmds ? Submissiveness:
         ~ incstat(obedience)
 }
-{cmds ? cmd_increase_addiction:
+{cmds ? Addiction:
         ~ incstat(addiction)
 }
-{cmds ? cmd_increase_lust:
+{cmds ? Lust:
         ~ incstat(lust)
 }
-{cmds ? cmd_increase_sleepiness:
+{cmds ? Sleepiness:
         ~ incstat(sleepiness)
 }
-{cmds ? cmd_decrease_confidence:
+{cmds ? Confidence:
         ~ decstat(confidence)
 }
-~ cmds -= stat_changing_commands
+~ cmds -= LIST_ALL(stat_t)
 
 // NOTE, testing for equality, not inclusion.
 {cmds == cmd_again:
@@ -221,7 +220,7 @@ triggers command_greet("Hello", now(), (BELLA))
     { 
     // Force an activity
     - cmds ? cmd_do_activity:
-
+        -> M(msg, t, args) ->
 
         ~ temp fansite_activity = args ^ LIST_ALL(fansite_activities)
         {fansite_activity != ():
@@ -264,11 +263,13 @@ triggers command_greet("Hello", now(), (BELLA))
         -> command_send_item(msg, t, args) ->
         
     - cmds ? cmd_unlock_item:
-        -> command_unlock_item(msg, t, args) ->        
-      - cmds ? cmd_repeat_after_me:
+        -> command_unlock_item(msg, t, args) ->    
+        
+     - cmds ? cmd_repeat_after_me:
             -> command_repeat_after_me(msg, t, args) ->
             
-    
+    - cmds ? cmd_noecho:
+           {_DEBUG:>>> cmd_noecho, not emitting message}    
       - else:
       {not (cmds == ()): 
            {_DEBUG:>>> UNHANDLED COMMAND(S) {cmds}}
@@ -283,32 +284,6 @@ triggers command_greet("Hello", now(), (BELLA))
 }
 ->->
 
-== function trib2num(arg)
-~ arg = arg ^ (LIST_ALL(standard_tributes) + LIST_ALL(all_binary_tributes))
- ~ temp sum = 0
-{arg == ():
-    ~ return sum
-}
-~ temp _min = LIST_MIN(arg)
-~ return LIST_VALUE(_min) + trib2num(arg-_min)
-
-== function num2trib(v)
-{v > 65535: {_DEBUG:>>> num2trib max is < {v}}}
-~ temp bt = ()
-~ return _num2trib(1, v, bt)
-    
-== function _num2trib(cumprod, ref v, ref bt)    
-{v == 0:
-    ~ return bt
-}
-{v % 2:
-    ~ bt += all_binary_tributes(cumprod)
-}
-~ v = v / 2
-~ return  _num2trib(cumprod * 2, v, bt)
- 
-    
-    
 
 
 

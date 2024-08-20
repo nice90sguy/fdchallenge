@@ -120,11 +120,12 @@ Convert an "epoch_time" t, which should be a unix timestamp (seconds since Jan 0
 ~ m = _month
 ~ gmtime(_now)
 
-=== function date(t)
+=== function datetime(t)
 ~ temp _now = epoch_time
 ~ gmtime(t)
 {today()}, {month_name()} {ord(_day)} {last_displayed_year!=_year:, {_year}|} {l0(tm_hour)}:{l0(tm_min)}:{l0(tm_sec)}
 ~ gmtime(_now)
+
 
 === function _time(t, ref h, ref m, ref s)
 ~ temp _now = epoch_time

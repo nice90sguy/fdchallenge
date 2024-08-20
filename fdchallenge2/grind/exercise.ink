@@ -7,16 +7,16 @@ VAR num_times_actually_did_exercise = 0
     - night: It's a bit late to go out for exercise.
     - else:
         {fitness:
-            - fitness.min: You've become really unfit. Maybe today's the day you should try to get back in shape...
-            - fitness.low: You're not really taking care of your body enough. A bit of exercise would do you good!
-            - fitness.medium: You're starting to do well with your exercise regimen. You should keep it up!
-            - fitness.high:It's <>
+            - min: You've become really unfit. Maybe today's the day you should try to get back in shape...
+            - low: You're not really taking care of your body enough. A bit of exercise would do you good!
+            - medium: You're starting to do well with your exercise regimen. You should keep it up!
+            - high:It's <>
             {current_period:
              - morning:a perfect
              - evening:getting late, but there's still
              - afternoon:not a bad
              } <> time to exercise.
-            - fitness.max: Gotta work out, you need those endorphins!
+            - max: Gotta work out, you need those endorphins!
             }
 }<><br><>
 +  (do) [Exercise] ->

@@ -89,6 +89,26 @@ VAR last_displayed_year = 0
 == function videocam
 📹 <i><>
 
+VAR DISPLAY_ANALOG_CLOCK=true
+== function analog_clk
+{DISPLAY_ANALOG_CLOCK:
+ <>   {tm_hour % 12:
+        -1:🕐
+        -2:🕑
+        -3:🕒
+        -4:🕓
+        -5:🕔
+        -6:🕕
+        -7:🕖
+        -8:🕗
+        -9:🕘
+        -10:🕙
+        -11:🕚
+        -0:🕛
+    }
+    <>
+}
+
 LIST speech_type = (speech_type_voice), speech_type_wa, speech_type_chat
 
 === function _emo(emoji)

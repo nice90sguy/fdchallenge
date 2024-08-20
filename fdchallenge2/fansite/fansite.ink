@@ -3,8 +3,12 @@
 LIST fansite_activities = fsa_add_credits, fsa_chat, fsa_shop, fsa_video_session, fsa_tribute, fsa_logout
 
 VAR force_fansite_activity = false
+
+// This hack is so that "logout" can be called from anywhere.
+// The way the activity builder is designed, it makes it hard to use redirects as tunnel params, because they need to get propagated
+VAR fansite_return_to = ->grind.after_activity
 === fansite
-{fansite == 1:
+{fansite == 1 and fansite_return_to == ->grind.after_activity:
 {bella()} Welcome to My Fan Page! I'm sure you'll be here a lot!
 
 The first thing you need to do is to add some credits, it looks like you don't have any yet!  You won't be able to do much here unless you have plenty of them!
@@ -15,7 +19,7 @@ I'm usually online here between {ampm_hm(bella_online_start_hour, 0)} and  {ampm
 
 But even when I'm not here, there's plenty to do!
 
-You can browse my amazing pics and videos and other merch in My shop.  Or if you're feeling weak, you can always tribute Me.  That will make Me <i>really</i> happy; and, therefore, of course, it will make you happy too. Win win!!
+You can browse my amazing pics and videos and other merch in My shop.  Or if you're feeling weak, you can always tip Me.  That will make Me <i>really</i> happy; and, therefore, of course, it will make you happy too. Win win!!
 
 When I'm online, you can chat with Me.  But make sure you always greet Me first.  And you know what I mean by "greet".  If you don't, you soon will 🤣
 
@@ -126,36 +130,40 @@ VAR bella_online_now = false
 = opt
 + + (do) [Log out] ->
     {chat_offline_messages != "":
+    
         {warn()} You can't log out until you read your offline messages!
         -> fansite.after_activity
+        
     }
     // If you have any credits, you have to tribute her once per day
     {credits and not (activities_done_today? fsa_tribute):
-        {warn()} You can't end your first session of the day without tributing her first!
+        {warn()} You can't end your first session of the day without tipping her first!
         -> fansite.after_activity
     }
     ~ force_fansite_activity = false
     
-    -> grind.after_activity
+    -> fansite_return_to
     
 
 == fansite_tribute
 = opt
 ~ temp tx_result = ()
-~ temp price = 0
-+ + (do) [Tribute 💵] ->
-    + + + [{100 * LIST_VALUE(addiction)} credits] -> 
-        ~ price = 100 * LIST_VALUE(addiction)
+
++ + (do) [Tip Me! 💵] ->
+    ~ temp tip_amount = sqi(addiction) // quantized addiction level as number
+    + + + [{tip_amount} credits] -> 
+    + + + [{tip_amount * 10} credits] -> 
+     ~ tip_amount = tip_amount * 10
     + + +  {credits} [All your credits] -> 
-        ~ price = credits
+        ~ tip_amount = credits
 
 
-    - - - -> fansite_credits.pay(price, tx_result) -> 
+    - - - -> fansite_credits.pay(tip_amount, tx_result) -> 
     {tx_result ? FS_TX_SUCCESS:
-        {That felt good.|You want to that again.|Pay more.}
+        {That felt good.|You want to do that again.|Pay more.}
         ~ incstat(addiction)
-        
-        {addiction >= addiction.high:
+        ~ decstat(confidence)
+        {sq(addiction) >= high:
             ~ incstat(lust)
         }
 

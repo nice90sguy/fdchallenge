@@ -1,6 +1,12 @@
 // BEGIN utils.ink
 VAR continue_prompt = true
 
+=== list_utils
+= move_item(item, ref from, ref to)
+    ~ from -= item
+    ~ to += item
+->->
+
 == function LIST_TOTAL(l)
 { l == ():
     ~ return 0
@@ -221,7 +227,8 @@ VAR __print_number_init_cap = false
 */
 LIST type = int_t, str_t, lst_t
 === function typeof(val)
-{"{val+1}" == "":
+
+{"{val+10000}" == "":
     ~ return lst_t
 }
 

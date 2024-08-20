@@ -1,7 +1,7 @@
 === grind_fansite
 = opt
 {path==adventure:
-You know it's a bad idea, but maybe you could see if {BELLA_NAME} is online right now... 
+You know it's a bad idea, but maybe you could {bella_online():have a "chat" with {BELLA_NAME}, she's probably|see if {BELLA_NAME} might be} online right now... 
 }
 <><br><>
 + + (do) [Fan Login 💳] ->

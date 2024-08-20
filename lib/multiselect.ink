@@ -170,14 +170,7 @@ LIST digits = _1_,_2_,_3_,_4_,_5_,_6_,_7_,_8_,_9_,_0_
 
 }
 
-// Needs search.ink
-=== search_dialog(terms, list, ref result, match_type)
-~ terms = ()
 
--> multiselect(LIST_ALL(terms), terms, 0, MULTISELECT_MAX, "search term") ->
-
-~ result = search(terms, list, match_type)
-->->
 
     
     

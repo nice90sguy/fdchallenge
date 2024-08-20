@@ -9,25 +9,24 @@ VAR available_employers = ()
     ~ return
 }
 
-{confidence >= confidence.high:
+{sq(confidence) >= high:
      ~ available_employers += silverman
 - else:
     {available_employers ? silverman:You don't feel up to working for the investment bank today.}
      ~ available_employers -= silverman
 }
-{confidence >= confidence.medium:
+{sq(confidence) >= medium:
      ~ available_employers += food_bank
 - else:
     {available_employers ? food_bank:You don't feel up to working for Al today.}
      ~ available_employers -= food_bank
 }
-{confidence >= confidence.low:
+{sq(confidence) >= low:
      ~ available_employers += own_project
 - else:
     {available_employers ? own_project:You don't even feel up to working on your own stuff today.}
      ~ available_employers -= own_project
 }
-
 
 === grind_work
 
@@ -42,6 +41,7 @@ VAR available_employers = ()
     ~ current_activity = work
      ~ temp pay = 0
     -> select_employer ->
+
     {employer:
         - ():->grind.after_activity
         - silverman:

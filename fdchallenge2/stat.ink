@@ -1,187 +1,190 @@
-CONST MAX_STAT_VALUE = 5 //
-
-// General horniness, need for release
-LIST lust = min, (low), medium, high, max
-VAR _flt_lust = 0.0
-~ _flt_lust = LIST_VALUE(lust)
-
-// Self-confidence, Self-esteem. Lowered by being humiliated, or not being able to pay {BELLA_NAME}.  Affects your ability to earn
-LIST confidence = min, low, medium, (high), max
-VAR _flt_confidence = 0.0
-~ _flt_confidence = LIST_VALUE(confidence)
-
-// If your obedience is high, you won't be able to disobey or ignore {BELLA_NAME}.
-// This can lead rapidly to financial ruin!
-LIST obedience = min, (low), medium, high, max
-VAR _flt_obedience = 0.0
-~ _flt_obedience = LIST_VALUE(obedience)
-
-// Addiction is the need to contact her, or log on to her site.
-// When high, you'll crave every chance to contact her, and so will be unable to ignore her
-// messages.
-LIST addiction = min, (low), medium, high, max
-VAR _flt_addiction = 0.0
-~ _flt_addiction = LIST_VALUE(addiction)
-
-// This value is set by a function that maps the amount of money in your account to the list values
-LIST wealth = ruined, dont_ask, in_debt, barely_keeping_afloat, (doing_ok), flush, rich
-
-// Increases every six hours (day+night), goes to low after eating
-LIST hunger = min, (low), medium, high, max
-VAR _flt_hunger = 0.0
-~ _flt_hunger = LIST_VALUE(hunger)
-
-// Increases every six hours you're awake, goes to low after sleep
-LIST sleepiness = min, (low), medium, high, max
-VAR _flt_sleepiness = 0.0
-~ _flt_sleepiness = LIST_VALUE(sleepiness)
-// Decreases with exercise
-LIST fitness = min, low, medium, (high), max
-VAR _flt_fitness = 0.0
-~ _flt_fitness = LIST_VALUE(fitness)
-
-== function stat_pc(_stat)
-{ _stat:
-  - sleepiness:  
-        ~ return _stat_pc(_flt_sleepiness)
-  - lust:  
-        ~ return _stat_pc(_flt_lust)
-  - hunger:  
-        ~ return _stat_pc(_flt_hunger)
-  - addiction:  
-        ~ return _stat_pc(_flt_addiction)
-  - confidence:  
-        ~ return _stat_pc(_flt_confidence)
-  - obedience:  
-        ~ return _stat_pc(_flt_obedience)
-  - fitness:  
-        ~ return _stat_pc(_flt_fitness)
-   
-} 
-
-== function _stat_pc(_v)
-~ return INT(((_v-1) * 25) + 0.5)
-
 === stats
 
+\----------------------------------------------------<br><>
+Your last activity: <b>{current_activity:{current_activity}|(none)}</b><br><>
+<b>Exercise: </b>{grind_exercise.do}</b> times.<br><>
+<b>Fan Site: </b>{grind_fansite.do}</b> times.<br><>
+\----------------------------------------------------
+->->
+
 = display
-<- grind_stat.display
+\----------------------------------------------------<br><>
+-> cc.disp_balance ->
+
+{DispStat(lust)} <br><>
+{DispStat(confidence)}<br><>
+{DispStat(obedience)}<br><>
+{DispStat(addiction)}<br><>
+{DispStat(fitness)}<br><>
+{DispStat(hunger)}<br><>
+{DispStat(sleepiness)}<br><>
+\----------------------------------------------------<br><>
+
 ->->
 
 
-
+->->
 = reset(_path)
 {_path:
  - adventure:
 
-        ~ setstat(sleepiness, sleepiness.low)
-        ~ setstat(lust,lust.low)
-        ~ setstat(addiction,addiction.high)
-        ~ setstat(hunger,hunger.low)
-        ~ setstat(confidence,confidence.high)
-        ~ setstat(obedience,obedience.low)
-        ~ setstat(fitness,fitness.medium)
+        ~ setstat(sleepiness, low)
+        ~ setstat(lust,low)
+        ~ setstat(addiction,high)
+        ~ setstat(hunger,low)
+        ~ setstat(confidence,low)
+        ~ setstat(obedience,low)
+        ~ setstat(fitness,medium)
 - sub:
-        ~ setstat(sleepiness,sleepiness.min)
-        ~ setstat(lust,lust.low)
-        ~ setstat(hunger,hunger.low)
-        ~ setstat(addiction,addiction.low)
-        ~ setstat(confidence,confidence.low)
-        ~ setstat(obedience,obedience.medium)
-        ~ setstat(fitness,fitness.low)
-
+        ~ setstat(sleepiness,min)
+        ~ setstat(lust,low)
+        ~ setstat(hunger,low)
+        ~ setstat(addiction,low)
+        ~ setstat(confidence,low)
+        ~ setstat(obedience,medium)
+        ~ setstat(fitness,low)
+- dom:
+        ~ setstat(sleepiness,min)
+        ~ setstat(lust,low)
+        ~ setstat(hunger,low)
+        ~ setstat(addiction,min)
+        ~ setstat(confidence,high)
+        ~ setstat(obedience,min)
+        ~ setstat(fitness,medium)
+- else:
+>>> Can't reset to {_path}
 }
 ->->
 
 
-== function stat_snapshot
-~ return (sleepiness + lust + addiction + hunger + confidence + obedience + fitness + num2trib(_cc))
+// 
+// Values are centered on their ranges
+// i.e. 
+// min = 1-20
+// low = 21-40
+// med = 41-60
+// high = 61-80
+// max  = 81-100
+LIST quantized_stat_val = min=10, low=30, medium=50, high=70, max=90
 
-== function load_snapshot(snapshot)
+// number of steps between succesive _stat_vals
+// multipliers for stat delta, can be set per stat. 1 means 1 percent, whole_step is 20 percent
 
-    ~ setstat(sleepiness, snapshot ^ LIST_ALL(sleepiness))
-    ~ setstat(lust,snapshot ^ LIST_ALL(lust))
-    ~ setstat(hunger, snapshot ^ LIST_ALL(hunger))
-    ~ setstat(addiction, snapshot ^ LIST_ALL(addiction))
-    ~ setstat(confidence, snapshot ^ LIST_ALL(confidence))
-    ~ setstat(obedience, snapshot ^ LIST_ALL(obedience))
-    ~ setstat(fitness, snapshot ^ LIST_ALL(fitness))
-    ~ _cc = trib2num(snapshot)
+LIST _stat_dm = _stat_dm_0=0,_stat_dm_1,_stat_dm_2,_stat_dm_3,_stat_dm_4,_stat_dm_5,_stat_dm_6,_stat_dm_7,_stat_dm_8,_stat_dm_9,_stat_dm_10,_stat_dm_11,_stat_dm_12,_stat_dm_13,_stat_dm_14,_stat_dm_15,_stat_dm_16,_stat_dm_17,_stat_dm_18,_stat_dm_19,_stat_dm_20,_stat_dm_whole_step=20
 
+LIST stat_t = Sleepiness, Hunger, Lust, Submissiveness, Addiction, Confidence, Fitness
+// Add stat_name to each var so that for a given stat, when passed to a function, we know what stat we're dealing with, (for display funcs)
+VAR sleepiness = (Sleepiness, _stat_dm_whole_step)
+VAR hunger = (Hunger, _stat_dm_whole_step)
+VAR lust = (Lust, _stat_dm_2)
+VAR obedience = (Submissiveness, _stat_dm_1)
+VAR addiction = (Addiction, _stat_dm_1)
+VAR confidence = (Confidence, _stat_dm_1)
+VAR fitness = (Fitness, _stat_dm_2)
 
-== function setstat(ref _stat, val)
-    ~ _stat = val
-{ _stat:
-  - sleepiness:  
-        ~ _flt_sleepiness = LIST_VALUE(sleepiness)
-  - lust:  
-        ~ _flt_lust = LIST_VALUE(lust)
-  - hunger:  
-        ~ _flt_hunger = LIST_VALUE(hunger)
-  - addiction:  
-        ~ _flt_addiction = LIST_VALUE(addiction)
-  - confidence:  
-        ~ _flt_confidence = LIST_VALUE(confidence)
-  - obedience:  
-        ~ _flt_obedience = LIST_VALUE(obedience)
-  - fitness:  
-        ~ _flt_fitness = LIST_VALUE(fitness)
-   
-}    
+=== function sq(p_stat)
+~ return p_stat ^ LIST_ALL(quantized_stat_val)
+
+// return quantized_stat value (i.e. LIST_VALUE of min..max) as an int
+=== function sqi(p_stat)
+~ return LIST_VALUE(sq(p_stat))
+
+=== function setstat(ref p_stat, val)
+
+~ temp quantized_value = ()
+{typeof(val) == lst_t:
+    ~ quantized_value = val ^ LIST_ALL(quantized_stat_val)
+    {quantized_value != ():
+        ~ val = LIST_VALUE(quantized_value)
+    }
+}
+// set value, and cast val to int if necessary
+~ val = set_val(p_stat, val)
+
+// update the _stat_val to the nearest quantized value
+~ p_stat -= LIST_ALL(quantized_stat_val)
+~ p_stat += quantized_value
+
+{val == 100:
+    ~ p_stat += max
+- else:
+    ~ p_stat += LIST_RANGE(LIST_ALL(quantized_stat_val), val-9, val+10)
+}
+
+VAR SHOW_STATS=false
+=== function deltastat(ref p_stat, delta)
+{SHOW_STATS:
+    ~DispDelta(p_stat, delta)
+}
+
+~ temp multiplier = p_stat ^ LIST_ALL(_stat_dm)
+{multiplier == ():
+    ~ multiplier = 1
+- else:
+    ~ multiplier = LIST_VALUE(multiplier)
+}
+~ delta = list2num(delta) * multiplier
+~ temp current_val = list2num(p_stat)
+~ temp new_val = current_val + delta
+{new_val < 0:
+    ~ new_val = 0
+}
+{new_val > 100:
+    ~ new_val = 100
+}
+~ setstat(p_stat, new_val)
+~ return sq(p_stat)
+
+=== function incstat(ref p_stat)
+    ~ return deltastat(p_stat, 1)
     
+=== function decstat(ref p_stat)
+    ~ return deltastat(p_stat, -1)
+    
+=== function stat_type(_stat)
+~ return _stat ^ LIST_ALL(stat_t)
 
-
-== function incstat(_stat)
-~ return deltastat(_stat, 1)
-
-== function decstat(_stat)
-~ return deltastat(_stat, -1)
-
-VAR SHOW_STAT_CHANGES = false
-// each stat has its own "speed" for inc and dec, which is it's "delta"
-// e.g. if delta is 0.1, it takes 10 increments to actually change to the 
-// next highest state
-=== function deltastat(_stat, amount)
-{SHOW_STAT_CHANGES:<br>}
-{_stat:
-  - sleepiness:  
-{SHOW_STAT_CHANGES:<>😴 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
-        ~ _deltastat_sub1(sleepiness, _flt_sleepiness, 1.0 * amount)
-  - lust:  
-{SHOW_STAT_CHANGES:<>🌶️ {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
-        ~ _deltastat_sub1(lust, _flt_lust, 0.1 * amount)
-  - hunger:  
-{SHOW_STAT_CHANGES:<>🍕 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
-        ~ _deltastat_sub1(hunger, _flt_hunger, 1.0 * amount)
-  - addiction:  
-{SHOW_STAT_CHANGES:<>💉 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
-        ~ _deltastat_sub1(addiction, _flt_addiction, 0.05 * amount)
-  - confidence:  
-{SHOW_STAT_CHANGES:<>🦚 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}} <>}
-        ~ _deltastat_sub1(confidence, _flt_confidence, 0.05 * amount)
-  - obedience:  
-{SHOW_STAT_CHANGES:<>🙏🏻 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}}} <>
-        ~ _deltastat_sub1(obedience, _flt_obedience, 0.05 * amount)
-  - fitness:  
-{SHOW_STAT_CHANGES:<>💪🏻 {amount > 0:{amount > 1: ⏫|🔼}|{amount < -1: ⏬|🔽}}} <>
-        ~ _deltastat_sub1(fitness, _flt_fitness, 0.1 * amount)
-   
+== function stat_name(_stat)
+{stat_type(_stat):
+    - Sleepiness:  
+        Sleepiness
+    - Hunger:  
+        Hunger
+    - Lust:  
+        Horniness
+    - Addiction:  
+        Findom addiction
+    - Confidence:  
+        Self-esteem
+    - Fitness:  
+        Health
+    - Submissiveness:  
+        Submissiveness
+}
+== function stat_icon(_stat)
+{stat_type(_stat):
+    -  Sleepiness:  
+        😴
+    - Hunger:  
+        🍕
+    - Lust:  
+        🌶️
+    - Addiction:  
+        💉
+    - Confidence:  
+        🦚
+    - Fitness:  
+        💪
+    - Submissiveness:  
+        🙏
+}
+=== function DispDelta(_stat, delta)
+{SHOW_STATS:
+    {stat_icon(_stat)}
+    <>{delta > 0:{delta > 1: ⏫|🔼}|{delta < -1: ⏬|🔽}}
 }
 
-~ return _stat
-
-=== function _deltastat_sub1(ref statevar, ref flt_statevar, delta)
-
-~ temp la = LIST_ALL(statevar)
-~ temp _max = LIST_COUNT(la)
-
-~ flt_statevar += delta 
-{flt_statevar < 1:
-    ~ flt_statevar = 1
+=== function DispStat(_stat)
+{SHOW_STATS:
+    {stat_icon(_stat)} {stat_name(_stat)}: {_stat ^ LIST_ALL(quantized_stat_val)} ({list2num(_stat)}%)
 }
-{flt_statevar > _max:
-    ~ flt_statevar = _max 
-}
- ~ statevar = item_at_index(la, INT(flt_statevar + 0.5))
- 
-

@@ -34,41 +34,52 @@ You don't have a choice. <i>(She pauses, then laughs)</i>  That's right, it's no
 <i>Whatever she is, that last sentence of hers strikes a nerve. In fact you think she's some kind of mind-reader.
 
 Now, I want you stand up. Yes, right now.
--> p1("Stand up") ->
+-> intent.cmd_adhoc("Stand up", low) ->
+
 <i>You're standing up now. You didn't even think to do it.
 
 Good.  Now, say it out loud: "{BELLA_NAME}, I want you to help manage my life."
--> p1e("\"{BELLA_NAME}, I want you to help manage my life.\"") ->
+-> intent.cmd_adhoc("\"{BELLA_NAME}, I want you to help manage my life.\"", low) ->
 
 <i>She pauses and smiles, giving you exactly enough time to reply.  It's like she's there with you in your room, and can hear you.
 
 Good boy.  Now beg me:  Say, "Please {BELLA_NAME}, help me manage my money."
--> p1e("\"Please {BELLA_NAME}, help me manage my money.\"") ->
+
+-> intent.cmd_adhoc("\"Please {BELLA_NAME}, help me manage my money.\"", low) ->
 
 Now. Take off your pants, and take out your dick, and grab hold of it.
+-> cont ->
+<i>What the actual fuck??  Did she she just say that?
+-> intent.cmd_adhoc("Do it", medium) ->
 
- -> p1e("<i>Oh yes...") ->
 
-Don't move your hand.
-
+{obeyed_cmd:
+Don't move your hand yet.
  -> p1e("<i>No, Ma'am... (Damn...)") ->
+ Now, start stroking, slowly, and repeat after me: "{BELLA_FULL_NAME} controls my money."
 
-Now, start stroking, slowly, and repeat after me: "{BELLA_FULL_NAME} controls my money."
+-> p1e("<i>\"{BELLA_FULL_NAME} controls my money.\"") ->
+-else:
+<i>She laughs and says,</i> "It's okay if you don't want to."
+ -> p1e("<i>\"Thank you for your understanding\"") ->
+ <>, you say to the screen.
+ -> cont ->
 
-<i>"{BELLA_FULL_NAME} controls my money."
+}
 
-"{BELLA_FULL_NAME} controls my bank account."
 
-<i>"{BELLA_FULL_NAME} controls my bank account."
+{obeyed_cmd:"{BELLA_FULL_NAME} controls my bank account."}
+
+{obeyed_cmd:<i>"{BELLA_FULL_NAME} controls my bank account."|->cont->}
 
 "My money belongs to {BELLA_NAME}."
 
-<i>"My money belongs to {BELLA_NAME}."
+{obeyed_cmd:<i>"My money belongs to {BELLA_NAME}."|->cont->}
 
-
+{not obeyed_cmd: You don't understand it, you should be completely put off by her blatent attempt to hypnotise you, or whatever she's trying to do, but you're now getting so hard, you find yourself pulling out your dick and stroking. ->cont->}
 "Faster now. {BELLA_NAME} controls my dick."
 
-<i>"{BELLA_NAME} controls my dick..."
+{obeyed_cmd:<i>"{BELLA_NAME} controls my dick..."|->cont->}
 
 "Keep repeating it."
 
@@ -85,7 +96,6 @@ Now, start stroking, slowly, and repeat after me: "{BELLA_FULL_NAME} controls my
 <i>"{BELLA_NAME}... controls... me...."
 
 Good!  See how great things are gonna be for you?
-
 -> cont ->
 
 Now, I said at the beginning that you'd have to pass a couple of tests.  Well, that was the first one.  It wasn't so hard was it?

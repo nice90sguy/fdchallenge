@@ -84,7 +84,7 @@ Welcome to {grind_location_desc()}!
 
 = opt
 
-+ + (do) [{opt==1:Go and talk to her|Hang out {activities_done_today ? ba_with_angie:more } with {msg_name(ANGIE)}}] ->
++ + (do) {(events ? met_angie_in_bar) or opt == 1}[{opt==1:Go and talk to her|Hang out {activities_done_today ? ba_with_angie:more } with {msg_name(ANGIE)}}] ->
 
 // First time you meet her is special
 {do == 1:
@@ -93,9 +93,9 @@ Welcome to {grind_location_desc()}!
     TODO angie meeting, might change below stats
     You have a nice time with her.
     ~ angie_affection = angie_affection.like
-    ~deltastat(confidence, 10)
-    ~deltastat(addiction, -10) 
-    ~deltastat(obedience, -10) 
+    ~deltastat(confidence, 3)
+    ~deltastat(addiction, -3) 
+    ~deltastat(obedience, -3) 
 
     -> ffa(hour, 2) ->
     -> bar_return_home

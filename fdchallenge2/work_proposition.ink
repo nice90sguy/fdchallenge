@@ -38,7 +38,8 @@ That seems to be the end of that conversation.
 {hint()}  Choose "Work for {BELLA_NAME}" from the activity menu!
 
 
- ~ untagged_videos = search(video, LIST_ALL(media), match_any)
+-> search_media(video, LIST_ALL(media), untagged_videos) ->
+
 // Number of videos: {LIST_COUNT(untagged_videos)}
 
 // Total cost of videos: {LIST_TOTAL(untagged_videos)}
@@ -53,7 +54,7 @@ VAR payment_for_correct_video_tag = 100
 ~ temp lum_arg = ()
 
 ->lookup_media(video_, lum_arg) ->
->>> lum_arg = {lum_arg}
+>>> (CHEAT)<i> Media Info = {lum_arg}
 ~ temp actual_tags = (lum_arg ^ LIST_ALL(search_tags))-video
 
 {_DEBUG:>>> Video: ({video_})}
@@ -71,7 +72,7 @@ VAR payment_for_correct_video_tag = 100
 + [Come back to this one later] ->
     -> list_utils.move_item(video_, untagged_videos, skipped_videos) ->-> 
 -
--> ffa(minute, 5) ->
+-> ffa(minute,10) ->
 ~ temp guessed_tags = ()
 ~ temp num_actual_tags = LIST_COUNT(actual_tags)
 

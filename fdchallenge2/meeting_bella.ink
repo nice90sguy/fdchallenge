@@ -100,6 +100,7 @@ You're leaning towards...
 + [Jumbo Shrimp (${LIST_VALUE(shrimp)})] ...the shrimp.
     ~ bar_menu_options = shrimp
     ~ path = sub
+    
 
 
 + [Shigoku Oysters (${LIST_VALUE(oysters)})] ...the oysters.
@@ -111,6 +112,9 @@ You're leaning towards...
     ~ path = dom
 
 -
+// Set stats based on chosen path
+-> stats.reset(path) ->
+
 
 // path branch
 
@@ -583,11 +587,14 @@ You order another JD, while she swipes and taps on her phone with one hand, and 
 The second plate of oysters arrive, but she gestures to the bartender to put it in front of her instead of you.  Did she misunderstand your chivalrous gesture earlier? Did she think you were actually <i>giving</i> her your portion?
 
 * (protest)[Protest]
+    ~ decstat(obedience)
     "Hey, I think those were mine," you say.
     She looks at you, puzzled, and then says, "No these are mine.  I already ate yours."
 
+
 * [Say nothing]
 You say nothing, thinking of the {print_number(LIST_VALUE(oysters))} dollars they're going to charge you for them.
+    ~ incstat(obedience)
 -
 
 You {protest: stare at her in disbelief|watch her } while she picks up an oyster, ready to start on your plate.

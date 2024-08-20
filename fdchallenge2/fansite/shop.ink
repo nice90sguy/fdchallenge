@@ -17,13 +17,14 @@ VAR favourite_items = ()
             {hint()} (Cumming soon)
     + + + [Search for items]
         ~ temp found_items = ()
-        -> search_dialog(LIST_ALL(search_tags), available_items, found_items, match_any) ->
+        -> search_media_dialog(LIST_ALL(search_tags), available_items, found_items) ->
         
         {found_items == ():No items available for {search_tags}).-> do}
+        ~ temp n_found = LIST_COUNT(found_items)
+        Found {n_found} item{n_found!=1:s}.
         
-        Found {LIST_COUNT(found_items)} items.
-
-        Add them to your favourites?
+        -> disp_titles(found_items) ->
+        Add {n_found==1:it|them} to your favourites?
         + + + + [Yes]
             ~ favourite_items += found_items
         + + + + [No]
@@ -38,6 +39,13 @@ VAR favourite_items = ()
     ~ activities_done_today += fsa_shop
     -> fansite.after_activity
 
+= disp_titles(m)
+{m != ():
+ ~ temp tags = (lum_desc)
+-> lookup_media(LIST_MIN(m), tags) ->
+-> disp_titles(m-LIST_MIN(m)) ->
+}
+->->
 
 === inventory
 // Items -- values are their prices
@@ -67,14 +75,16 @@ A photo of Me
 
 
 ->->
-=== function inventory_find_photo
-    ~ temp available_photos = search(photo, available_items, match_any)
+=== inventory_find_photo(ref chosen_photo)
+    
+    ~ temp available_photos = ()
+    -> search_media(photo, available_items, available_photos) ->
     
     { available_photos == ():>>> Bella has no more photos to send you!}
-    ~ temp chosen_photo = LIST_MIN(available_photos)
+    ~ chosen_photo = LIST_MIN(available_photos)
     {chosen_photo:
-        ~ chosen_photo += num2trib(LIST_VALUE(chosen_photo))
+        ~ chosen_photo += num2list(LIST_VALUE(chosen_photo))
     }
-    ~ return chosen_photo
+->->
 
 

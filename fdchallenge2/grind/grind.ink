@@ -73,7 +73,7 @@ VAR final_stat = ()
 
 
    ~ grind_start_t = now()
-   ~ starting_stat = stat_snapshot()
+
    ~ set_interval_cb(3600,->on_the_hour)
    ~ set_timer_cb(FAR_FUTURE-epoch_time,->grind_messages.taunt)
 
@@ -96,18 +96,18 @@ VAR final_stat = ()
 // (Re)init interrupts and alarms which may have been cleared 
 
 {now() >= grind_start_t + max_grind_days * SECS_DAY:
-     {_DEBUG:>>> MAX GRIND DAYS REACHED: grind_start_t = {date(grind_start_t)}}
+     {_DEBUG:>>> MAX GRIND DAYS REACHED: grind_start_t = {datetime(grind_start_t)}}
 
      ~ continue_prompt = true
 
 - else: -> build_opts
 }
-~ final_stat = stat_snapshot()
-//  Display starting vs ending stats
-~ load_snapshot(starting_stat)
-Starting stat:-> stats.display ->
-~ load_snapshot(final_stat)
-Final stat: -> stats.display ->
+
+Final stat: 
+~ temp current_show_stats = SHOW_STATS
+~ SHOW_STATS = true
+-> stats.display ->
+~ SHOW_STATS = current_show_stats
  {_DEBUG:>>> END GRIND (TBC)}
 ->one_week_later
 
@@ -126,6 +126,7 @@ Final stat: -> stats.display ->
 
 VAR prev_interval = FAR_FUTURE
 = on_the_hour
+{analog_clk()}
 {prev_interval == FAR_FUTURE:
 ~ prev_interval = epoch_time - _interval
 }
@@ -187,11 +188,11 @@ VAR prev_interval = FAR_FUTURE
     }
     // Randomly taunt some time in the next hour, more often if on sub path
     {path == sub:
-        {RANDOM(1, 100) <= 50:
+        {RANDOM(1, 100) <= 25:
             ~ _next_timer = now() + RANDOM(10,50) * 60
         }
     - else:
-        {RANDOM(1, 100) <= 5 * LIST_VALUE(obedience):
+        {RANDOM(1, 1000) <= sqi(obedience):
             ~ _next_timer = now() + RANDOM(10,50) * 60
         }    
     }
@@ -221,10 +222,10 @@ VAR prev_interval = FAR_FUTURE
 // update current time vars
 ~ current_period = period_of_day()
 ~ current_t = now()
-{_DEBUG: >>> (REMOVE STAT DISPLAY) <-grind_stat.display}
+{_DEBUG: >>> (REMOVE STAT DISPLAY) ->stats.display->}
 
-// Bella's work proposition, after 2 days, before evening, and she hasn't propositioned you already
-{path==adventure and day_rollover>=2 and (current_period < evening) and (not work_proposition_bella):
+// Bella's work proposition, after 4 days, before evening, and she hasn't propositioned you already
+{path==adventure and day_rollover>=4 and (current_period < evening) and (not work_proposition_bella):
 -> work_proposition_bella -> build_opts
 }
 
@@ -278,6 +279,12 @@ VAR prev_interval = FAR_FUTURE
     ~ possible_activities -= breakfast
 
 }
+
+// No need to jerk off if lust min
+{sq(lust) <= low:
+    ~ possible_activities -= jerk_off
+}
+
 // can't do a full days' except immediately after breakfast
 {current_activity != breakfast:
 
@@ -318,7 +325,7 @@ VAR prev_interval = FAR_FUTURE
 }
 // prevent two consecutive snacks
 {(possible_activities ? snack) and (current_activity ? snack):
-    {hunger < hunger.high:
+    {sq(hunger) < high:
         You can't have another snack now, you're not that hungry!
         ~ possible_activities -= snack
     }
@@ -327,14 +334,14 @@ VAR prev_interval = FAR_FUTURE
 
 // prevent snack immediately after breakfast
 {(possible_activities ? snack) and (current_activity == breakfast):
-    {hunger < hunger.high:
+    {sq(hunger) < high:
         You can't have a snack straight after breakfast!
         ~ possible_activities -= snack
     }
     
 }
 // If your horniness and addiction is low, and your self-esteem is high, don't allow distraction while working 
-{(lust < lust.medium) and (addiction < addiction.high) and (confidence > confidence.medium) and (current_activity ^ (work, full_days_work)) != ():
+{(sq(lust) < medium) and (sq(addiction) < high) and (sq(confidence) > medium) and (current_activity ^ (work, full_days_work)) != ():
     ~ possible_activities -= porn
     ~ possible_activities -= logon_fansite
 
@@ -349,22 +356,22 @@ VAR prev_interval = FAR_FUTURE
 
 
 
-// Sleepiness < medium, don't sleep
-{sleepiness < sleepiness.medium:
+// sq(Sleepiness) < medium, don't sleep
+{sq(sleepiness) < medium:
     // You're not sleepy...
     ~ possible_activities -= sleep
 
 }
 
 // Sleepiness high, unable to work, exercise, go out
-{sleepiness >= sleepiness.high:
+{sq(sleepiness) >= high:
     You're too tired to go out, or work...
     ~ possible_activities -= (exercise, work, socialize)
 
 }
 
 // Become introspective if zero confidence
-{confidence == confidence.min:
+{sq(confidence) == min:
     ~ possible_activities += introspect
     // Can't work if confidence is min
     {possible_activities ^ (work, full_days_work) != ():
@@ -396,7 +403,7 @@ VAR prev_interval = FAR_FUTURE
 TODO slug_life_reset
 You stare into space. Just then, you get a phone call. It's your friend Al, calling to see how you're doing.
     // reset confidence, so you can work again
-    ~setstat(confidence, confidence.high)
+    ~setstat(confidence, high)
     -> ff2DOW(Monday) ->
     ~ set_hm(6,30)
      ~ activities_done_today = ()
@@ -602,19 +609,19 @@ Each of them return to after_activity when done.
  
  // When any of sleepiness, hunger, lust, addiction are maxed, they will be the only option available, so the narrative can end quickly.
  
- {sleepiness == sleepiness.max:
+ {sq(sleepiness) == max:
     You can hardly keep your eyes open...
     ->->
  }
- {hunger == hunger.max:
+ {sq(hunger) == max:
     You can't go on until you eat something. Anything.
     ->->
  }
-  {lust == lust.max:
+  {sq(lust) == max:
     If you don't stroke that dick now, you'll die...
     ->->
  }
- {addiction == addiction.max:
+ {sq(addiction) == max:
     You need another fix of {BELLA_NAME}...
     ->->
  }
@@ -626,8 +633,8 @@ Each of them return to after_activity when done.
  
  // ------------------------------------------------------------------
  // Are you sleepy?
- {sleepiness >= sleepiness.medium:
- You're feeling{sleepiness == sleepiness.high: really } {sleepiness==sleepiness.medium: a little } sleepy{current_period != night:, even though it's still {current_period == evening: a little|way too} early to go to bed}...
+ {sq(sleepiness) >= medium:
+ You're feeling{sq(sleepiness) == high: really } {sq(sleepiness) == medium: a little } sleepy{current_period != night:, even though it's still {current_period == evening: a little|way too} early to go to bed}...
  }
 <><br><>
  ->-> 
@@ -636,14 +643,14 @@ Each of them return to after_activity when done.
 === function check_max_stats
 // If certain stats have reached max, remove every activity from choice except the ones that reduce those stats. The order is decreasing priority
 ~ temp tmp_poss_act = possible_activities
-{stat_snapshot() ^ (hunger.max, lust.max, sleepiness.max, addiction.max) != ():
+{sq(hunger) == max or  sq(lust) == max or sq(sleepiness) == max or sq(addiction) == max:
     ~ tmp_poss_act = ()
     {
     
     // Hack. Ignore your hunger when you're in the bar
-    - hunger == hunger.max and grind_location != location_bar: 
+    - sq(hunger) == max and grind_location != location_bar: 
         
-        { confidence > confidence.min:
+        { sq(confidence) > min:
             { 
             - possible_activities ? breakfast:
                 Gotta have breakfast <i>now.
@@ -661,14 +668,14 @@ Each of them return to after_activity when done.
             ~ tmp_poss_act += snack
         }
         <><br><>
-    - lust == lust.max:
+    - sq(lust) == max:
         You need release <i>now.<><br><>
         ~ tmp_poss_act += jerk_off
         
     // If max sleepiness, you have to sleep
-    - sleepiness == sleepiness.max :
+    - sq(sleepiness) == max :
         ~ tmp_poss_act += sleep
-    - addiction == addiction.max and confidence == confidence.min and current_activity != sleep and (path == adventure):
+    - sq(addiction) == max and sq(confidence) == min and current_activity != sleep and (path == adventure):
         ~ tmp_poss_act += logon_fansite
 
     }

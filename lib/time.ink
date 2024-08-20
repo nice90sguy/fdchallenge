@@ -183,7 +183,7 @@ VAR _timer_cb = 0
     ~ _timer_cb = cb
 // Prevent rentry
 VAR IN_CALLBACK = false
-VAR ff_in_callback_time = 0
+//VAR ff_in_callback_time = 0
 // fast forward time, checking for interrupt
 
  == ffa(units, by)
@@ -214,7 +214,7 @@ VAR ff_in_callback_time = 0
         -> ffa(second + fff_bypass_record, extra_time) ->
      - else: 
 
-        ~ ff_in_callback_time = 0
+//        ~ ff_in_callback_time = 0
         ~ ff(units, by)
         ->->
     }
