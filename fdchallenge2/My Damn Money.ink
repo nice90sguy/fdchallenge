@@ -48,6 +48,10 @@ INCLUDE work.ink
 INCLUDE work_proposition.ink
 INCLUDE one_week_later.ink
 INCLUDE ../lib/list2num.ink
+INCLUDE angie.ink
+INCLUDE location.ink
+
+
 
 
 # author nice90sguy@gmail.com
@@ -61,74 +65,24 @@ VAR _LITEROTICA_EXPORT = true
 ~ DISPLAY_ANALOG_CLOCK = true
 
 // TESTING
-// ~ speech_type = speech_type_chat
-// ~ set_bella_online(true)
-// ~ current_activity = fsa_chat
-// -> fansite_chat.lines_game -> END
-// -> stats.reset(adventure) ->
-// -> stats.display ->
-// ~SHOW_STATS = true
+// -> Angie.plane_meeting ->
+// -
+//      <- grind_bar.opt
+ 
+// + ->
+// FOO
 
-// ~ setstat(obedience, medium)
-
-// {DispStat(obedience)}
-// FOO <>
-// ~ incstat(obedience)
-// <> BAR
-// {DispStat(obedience)}
-// ~ deltastat(obedience, 7)
-// {DispStat(obedience)}
-// ~ deltastat(obedience, 1000)
-// {DispStat(obedience)}
-// -> stats.display ->
 // -> END
-// ~ _DEBUG = false
-// ~ set_dMy(29,July,2024)
-// ~ path = adventure
-// -> stats.reset(path) ->
-// -> stats.display ->
-// -> one_week_later
-// === TEST
-
-// ~ set_dMy(26,July,2024)
-// ~ set_hms(20, 27, 52)
-// -> work_proposition_bella -> END
-// ~ set_interval_cb(1800, ->INTERVAL_CB)
-// ~ set_timer_cb(43*60, ->PHONE_CALL)
-// >> next interval at {hhmm(_next_interval)}
-// >> next timer at {hhmm(_next_timer)}
-// -> ffa(hour, 4) ->
-// -> END
-// Define an hourly interval callback
-// = INTERVAL_CB
-// >> time {ampm()}
-// ->->
-// Define an event to occur in 43 minutes' time
-// = PHONE_CALL
-// >> You get a phone call {approx_time(epoch_time)}!
-// >> You set a reminder about it for 20 minutes' time.
-// ~ set_timer_cb(19*60, ->REMINDER)
-// ->->
-// = REMINDER
-// >> Your reminder goes off {approx_time(epoch_time)}!
-// You call back, and have an hour long conversation.
-// The time before your conversation is {ampm()}
-// -> ffa(second, 3600) ->
-// The time after your conversation is {ampm()}
-// ->->
-// END TESTING
-
-
-(Version 0.049)
+(Version 0.052)
 -> main
 
 == main
 * [Fan Login 💳 ]
     You haven't unlocked this option yet. Become My fan first!
-    -> J(->main)
+    ->main
 
 * [Become My Fan 😍] Good boy. Let's see if you're worthy...
-    -> cont -> J(->meeting_bella) -> S("Your Apartment", ->back_home) -> tbc
+    -> cont ->meeting_bella ->back_home ->one_week_later -> tbc
 
 
 + [Options ⚙️]
@@ -145,7 +99,7 @@ VAR _LITEROTICA_EXPORT = true
         ~ path = sub
     * * [Adventure Path]
         ~ path = adventure
-        ~ events += met_angie_on_plane
+        -> Angie.plane_meeting ->
     - -
     ~ _DEBUG = false
     -> cc.deposit(1000) ->

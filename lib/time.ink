@@ -170,16 +170,25 @@ VAR _timer_cb = 0
     ~ return ()
 // 
 == function set_interval_cb(interval, ->cb)
-{_DEBUG:{IN_CALLBACK:>>> !!! Should not set interval callback within callback {_interval_cb}}}
+
     ~ _interval = interval
-    ~ _next_interval = (epoch_time / _interval) * _interval + _interval
+    {interval == FAR_FUTURE:
+        ~ _next_interval = FAR_FUTURE
+    -else:
+        {_DEBUG:{IN_CALLBACK:>>> !!! Should not set interval callback within callback {_interval_cb} {cb}}}
+        ~ _next_interval = (epoch_time / _interval) * _interval + _interval
+    }
     ~ _interval_cb = cb
     
 == function set_timer_cb(seconds_from_now, ->cb)
 
-{_DEBUG:{IN_CALLBACK:>>> !!! Should not set callback within callback {_timer_cb}}}
-    ~ _next_timer = epoch_time + seconds_from_now
 
+{seconds_from_now == FAR_FUTURE:
+    ~ _next_timer = FAR_FUTURE
+- else: 
+    {_DEBUG:{IN_CALLBACK:>>> !!! Should not set timer callback within callback {_timer_cb}  {cb}}}
+    ~ _next_timer = epoch_time + seconds_from_now
+}
     ~ _timer_cb = cb
 // Prevent rentry
 VAR IN_CALLBACK = false

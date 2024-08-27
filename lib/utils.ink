@@ -131,7 +131,7 @@ VAR __print_number_init_cap = false
 === function print_number(x) 
 ~ x = INT(x) // cast to an int, since this function can only handle ints!
 
-~ temp c = __print_number_init_cap
+~ temp _c = __print_number_init_cap
 
 {
     - x >= 1000000:
@@ -150,44 +150,44 @@ VAR __print_number_init_cap = false
     - else:
         { x >= 20:
             { x / 10:
-                - 2: {c:Twenty|twenty}
-                - 3: {c:Thirty|thirty}
-                - 4: {c:Forty|forty}
-                - 5: {c:Fifty|fifty}
-                - 6: {c:Sixty|sixty}
-                - 7: {c:Seventy|seventy}
-                - 8: {c:Eighty|eighty}
-                - 9: {c:Ninety|ninety}
+                - 2: {_c:Twenty|twenty}
+                - 3: {_c:Thirty|thirty}
+                - 4: {_c:Forty|forty}
+                - 5: {_c:Fifty|fifty}
+                - 6: {_c:Sixty|sixty}
+                - 7: {_c:Seventy|seventy}
+                - 8: {_c:Eighty|eighty}
+                - 9: {_c:Ninety|ninety}
             }
             { x mod 10 > 0:
-                ~ c = false
+                ~ _c = false
                 <>-<>
             }
         }
         { x < 10 || x > 20:
             { x mod 10:
-                - 1: {c:One|one}
-                - 2: {c:Two|two}
-                - 3: {c:Three|three}
-                - 4: {c:Four|four}
-                - 5: {c:Five|five}
-                - 6: {c:Six|six}
-                - 7: {c:Seven|seven}
-                - 8: {c:Eight|eight}
-                - 9: {c:Nine|nine}
+                - 1: {_c:One|one}
+                - 2: {_c:Two|two}
+                - 3: {_c:Three|three}
+                - 4: {_c:Four|four}
+                - 5: {_c:Five|five}
+                - 6: {_c:Six|six}
+                - 7: {_c:Seven|seven}
+                - 8: {_c:Eight|eight}
+                - 9: {_c:Nine|nine}
             }
         - else:
             { x:
-                - 10: {c:Ten|ten}
-                - 11: {c:Eleven|eleven}
-                - 12: {c:Twelve|twelve}
-                - 13: {c:Thirteen|thirteen}
-                - 14: {c:Fourteen|fourteen}
-                - 15: {c:Fifteen|fifteen}
-                - 16: {c:Sixteen|sixteen}
-                - 17: {c:Seventeen|seventeen}
-                - 18: {c:Eighteen|eighteen}
-                - 19: {c:Nineteen|nineteen}
+                - 10: {_c:Ten|ten}
+                - 11: {_c:Eleven|eleven}
+                - 12: {_c:Twelve|twelve}
+                - 13: {_c:Thirteen|thirteen}
+                - 14: {_c:Fourteen|fourteen}
+                - 15: {_c:Fifteen|fifteen}
+                - 16: {_c:Sixteen|sixteen}
+                - 17: {_c:Seventeen|seventeen}
+                - 18: {_c:Eighteen|eighteen}
+                - 19: {_c:Nineteen|nineteen}
             }
         }
 } 

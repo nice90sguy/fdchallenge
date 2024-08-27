@@ -1,4 +1,4 @@
-=== grind_stat
+=== grind_introspect
 = do
    -> stats.display ->
 ->->
@@ -14,7 +14,7 @@
     + + + [Back] -> 
     - - -
 - -
--> grind
+-> grind.build_opts
 
 
 

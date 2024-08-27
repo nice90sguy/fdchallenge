@@ -65,9 +65,12 @@ cat $output_file.CONST $output_file.LIST $output_file.VAR >> ${output_file}
 # echo -e "\n-> main\n" >> $output_file
 cat $output_file.tmp >> ${output_file}
 
-sed -i 's/<[bip]>//g' ${output_file}
+# remove b, i, p, u, s tags
+sed -i 's/<[bipus]>//g' ${output_file}
+sed -i 's/<\/[bipus]>//g' ${output_file}
 
-sed -i 's/<\/[bip]>//g' ${output_file}
+# Replace <br> with space
+sed -i 's/<br>/\ /g' ${output_file}
 
 sed -i 's/_LITEROTICA_EXPORT\ =\ false/_LITEROTICA_EXPORT\ =\ true/g' ${output_file}
 exit 0

@@ -4,7 +4,7 @@ Manage commands (illocutionary forces, e.g. greet, comma)
 and purposes (perlocutionary forces -- stat-changing effects of Bella's actions/words)
 
 */
-LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_again, cmd_tribute_more, cmd_double_it,cmd_send_item, cmd_repeat_after_me, cmd_haggle_game, cmd_greet, cmd_unlock_item, cmd_do_activity, cmd_noecho
+LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_again, cmd_tribute_more, cmd_double_it,cmd_send_item, cmd_repeat_after_me, cmd_haggle_game, cmd_greet, cmd_unlock_item, cmd_noecho
 
 // Some commands may change stats, but the stat_changing_commands are available too,
 // and are meant to be use as a mixin for other commands to boost/decrease stats in addition to the 
@@ -219,23 +219,23 @@ triggers command_greet("Hello", now(), (BELLA))
 
     { 
     // Force an activity
-    - cmds ? cmd_do_activity:
-        -> M(msg, t, args) ->
+//     - cmds ? cmd_do_activity:
+//         -> M(msg, t, args) ->
 
-        ~ temp fansite_activity = args ^ LIST_ALL(fansite_activities)
-        {fansite_activity != ():
-            ~ force_fansite_activity = true
-            ~ possible_activities = fansite_activity
-{_DEBUG: >>> Forced activity: {fansite_activity}}
-            -> cont -> fansite.do ->
-        }
-        ~ temp grind_activity = args ^ LIST_ALL(_all_activities)
-        {grind_activity != ():
-            ~ force_grind_activity = true
-            ~ possible_activities = grind_activity
-{_DEBUG:>>> Forced activity: {grind_activity}}
-            -> cont -> grind.do ->
-        }
+//         ~ temp fansite_activity = args ^ LIST_ALL(fansite_activities)
+//         {fansite_activity != ():
+//             ~ force_fansite_activity = true
+//             ~ possible_activities = fansite_activity
+// {_DEBUG: >>> Forced activity: {fansite_activity}}
+//             -> cont -> fansite.do ->
+//         }
+//         ~ temp grind_activity = args ^ LIST_ALL(_all_activities)
+//         {grind_activity != ():
+//             ~ force_grind_activity = true
+//             ~ possible_activities = grind_activity
+// {_DEBUG:>>> Forced activity: {grind_activity}}
+//             -> cont -> grind.do ->
+//         }
     - cmds ? cmd_logon:
 
             -> M(msg, t, args) ->

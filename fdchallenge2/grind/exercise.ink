@@ -25,17 +25,17 @@ VAR num_times_actually_did_exercise = 0
     ~ current_activity = exercise
     + + {current_period != night} [Park]
         You head out to the park for some fresh air.
-        ~ grind_location = location_park
+        ~ location = location_park
         ~ num_times_actually_did_exercise++
         
     + + {current_period != night} [Gym]
         You head to the gym.
-        ~ grind_location = location_gym 
+        ~ location = location_gym 
         ~ num_times_actually_did_exercise++
 
     + + [{current_period != night:Change your mind and go home|Shit, is that the time??}]
         You change your mind and go back to your apartment.
-         ~ grind_location = location_home
+         ~ location = location_home
          ~ current_activity = prev_activity
     - -
 -
@@ -65,7 +65,7 @@ VAR num_times_actually_did_exercise = 0
     }
     ~ decstat(addiction)
 - 
-    ~ grind_location = location_home
+    ~ location = location_home
     -> grind.after_activity
 
 ->->
@@ -91,7 +91,7 @@ VAR num_times_actually_did_exercise = 0
     }
     ~ decstat(addiction)
 - 
-    ~ grind_location = location_home
+    ~ location = location_home
     -> grind.after_activity
 
 ->->
@@ -115,7 +115,7 @@ VAR num_times_actually_did_exercise = 0
     ~ incstat(fitness)
     ~ decstat(addiction)
 - 
-    ~ grind_location = location_home
+    ~ location = location_home
     -> grind.after_activity
 
 ->->
@@ -140,7 +140,7 @@ VAR num_times_actually_did_exercise = 0
     ~ decstat(addiction)
 - 
 
-    ~ grind_location = location_home
+    ~ location = location_home
     -> grind.after_activity
 
 ->->
@@ -165,7 +165,7 @@ VAR num_times_actually_did_exercise = 0
     ~ decstat(addiction)
 - 
 
-    ~ grind_location = location_home
+    ~ location = location_home
     -> grind.after_activity
 
 ->->

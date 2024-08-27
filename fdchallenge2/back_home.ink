@@ -4,9 +4,9 @@ VAR timestamp_backhome = 0
 ~ timestamp_backhome = now()
 {_DEBUG:>>> Scatter back home}
 // path branch
-+ {path == sub} -> J(->sub_path) ->
-+ {path == dom} -> J(->dom_path) ->
-+ {path == adventure} -> J(->adventure_path) ->
++ {path == sub} -> sub_path ->
++ {path == dom} -> dom_path ->
++ {path == adventure} -> adventure_path ->
 - 
 {_DEBUG:>>> Gather back_home}
 What you need, you decide, is to forget about her, and start taking care of yourself. You change into your running shorts and shoes, and jog to the supermarket, where you stock up on healthy stuff.
@@ -21,8 +21,15 @@ You go bed without even looking at your phone, and forget all about her.
     ~setstat(hunger, medium)
     ~current_activity = sleep
 ~ _ffh(7)
-    -> grind.morning_alarm
 
+~ grind_return_to = ->here
+
+
+~ grind_days = 7
+-> grind
++ (here) ->
+-
+->->
 
 = sub_path
 You arrive home, and unpack.  You find your phone in the bottom of your travel case. You plug it in.
@@ -83,7 +90,7 @@ The page is asking you for a "pin code" -- wtf is that supposed to mean?
     - -
 -
 -> ffa(minute, 10) ->
--> S("Become My Fan", ->become_my_fan) ->
+-> SCENE(location_laptop, ->become_my_fan) ->
 
 Woah, that gave you a reality check:
 {print_number_c(FAN_CLUB_SIGNON_FEE)} dollars!?
@@ -117,9 +124,25 @@ TODO Make her onboarding message
 -> later(true) ->
 <> your phone alerts you.
 -> ffa(minute, 2) ->
--> wa.m("Good boy", WAM_CONTINUOUS + Addiction) ->
--> wa.m("The pin code to My Fan Site is 78284.", WAM_CONTINUOUS + Addiction) ->
--> wa.m("Logon now, and read my chat message there.", WAM_CONTINUOUS + Addiction) ->
--> wa.m("Respond immediately to it, even if I'm not online.", WAM_READ + Addiction + cmd_do_activity + logon_fansite)
+~ speech_type = speech_type_wa
+-> wa.m("Good boy", WAM_READ + WAM_PAUSE) ->
+You can see she's continuing to type...
+-> M_B("The pin code to My Fan Site is 78284.") ->
+-> M_B("Logon now, and read my chat message there.") ->
+-> cont ->
+You do as she says.  For some reason your fingers are trembling as you type the pin code...
+-> cont ->
+-> ffa(second, 30) ->
 
-// NOTE: Does not tunnel-on!
+~ fansite_return_to = ->here1
+
+// Note, not a tunnel, logout will come back here
+-> fansite
+
++ (here1) ->
+-
+// Bugfix v. 51
+~ fansite_return_to = ->grind.after_activity
+
+->->
+

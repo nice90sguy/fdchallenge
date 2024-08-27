@@ -3,9 +3,9 @@
 // You're back in your room (without her if adventure)
 {_DEBUG:(Paths Split)}
 // path branch
-+ {path == sub} -> J(->sub_path) ->
-+ {path == dom} -> J(->dom_path) ->
-+ {path == adventure} -> J(->adventure_path) ->
++ {path == sub} -> sub_path ->
++ {path == dom} -> dom_path ->
++ {path == adventure} -> adventure_path ->
 - 
 
 ->->
@@ -63,7 +63,7 @@ She stands at the foot of the bed and finally looks at you, with an impatient ex
 Again, without thinking, you do as she says.  Your dick is ready to burst now. What a way to end the week. And she knows your favourite position, without even asking! You're going to be ridden cowgirl by the hottest woman you've ever seen.
 
 -> cont ->
--> S("Hotel Bedroom", ->hotel_room_after_bar_sub_scene) ->
+-> SCENE(location_hotel_room, ->hotel_room_after_bar_sub_scene) ->
 
 ->->
 
@@ -79,6 +79,7 @@ She's also told you the "password" to her site.
 You're pretty obsessed with her already.
 Tunnels on to flight back home, becoming her fan.
 */
+
 You throw off your clothes and climb into bed. Your head's spinning when you lay down, so you sit up.  You feel more drunk than you should do after those three whiskeys.  You really should have ordered some food.  Oh yeah, you did...
 <i>Damn.  that woman... what a devious bitch...
 
@@ -111,19 +112,14 @@ Somehow you make it in time, rushing through the airport without a moment to spa
 You can't stop thinking about what happened last night.  You let her take hundreds of dollars from you, for... {sold_ass: kissing her ass|nothing}.  And you didn't care that she teased you{not sold_ass: and tricked you}.  In fact, you liked it!  No, more than that: You wanted her to take more,  to take everything from you. To take over completely.
 And it wasn't just because she was so fucking gorgeous-looking.  It was something else.  She made you pay, for her meal, for her fancy drinks, and then she made you pay for the pleasure of -- paying her. And now you're craving to pay her more.
 You want to pay her <i>now..
--> J(->slug_airplane_no_phone) ->
+-> slug_airplane_no_phone ->
 Anyway there's no reception up here.  
 Wtf? Were you really intending to transfer money to her?? Maybe by the time you land, you'll be over this crazy feeling.
 Maybe.
 You manage to get a couple of hours sleep, but she's in there in your dreams. There's no escape from her now.    
 
 - adventure:
-    A woman sits in the next seat to you.  She's very nice-looking, with a big smile and great legs, which you notice while untangling your seatbelt from hers.  You end up talking with her. Her name's {msg_name(ANGIE)}. You watch a couple of inflight movies together, laughing at the same places in the movie.  You're obviously suited, with the same sense of humor; and she wants to exchange numbers. 
-    -> J(->slug_airplane_no_phone) -> 
-    You get her to write down her number in your notepad, old-school.
-    ~ events += met_angie_on_plane
-    // {hint()} Don't lose that number!
-    // -> cont ->
+-> Angie.plane_meeting ->
     Before you know it, you've landed.  You've even forgotten all about that woman you met last night.  Until now, when you realise that subconsciously, you've never stopped thinking about her since you first set eyes on her. Who the fuck was she?  And what was her name? You gotta find out as soon as you get home.
 - dom:
     TODO airplane dom

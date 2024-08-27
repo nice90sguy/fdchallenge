@@ -39,20 +39,6 @@ VAR last_displayed_year = 0
 -> END
 
 
-== ldtp(location)
-{location:Location: <b>{location}}</b><br><>
--> dtp ->->
-
-== S(location, ->scene)
-{_DEBUG:<i><>}
-{_DEBUG:{scene}}
-{location:Location: <b>{location}}</b><br><>
--> dtp ->scene -> cont ->->
-
-== J(->scene)
-{_DEBUG:<i {_DEBUG:>>>> <>}}
-{_DEBUG:{scene}}
-->scene->->
 
 
 == function pod_img

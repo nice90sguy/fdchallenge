@@ -2,7 +2,6 @@
 
 LIST fansite_activities = fsa_add_credits, fsa_chat, fsa_shop, fsa_video_session, fsa_tribute, fsa_logout
 
-VAR force_fansite_activity = false
 
 // This hack is so that "logout" can be called from anywhere.
 // The way the activity builder is designed, it makes it hard to use redirects as tunnel params, because they need to get propagated
@@ -57,52 +56,18 @@ Time: {l0(tm_hour)}:{l0(tm_min)} <> ->bella_status->
 ~ possible_activities += fsa_chat
 }
  + + (do) ->
-{_DEBUG: >>> forced_activity = {force_fansite_activity}}
-    { possible_activities ? fsa_chat:
 
-        {force_fansite_activity:
-            -> fansite_chat.do
-        -else:
-            <- fansite_chat.opt
-        }
-    }
-    { possible_activities ? fsa_add_credits:
-        {force_fansite_activity:
-            -> fansite_add_credits.do
-        -else:
-            <- fansite_add_credits.opt
-        }
-    }
-    { possible_activities ? fsa_tribute:
-        {force_fansite_activity:
-            -> fansite_tribute.do
-        -else:
-            <- fansite_tribute.opt
-        }
-    }
-    { possible_activities ? fsa_shop:
-        {force_fansite_activity:
-            -> fansite_shop.do
-        -else:
-            <- fansite_shop.opt
-        }
-    }
-    { possible_activities ? fsa_logout:
-        {force_fansite_activity:
-            -> fansite_logout.do
-        -else:
-            <- fansite_logout.opt
-        }
-    }
+    {possible_activities ? fsa_chat:<- fansite_chat.opt}
+    {possible_activities ? fsa_add_credits:<- fansite_add_credits.opt}
+    {possible_activities ? fsa_tribute:<- fansite_tribute.opt}
+    {possible_activities ? fsa_shop:<- fansite_shop.opt}
+    {possible_activities ? fsa_logout:<- fansite_logout.opt}
+    
 
  - -
 -
 + (after_activity) ->
-    {not force_fansite_activity:
         -> cont ->
-    }
-    // force activity is one-shot
-    ~ force_fansite_activity = false
    -> fansite
 -
 
@@ -140,7 +105,6 @@ VAR bella_online_now = false
         {warn()} You can't end your first session of the day without tipping her first!
         -> fansite.after_activity
     }
-    ~ force_fansite_activity = false
     
     -> fansite_return_to
     

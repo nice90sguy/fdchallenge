@@ -1,4 +1,4 @@
-=== grind_fansite
+=== grind_logon_fansite
 = opt
 {path==adventure:
 You know it's a bad idea, but maybe you could {bella_online():have a "chat" with {BELLA_NAME}, she's probably|see if {BELLA_NAME} might be} online right now... 

@@ -32,7 +32,7 @@ LIST fsa_chat_activities = fsa_chat_greet
         ~ chat_offline_messages = ""
     }
     // First convo if first time chatting
-    {do == 1 and fansite_return_to == ->grind.after_activity:-> adventure_initial_convo -> fansite.after_activity}
+    {do == 1:-> adventure_initial_convo -> fansite.after_activity}
     // Check the last_args for any command
 
     {chat_last_args != ():
@@ -152,7 +152,7 @@ You sit back, wondering even more than ever who she is, and leave the chat, to e
     -3:
         -> intent.respond("{I'm worthless|No escape|I'm your ATM|I'm your paypig|oink}", now(), cmd_repeat_after_me + Confidence) ->
         -> intent.respond("{Spoil.|Send|spoil me|spoil your Goddess|pay.}", now(), Confidence) ->
-        -> fansite_credits.pay(100-sv(confidence), tx_result) ->
+        -> fansite_credits.pay(100-sqi(confidence), tx_result) ->
         -> ffa(minute,2) ->
     -4:
         -> M_B("Take off your pants,and get on your knees.") ->

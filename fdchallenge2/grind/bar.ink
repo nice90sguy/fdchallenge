@@ -10,28 +10,29 @@ Maybe go out for a drink...
     + + + [Call Al and see if he wants to meet up]
         "Sure," he says.
         ~ people_in_bar += al
-    + + + {events ? met_angie_in_bar} [Call Angie]
-        {angie_affection:
-            - (): >>> Should not be able to meet up with Angie if unknown affection
-            - hate:
+    + + + {Angie.first_bar_meeting} [Call Angie]
+        {sq(angie_relationship):
+            - min:
                 You try to call her, but can't get through.
-            - dislike:
+            - low:
                 TODO try to make Angie like you
-                She doesn't answer, and you leeave an apologetic message for your behaviour last time.
-                ~ angie_affection++
-            - like:
+                She doesn't answer, and you leave an apologetic message for your behaviour last time.
+                ~ incstat(angie_relationship)
+            - medium:
                 She answers, and you agree to meet up.
                  ~ people_in_bar += angie
-            - love:
+            - high:
                 She answer immediately, and sounds really excited to meet up!
                  ~ people_in_bar += angie
+            - max:
+                -> Angie.yandere -> grind.after_activity
                 
         }
     + + + [Just go out on your own]
     - - -
-    // put her in the bar so you can meet her
-    {(events ? met_angie_on_plane) and not (events ? met_angie_in_bar): 
+    // Met her on plane but haven't seen her in bar yet? put her in the bar so you can meet her there
+    {Angie.plane_meeting and not Angie.first_bar_meeting: 
         ~ people_in_bar += angie
     }
-    ~ grind_location = location_bar
+    ~ location = location_bar
     -> bar

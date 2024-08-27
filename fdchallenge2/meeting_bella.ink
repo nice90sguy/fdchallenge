@@ -34,16 +34,16 @@ CONST HOTEL_NAME = "Hotel Royale, Manhattan NY"
 
 // Scenes in this chapter
 
--> S("A Hotel Bedroom, Manhattan, NY", ->hotel_room) ->
--> S("Hotel Bar, Manhattan, NY", ->hotel_bar) ->
--> S("Your Hotel Room", ->hotel_room_after_bar) ->
+-> SCENE(location_hotel_room, ->hotel_room) ->
+-> SCENE(location_hotel_bar, ->hotel_bar) ->
+-> SCENE(location_hotel_room, ->hotel_room_after_bar) ->
 {_DEBUG:(Paths Join)}
 -> eod ->
 -> ffa(hour, 8) ->
 -> ffa(minute, 2) ->
--> S("Hotel Bedroom, Manhattan, NY", ->hotel_room_after_bar.next_morning)->
+-> SCENE(location_hotel_room, ->hotel_room_after_bar.next_morning)->
 -> ffa(hour, 3) ->
--> S("Airplane, Somewhere over the Atlantic", ->hotel_room_after_bar.airplane)->
+-> SCENE(location_hotel_room, ->hotel_room_after_bar.airplane)->
 ->->
 // ----------------------------------------------------------------------------------
 // SCENE:
@@ -120,9 +120,9 @@ You're leaning towards...
 
 {_DEBUG:(Paths Split)}
 {path:
- - sub: -> J(->sub_path) ->
- - dom: -> J(->dom_path) ->
- - adventure: -> J(->adventure_path) ->
+ - sub: -> sub_path ->
+ - dom: -> dom_path ->
+ - adventure: -> adventure_path ->
 }
 
 {_DEBUG: >>> Gather}
@@ -141,9 +141,9 @@ You're leaning towards...
 You turn to see who's distracting his attention:
 -> cont ->
 She's stunning; <>
--> J(-> slug_first_sight) ->
+-> slug_first_sight ->
 -> ffa(minute, 20) ->
--> J(-> slug_first_talk) ->  
+-> slug_first_talk ->  
 -> ffa(minute, 20) ->
 She stops suddenly and resumes checking her phone, like she’s bored of teasing you.  You were probably too easy for her, you think.
 
@@ -232,8 +232,8 @@ Why the fuck are you a "good boy" for having WhatsApp on your phone?  Is she par
 
 
 {_DEBUG:(Paths Split)}
-+ {unread_message_count} -> J(->ignored_first_message) ->
-+ {unread_message_count == 0} -> J(->didnt_ignore_first_message) ->
++ {unread_message_count} -> ignored_first_message ->
++ {unread_message_count == 0} -> didnt_ignore_first_message ->
 
 
 // Gather
@@ -282,16 +282,16 @@ She immediately sends you another one:
 You ask the barman, trying to sound like you know something about food, “How are the oysters today?”
 
 “Get them. This is the best place for oysters in the city,” says a woman’s voice. You turn around, and then you see her: 
--> J(-> slug_first_sight) ->
+-> slug_first_sight ->
 "That's why I usually come here," she says.
 You're so stunned at the sight of her, you're not paying attention to what she's saying.
 "For the oysters," she explains, seeing your dumb look.
--> J(-> slug_first_talk) ->  
+-> slug_first_talk ->  
 -> ffa(minute, 22) ->
--> J(-> slug_qr_code) -> 
+-> slug_qr_code -> 
 -> ffa(minute, 30) ->
 -> laterp(true) ->
--> J(->slug_oysters) ->
+-> slug_oysters ->
 -> ffa(minute, 40) ->
 ->->
 
@@ -307,16 +307,16 @@ You're feeling slightly lonely there all by yourself at the bar.  Here you are, 
 A woman walks in, and instantly catches your attention.  She's fucking awesome looking!
 
 
--> J(-> slug_first_sight) ->
+-> slug_first_sight ->
 -> ffa(minute, 20) ->
--> J(-> slug_first_talk) ->
+-> slug_first_talk ->
 -> ffa(minute, 20) ->
--> J(-> slug_qr_code) -> 
+-> slug_qr_code -> 
 -> ffa(minute, 20) ->
 "Unless you've got what it takes to get me into the sack."
 -> cont ->
-You're not sure you heard right.  You look at her, and she <i>smirking</i>.  You hate that word, but no other word describes that sly smile of hers so well.
-You dick uncurls rapidly, and you peg her quickly:  She's a hooker.  High-class maybe, but definitely a hooker.
+You're not sure you heard right.  You look at her, and she's <i>smirking</i>.  You hate that word, but no other word describes that sly smile of hers so well.
+Your dick uncurls rapidly, and you peg her quickly:  She's a hooker.  High-class maybe, but definitely a hooker.
 You want to ask her immediately how much she charges,  but you're enjoying the flirting too much, so, with the word "smirk" still in your head, you say to her, putting on a fake scowl of diapproval,
 
 "Hey, This is a "No Smirking" bar, lady".
@@ -348,7 +348,7 @@ Suddenly you have an idea:
 
 "Okay, let's get another bottle. Buy maybe you should order it, I can't even pronounce it!"
 
-Either she doesn't find that amusing, or she took you seriously, and thinks you're uneducated.  Maybe  
+Either she doesn't find that amusing, or she took you seriously, and thinks you're uneducated.  
 
 She makes another tiny gesture with her finger, and the barman appears like a genie again, in front of her.  She orders a bottle of some other fancy-sounding stuff, and starts tapping on her phone.  She doesn't want to talk.  Or more accurately, let's face it, she doesn't want to talk to <i>you</i>. 
 
@@ -427,7 +427,7 @@ She doesn't even turn around.
 The barman is looking at you.  You fumble for your credit card.  Then you change your mind, and unfold the bill.
 
 
-"I think there's a mistake here," you say, to the barman trying to keep calm.
+"I think there's a mistake here," you say to the barman, trying to keep calm.
 
 
 ~ bar_bill += 1 * LIST_VALUE(bouillabaise)
@@ -437,7 +437,7 @@ The barman is looking at you.  You fumble for your credit card.  Then you change
 ~ bar_bill += 2 * LIST_VALUE(jack_daniels)
 ~ bar_bill = INT(bar_bill * 1.15)
 
-He looks at the check and says, "No, that's right, two JDs, one Bouillabaise, one Oysters, one Shellfish Platter, Two Armand de Brignac Blanc de Noirs. Plus fifteen percent cover charge. {print_number_c(bar_bill)} dollars."
+He looks at the check and says, "No, that's right, two JDs, one Bouillabaise, one Oyster, one Shellfish Platter, Two Armand de Brignac Blanc de Noirs. Plus fifteen percent cover charge. {print_number_c(bar_bill)} dollars."
 
 "You're sure that's right? {print_number_c(LIST_VALUE(ace_of_spades))} bucks? for a fucking <i>bottle of fizzy wine</i>?
 

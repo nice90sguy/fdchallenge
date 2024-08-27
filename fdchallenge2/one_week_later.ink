@@ -3,14 +3,14 @@
 // Create an offline message for you to read iff adventure path
 -> M_chat("One week later", now(), BELLA) ->
 
-~ grind_location = location_park
+~ location = location_park
 
 // ~ set_timer_cb(FAR_FUTURE-epoch_time,->grind_messages.taunt)
 ~ff(day,1)
 ~ff(hour,10)
 ~ff(minute, 12)
 ~ set_interval_cb(3600,->on_the_hour)
--> ldtp(grind_location_desc()) ->
+-> ldtp() ->
 <i>One week has passed since you got back from your week in New York...
 
 You're sitting on a bench in your local park, after a half-hour run.  You took your phone with you this time, although you usually leave it at home.  That was a little.. Weird.
@@ -26,6 +26,7 @@ You pick up your phone and look for messages from her.  None.  Maybe you should 
     ~ SHOW_STATS = true
    + [No]
     Ok, your stat changes will remain hidden.
+    ~ SHOW_STATS = true
    -
 
 <i>She's really got to you.  It's not really her, its you, you realize: It's your addictive personality,  which she's tapped into.  
