@@ -41,6 +41,10 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
             You've just started changing out of your swimming gear when your phone dings:
         - current_activity == jerk_off:
             She must have hidden cameras!  At the worst possible time, your phone distracts you:
+        - with_angie:
+            Your phone dings. Angie looks at you quizzically.  You glance at it, then put the phone away quickly.
+            "Who was that?" She asks, smiling.
+            "Just work."
         }
     
     }

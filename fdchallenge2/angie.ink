@@ -1,4 +1,4 @@
-
+VAR with_angie = false
 
 === Angie
 
@@ -23,25 +23,29 @@ Now that you're confident that she's not a random stranger, you
 + shut the lid of her laptop
 - 
 <> and say, "Hi, {msg_name(ANGIE)}."
-
-    You have a nice time with her.
-    ~ setstat(angie_relationship, medium)
->>> {angie_relationship}
- >>> {DispStat(angie_relationship)}
+~ with_angie = true
+You have a nice time with her.
+~ setstat(angie_relationship, medium)
+{_DEBUG:>>> {angie_relationship}}
+{_DEBUG: >>> {DispStat(angie_relationship)}}
     ~deltastat(confidence, 3)
     ~deltastat(addiction, -3) 
     ~deltastat(obedience, -3) 
     -> ffa(hour, 2) ->
-- else:
-    TODO angie  subsequent meetings, might change below stats
-    // subsequent meetings
-    ~ incstat(angie_relationship)
-    You hang out with {msg_name(ANGIE)}.
-    >>> {DispStat(angie_relationship)}
-    ~incstat(confidence)
-    ~decstat(addiction)    
-    -> ffa(hour, 2) ->
+~ with_angie = false
+->->
 
+= subsequent_bar_meeting
+~ with_angie = true
+TODO angie  subsequent meetings, might change below stats
+// subsequent meetings
+~ incstat(angie_relationship)
+You hang out with {msg_name(ANGIE)}.
+{_DEBUG: >>> {DispStat(angie_relationship)}}
+~incstat(confidence)
+~decstat(addiction)    
+-> ffa(hour, 2) ->
+~ with_angie = false
 
 
 ->->

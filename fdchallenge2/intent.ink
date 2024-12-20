@@ -118,8 +118,8 @@ VAR obeyed_cmd = false
         ~ incstat(addiction)
         ~ incstat(lust)
         ~ previous_tribute = tribute_amount
-    + {sq(obedience) <= medium}[Ignore]
-        You ignore her demand.
+    + {sq(obedience) <= medium}[Resist]
+        You resist.
         ~ decstat(confidence)
 
     -

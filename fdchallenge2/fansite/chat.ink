@@ -53,8 +53,11 @@ LIST fsa_chat_activities = fsa_chat_greet
             You know how you're meant to "greet" her:
 
 -> cont ->
-     -> intent.respond("{~Send.|Tip Me|}", now(), cmd_tribute + Confidence + num2list(sqi(addiction))) ->
+     -> intent.command_tribute("{~Send.|Tip Me|}", now(), cmd_tribute +  Confidence + num2list(sqi(addiction))) ->
        {bella_online():
+            -> M_B("{~Hello.|Hi|Hi loser.|}") ->
+            -> M_B("Tip me.") ->
+            
             -> taunt ->
         }
 
@@ -71,6 +74,8 @@ LIST fsa_chat_activities = fsa_chat_greet
 ~ set_bella_online(false) // Should already be false
 -> p1("Respond") ->
 -> intent.respond(chat_last_msg, chat_last_t, chat_last_args) ->
+~ chat_last_args = ()
+
 
 You notice she's offline now, so you sit back and wait. You re-read what she typed, and think to yourself, "Maybe I should say hi or something."  Or maybe be a little more polite.  You type:
 -> M_Y("Hello") ->

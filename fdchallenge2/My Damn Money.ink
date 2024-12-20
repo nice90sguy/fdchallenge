@@ -73,7 +73,7 @@ VAR _LITEROTICA_EXPORT = true
 // FOO
 
 // -> END
-(Version 0.052)
+(Version 0.053)
 -> main
 
 == main

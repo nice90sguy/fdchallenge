@@ -43,7 +43,7 @@ CONST HOTEL_NAME = "Hotel Royale, Manhattan NY"
 -> ffa(minute, 2) ->
 -> SCENE(location_hotel_room, ->hotel_room_after_bar.next_morning)->
 -> ffa(hour, 3) ->
--> SCENE(location_hotel_room, ->hotel_room_after_bar.airplane)->
+-> SCENE(location_airplane, ->hotel_room_after_bar.airplane)->
 ->->
 // ----------------------------------------------------------------------------------
 // SCENE:
