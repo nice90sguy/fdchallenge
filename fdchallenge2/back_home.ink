@@ -29,7 +29,7 @@ You go bed without even looking at your phone, and forget all about her.
 -> grind
 + (here) ->
 -
-->->
+-> one_week_later
 
 = sub_path
 You arrive home, and unpack.  You find your phone in the bottom of your travel case. You plug it in.
@@ -96,20 +96,20 @@ Woah, that gave you a reality check:
 {print_number_c(FAN_CLUB_SIGNON_FEE)} dollars!?
 
 You shut the laptop and stand up.  Your post-orgasm bliss fades, and you start to recover your senses.  You're conflicted as to what to do:
-{devil_happy()}Just stop fighting the truth about who you are, you know {BELLA_NAME}'s right.  Do what she says; become her "super-fan".
+-> p1e("{devil_happy()}Just stop fighting the truth about who you are, you know {BELLA_NAME}'s right.  Do what she says; become her \"super-fan\".") ->
 
-{angel()} But she's so obviously trying to scam you!
+-> p1e("{angel()} But she's so obviously trying to scam you!") ->
 
-{devil_happy()}So what? You know what will happen to you if ignore her, don't you?
-{devil_happy()} Precisely zip.  You'll just go on with your stupid, meaningless life. 
-And you'll never see her again.
+-> p1e("{devil_happy()}So what? You know what will happen to you if ignore her, don't you?") ->
+-> p1e("{devil_happy()} Precisely zip.  You'll just go on with your stupid, meaningless life.") ->
+-> p1e("And you'll never see her again.") ->
 
 + [Do it {devil_happy()}]
- {bella()} As if you had a choice {_emo("(laugh)")} ...
+ -> p1e("{bella()} As if you had a choice {_emo("(laugh)")} ...") ->
  ~incstat(addiction)
  ~incstat(obedience)
-+ [.......... {angel()}]
-    {bella()} You don't have a choice. {_emo("(laugh)")} That's right, it's not up to you, I've decided for you.
++ [Escape while you still have a chance {angel()}]
+    -> p1e("{bella()} Too late. {_emo("(laugh)")} That's right, you never had a choice.") ->
 -
 
 -> ffa(minute,5) ->
@@ -137,6 +137,7 @@ You do as she says.  For some reason your fingers are trembling as you type the 
 ~ fansite_return_to = ->here1
 
 // Note, not a tunnel, logout will come back here
+~ unlocked_fansite = true
 -> fansite
 
 + (here1) ->

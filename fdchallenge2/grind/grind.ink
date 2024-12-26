@@ -114,7 +114,12 @@ VAR grind_return_to = ->error
 
 VAR prev_interval = FAR_FUTURE
 = on_the_hour
-{analog_clk()}
+{num_dick_pics_to_send > 0:
+    -> grind_messages.dick_pic_challenge ->
+
+ - else: 
+    {analog_clk()}
+}
 {prev_interval == FAR_FUTURE:
 ~ prev_interval = epoch_time - _interval
 }
@@ -212,6 +217,7 @@ Final stat ({path} path):
 -> stats.display ->
 ~ SHOW_STATS = current_show_stats
 {_DEBUG:>>> RETURN FROM GRIND {grind_return_to}}
+
 ->grind_return_to
 
 = build_opts
@@ -381,9 +387,12 @@ Final stat ({path} path):
     ~ possible_activities += introspect
     // Can't work if confidence is min
     {possible_activities ^ (work, full_days_work) != ():
-            Actually, you just don't even have the motivation to work today...
-            ~ possible_activities -= work
-            ~ possible_activities -= full_days_work
+            // Allow work 
+            {not (available_employers ? bella_org):
+                Actually, you just don't even have the motivation to work today...
+                ~ possible_activities -= work
+                ~ possible_activities -= full_days_work
+            }
     }
 }
 

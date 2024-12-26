@@ -49,15 +49,12 @@ LIST fsa_chat_activities = fsa_chat_greet
         -> ff2h(1) -> do ->
     + + + [Leave Chat]
     + + + [Say Hello]
-            -> M_Y("hello") ->
-            You know how you're meant to "greet" her:
+            -> M_Y("{Hello.|Hello|hello {BELLA_NAME}|Hi {BELLA_NAME}|Hi|hi|Hello godddess|hi goddess|goddess}") ->
 
--> cont ->
-     -> intent.command_tribute("{~Send.|Tip Me|}", now(), cmd_tribute +  Confidence + num2list(sqi(addiction))) ->
        {bella_online():
-            -> M_B("{~Hello.|Hi|Hi loser.|}") ->
-            -> M_B("Tip me.") ->
-            
+            -> M_B("{~Hello.|Hi|Hi loser.|hi}") ->
+            -> M_B("{~Send.|Tip Me|tribute|pay me, slave|greet me properly}") ->
+     -> intent.command_tribute("{~Send.|Tip Me|}", now(), cmd_tribute +  Confidence + num2list(sqi(addiction))) ->            
             -> taunt ->
         }
 
@@ -143,12 +140,20 @@ You sit back, wondering even more than ever who she is, and leave the chat, to e
 -> ffa(second, 30) ->
 ->->
 
-
+VAR enough_credits = true
 = taunt
+{credits < 100:
+    -> M_B("{enough_credits: add credits now|i told u to add credits}") ->
+    ~ enough_credits = false
+    {warn()} Bella kicks you out of the chat.
+    -> fansite.after_activity
+
+}
+~ enough_credits = true
 ~ temp tx_result = FS_TX_FAIL
 ~ temp choice = RANDOM(1,10)
-
 {choice:
+
     -1:
         -> intent.respond("{Jerk and goon 🤤|UNLOCK IT||Go on.|Unlock|Stroke|Open it}", now(), cmd_send_item+LIST_RANDOM(available_items)) ->
         -> ffa(minute, 15) ->
@@ -156,8 +161,7 @@ You sit back, wondering even more than ever who she is, and leave the chat, to e
         -> intent.respond("{I will obey {BELLA_NAME}|I love you|I'm your slave|You own me|I belong to {BELLA_NAME}}", now(), cmd_repeat_after_me + Submissiveness) ->
     -3:
         -> intent.respond("{I'm worthless|No escape|I'm your ATM|I'm your paypig|oink}", now(), cmd_repeat_after_me + Confidence) ->
-        -> intent.respond("{Spoil.|Send|spoil me|spoil your Goddess|pay.}", now(), Confidence) ->
-        -> fansite_credits.pay(100-sqi(confidence), tx_result) ->
+        -> intent.respond("{Fifty. Now.|Spoil.|Send|spoil me|spoil your Goddess|pay.}", now(), Confidence + cmd_tribute + num2list(50)) ->
         -> ffa(minute,2) ->
     -4:
         -> M_B("Take off your pants,and get on your knees.") ->
@@ -173,26 +177,53 @@ You sit back, wondering even more than ever who she is, and leave the chat, to e
         ->p1e("You feel you're about to cum") ->
         -> ffa(minute, 5) ->
         <><i>, but just as you're about to, she types:
-        ~ temp ad_hoc_tribute = 20 * sqi(addiction)
+        ~ temp ad_hoc_tribute = 10 * sqi(addiction)
 
         -> M_B("Pay your cum tax, if you want to cum. {ad_hoc_tribute} credits.") ->
         You take your hand off your dick and type furiously on the keyboard, rushing to do as you're told:
         -> fansite_credits.pay(ad_hoc_tribute, tx_result) ->
         {tx_result ? FS_TX_SUCCESS:
-            You cum.
+            -> p1e("You cum.") ->
             ~ incstat(addiction)
             ~ decstat(lust)
             -> M("Thank me.", now(), WAM_PAUSE) ->
             -> M_Y("thank you...") ->
         - else:
-            You don't cum.
+             -> p1e("You don't cum.") ->
+            ~ deltastat(lust, 5)
         }
 
     -5:
         -> lines_game -> ffa(minute, 5) ->
+    -6: 
+        ~ temp reserve6 = 1000
+        ~ temp starting_bid6 = 50
+        ~ speech_type = speech_type_chat
+        -> M_B("{How much would you pay to kiss my ass?|How much is my attention worth to you?}") ->
+        -> haggle("{my ass|my attention}", reserve6, starting_bid6) ->
+    -7: 
+        -> M_B("I've doubled the price per message for chatting with me. 💵") ->
+        ~ cost_per_message = 2 * cost_per_message
+    -8: 
+        // Exposure
+        -> M_B("{send me a photo of your girlfriend|tell me your mother's phone number|give me your boss's email address|upload a scan of your passport|send a baby picture of you|tell me your parents name and address|list the names of every girl you've slept with.|Stand up and shout \"Bella knows all my personal details\"}") ->
+        -> intent.allow_disobey_below_obedience_threshold(medium) ->
+    -9:
+        // Silent
+        ->M_B("{~Put your hands on your head and remain like that until I tell you to stop|Get on yr knees and stay like that|get naked and stand up, and don't move until i tell you}") ->
+        -> ffa(minute, 5) -> laterp(true) ->
+        -> ffa(minute, 5) -> laterp(true) ->
+        -> ffa(minute, 5) -> laterp(true) ->
+        -> ffa(minute, 5) -> laterp(true) ->
+        -> ffa(minute, 5) -> laterp(true) ->
+        -> ffa(minute, 5) -> laterp(true) ->
+        -> ffa(minute, 15) -> laterp(true) ->
+        -> ffa(minute, 15) -> laterp(true) ->
+        -> ffa(hour, 1) -> laterp(true) ->
+        
 
     -10:
-
+    {bella_online(): ->M_B("im bored with you. Bye 😘") ->}
         ->->
 
 
@@ -202,14 +233,16 @@ You sit back, wondering even more than ever who she is, and leave the chat, to e
 -> taunt
 
 = lines_game
-        ~ temp right = 0
+~ temp right = 0
 
-~ temp phrase1 = "I must always obey You immediately and without question. My money belongs to you, {BELLA_NAME}, please take it all"
-~ temp phrase2 = "I must always obey you immediately and without question. My money belongs to You {BELLA_NAME}, please take it all"
-~ temp phrase3 = "I must always obey You immediately, and without question. My money belongs to You {BELLA_NAME}, please take it all"
-~ temp phrase4 = "I must always obey you immediately and without question. My money belongs to you {BELLA_NAME}, please take it all."
-~ temp phrase5 = "I must always obey immediately, and without question. My money belongs to you {BELLA_NAME}, please take it all"
-~ temp phrase6 = "I must always obey You immediately and without question. My money belongs to you {BELLA_NAME}, please take it all"
+~ temp phrase1 = "I must always obey You immediately and without question. My money belongs to you, {BELLA_NAME}, please take it all."
+~ temp phrase2 = "I must always obey You immediately and without question. My money belongs to you {BELLA_NAME}, please take it all"
+~ temp phrase3 = "I must always obey You immediately, and without question. My money belongs to you {BELLA_NAME}. please take it all"
+~ temp phrase4 = "I must always obey You immediately and without question. My money belongs to you, {BELLA_NAME}. please take it all."
+~ temp phrase5 = "I must always obey You immediately, and without question. My money belongs to you {BELLA_NAME}, please, take it all"
+~ temp phrase6 = "I must always obey You immediately and without question. My money belongs to you {BELLA_NAME} please, take it all"
+
+
 ~ temp phrase = ""
 {RANDOM(1,6):
 -1:
@@ -227,9 +260,10 @@ You sit back, wondering even more than ever who she is, and leave the chat, to e
 }
 {bella_chat()} Type "{phrase}".
 
-{bella_chat()} Copy it exactly, five times!
+{bella_chat()} Copy it exactly!
 -> cont ->
-{bella_chat()} If you make a mistake, you have to start again {devil_happy()}
+{bella_chat()} If you make a mistake, give me all yr credits {devil_happy()}
+
 
 +\ [{phrase1}]
 -> M_Y(phrase1) ->
@@ -263,164 +297,18 @@ You sit back, wondering even more than ever who she is, and leave the chat, to e
     }
 -
 
-+\ [{phrase6}]
--> M_Y(phrase6) ->
-    {phrase6==phrase:
-        ~ right++
-    }
-
-+\ [{phrase3}]
--> M_Y(phrase3) ->
-    {phrase3==phrase:
-        ~ right++
-    }
-+\ [{phrase2}]
--> M_Y(phrase2) ->
-    {phrase2==phrase:
-        ~ right++
-    }
-
-+\ [{phrase5}]
--> M_Y(phrase5) ->
-    {phrase5==phrase:
-        ~ right++
-    }
-+\ [{phrase1}]
--> M_Y(phrase1) ->
-    {phrase1==phrase:
-        ~ right++
-    }
-
-
-+\ [{phrase4}]
--> M_Y(phrase4) ->
-    {phrase4==phrase:
-        ~ right++
-    }
--
-
-
-+\ [{phrase4}]
--> M_Y(phrase4) ->
-    {phrase4==phrase:
-        ~ right++
-    }
-+\ [{phrase6}]
--> M_Y(phrase6) ->
-    {phrase6==phrase:
-        ~ right++
-    }
-
-+\ [{phrase3}]
--> M_Y(phrase3) ->
-    {phrase3==phrase:
-        ~ right++
-    }
-+\ [{phrase2}]
--> M_Y(phrase2) ->
-    {phrase2==phrase:
-        ~ right++
-    }
-
-+\ [{phrase5}]
--> M_Y(phrase5) ->
-    {phrase5==phrase:
-        ~ right++
-    }
-
-+\ [{phrase1}]
--> M_Y(phrase1) ->
-    {phrase1==phrase:
-        ~ right++
-    }
-
--
-
-
-+\ [{phrase2}]
--> M_Y(phrase2) ->
-    {phrase2==phrase:
-        ~ right++
-    }
-+\ [{phrase5}]
--> M_Y(phrase5) ->
-    {phrase5==phrase:
-        ~ right++
-    }
-+\ [{phrase6}]
--> M_Y(phrase6) ->
-    {phrase6==phrase:
-        ~ right++
-    }
-
-+\ [{phrase3}]
--> M_Y(phrase3) ->
-    {phrase3==phrase:
-        ~ right++
-    }
-
-+\ [{phrase4}]
--> M_Y(phrase4) ->
-    {phrase4==phrase:
-        ~ right++
-    }
-
-
-+\ [{phrase1}]
--> M_Y(phrase1) ->
-    {phrase1==phrase:
-        ~ right++
-    }
-
--
-
-+\ [{phrase6}]
--> M_Y(phrase6) ->
-    {phrase6==phrase:
-        ~ right++
-    }
-
-+\ [{phrase4}]
--> M_Y(phrase4) ->
-    {phrase4==phrase:
-        ~ right++
-    }
-
-+\ [{phrase2}]
--> M_Y(phrase2) ->
-    {phrase2==phrase:
-        ~ right++
-    }
-
-+\ [{phrase3}]
--> M_Y(phrase3) ->
-    {phrase3==phrase:
-        ~ right++
-    }
-
-+\ [{phrase5}]
--> M_Y(phrase5) ->
-    {phrase5==phrase:
-        ~ right++
-    }
-
-
-+\ [{phrase1}]
--> M_Y(phrase1) ->
-    {phrase1==phrase:
-        ~ right++
-    }
-
--
 
 ~ incstat(obedience)
 
 -> cont ->
-{right < 5:
+{right < 1:
     ~ decstat(confidence)
 
-    {bella_chat()} {~lol|} you made a mistake. Start again. {😆|} 
-    -> lines_game
+    {bella_chat()} {~lol|} you made a mistake. {😆|} 
+    -> cont ->
+    ~ credits = 0
+
+
 }
 
 ->->

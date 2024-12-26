@@ -109,7 +109,6 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, YOU, AL
         {from == YOU:
             ~ temp tx_result = ()
             -> fansite_credits.pay(cost_per_message, tx_result) ->
-            {tx_result == FS_TX_FAIL: -> fansite.after_activity}
         }
         
         {formatted_msg}

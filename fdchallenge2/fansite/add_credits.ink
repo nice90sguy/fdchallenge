@@ -45,6 +45,7 @@ LIST fs_tx_status = FS_TX_SUCCESS, FS_TX_FAIL
     {warn()} You don't have enough credits to do that right now.
     ~decstat(confidence)
     ~ result = FS_TX_FAIL
+    {current_activity ? fsa_chat: {warn()} {bella_online(): Bella has kicked you out the chat!|You're kicked out of the chat.} -> fansite.after_activity}
 - else: 
     ~ credits -= price
     ~  result = FS_TX_SUCCESS

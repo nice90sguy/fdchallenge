@@ -19,15 +19,15 @@ You're definitily not right - you tap your forehead - <i>up there.
 
 You pick up your phone and look for messages from her.  None.  Maybe you should log on and see if she's left any messages on her chat page...
 
-{hint()} From this point in the game, you can choose to display your stat changes every time they occur, which will give you insight into the result of your choices.
-<><br>Do you want to do that now?
-   + [Yes]
-    Ok, you'll see stat changes from now on.
-    ~ SHOW_STATS = true
-   + [No]
-    Ok, your stat changes will remain hidden.
-    ~ SHOW_STATS = true
-   -
+// {hint()} From this point in the game, you can choose to display your stat changes every time they occur, which will give you insight into the result of your choices.
+// <><br>Do you want to do that now?
+//   + [Yes]
+//     Ok, you'll see stat changes from now on.
+//     ~ SHOW_STATS = true
+//   + [No]
+//     Ok, your stat changes will remain hidden.
+//     ~ SHOW_STATS = true
+//   -
 
 <i>She's really got to you.  It's not really her, its you, you realize: It's your addictive personality,  which she's tapped into.  
 <i>Of course she's unbelievably sexy, and few guys could resist the continual barrage of seduction she's been bombarding you with. And that's how she got to you, of course; but its more than that; she instantly found your weak spot, almost as soon as she met you in the hotel bar; you get turned on every time you send her money. She's <i>sexualized</i> the act of paying her. 

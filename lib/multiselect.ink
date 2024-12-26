@@ -5,16 +5,24 @@ LIST colors = (red), (blue), (green)
 -> multiselect(colors, favourite_colors, 1, 1) ->
 Your favorite color is {favourite_colors}, eh? Interesting...
 */
-
+=== function null_lookup_fn(item)
+    ~ return item
 === select(_l, ref _s, _item_name)
- -> multiselect_opts(_l, _s, 1, 1, _item_name, "")->
+ -> multiselect_opts(_l, _s, 1, 1, _item_name, "", ->null_lookup_fn)->
+ ->->
+ 
+ === select_with_lookup(_l, ref _s, _item_name, ->lookup_fn)
+ -> multiselect_opts(_l, _s, 1, 1, _item_name, "", lookup_fn)->
  ->->
  
  === multiselect(_l, ref _s, _limit_min, _limit_max, _item_name)
- -> multiselect_opts(_l, _s, _limit_min, _limit_max, _item_name, "D")->
+ -> multiselect_opts(_l, _s, _limit_min, _limit_max, _item_name, "D", ->null_lookup_fn)->
  ->->
  
-=== multiselect_opts(_l, ref _s, _limit_min, _limit_max, _item_name, _config)
+  === multiselect_with_lookup(_l, ref _s, _limit_min, _limit_max, _item_name, ->lookup_fn)
+ -> multiselect_opts(_l, _s, _limit_min, _limit_max, _item_name, "D", lookup_fn)->
+ ->->
+=== multiselect_opts(_l, ref _s, _limit_min, _limit_max, _item_name, _config, ->lookup_fn)
 
 // Set the maximum limit to MULTISELECT_MAX to allow "limitless" number of options!
 CONST MULTISELECT_MAX = 10000
@@ -28,7 +36,7 @@ VAR _387_n_sel = 0
 VAR _387_sel = ()
 VAR _387_sel_item_name = ""
 VAR _387_sel_onetime_scroll_hint = "<i>🧠 Use the up/down arrows to scroll."
-
+VAR _387_sel_lookup_fn = 0
 // (re)initialize vars
 ~ _387_i = 1
 ~ _387_sel_lst =_l
@@ -37,7 +45,7 @@ VAR _387_sel_onetime_scroll_hint = "<i>🧠 Use the up/down arrows to scroll."
 ~ _387_n_sel = LIST_COUNT(_s)
 ~ _387_sel = _s
 ~ _387_sel_item_name = _item_name
-
+~ _387_sel_lookup_fn = null_lookup_fn
 
 // config options
 VAR _387_cfg_opt_display_selections = false
@@ -46,6 +54,7 @@ VAR _387_cfg_opt_display_selections = false
 -else:
     ~ _387_cfg_opt_display_selections = false
 }
+~ _387_sel_lookup_fn = lookup_fn
 
 {_387_sel_onetime_scroll_hint != "" and (5 < LIST_COUNT(_387_sel_lst)): 
 {_387_sel_onetime_scroll_hint}
@@ -103,7 +112,8 @@ VAR _387_cfg_opt_display_selections = false
 
 ~ temp _val = item_at_index(_387_sel_lst, _i)
 
-+ {_val} [{_387_sel ? _val: <b>✅}{l2s(_val)}]
+~ temp _disp_val = _387_sel_lookup_fn(_val)
++ {_val} [{_387_sel ? _val: <b>✅}{_disp_val}]
 
     {_387_sel ? _val:
         ~ _387_sel -= _val
@@ -137,6 +147,11 @@ LIST digits = _1_,_2_,_3_,_4_,_5_,_6_,_7_,_8_,_9_,_0_
 
 
 === function l2s(l)
+
+{typeof(l) == str_t:
+
+    ~return l
+}
  ~ return _l2s(l, " ")
  
 === function _l2s(l, sep)

@@ -17,14 +17,16 @@ You reach for your phone in your backpack, but it's not there.  Fuck, did you le
 "Hi there," you say to her, but she's engrossed in her laptop.
 You stand there for a moment, looking at her now from close range, then you remember: Her name's {msg_name(ANGIE)}.  Of course, you sat next to her on the plane!
 
-Now that you're confident that she's not a random stranger, you 
+Now that you're confident that she's not a random stranger, you <>
 + raise your voice
 + tap her on the shoulder
 + shut the lid of her laptop
 - 
 <> and say, "Hi, {msg_name(ANGIE)}."
 ~ with_angie = true
+"Hello, Joe! What a coincidence!"
 You have a nice time with her.
+
 ~ setstat(angie_relationship, medium)
 {_DEBUG:>>> {angie_relationship}}
 {_DEBUG: >>> {DispStat(angie_relationship)}}

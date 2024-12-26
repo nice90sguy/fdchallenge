@@ -13,8 +13,9 @@ You have {unread_message_count:{print_number(unread_message_count)}|no} unread m
     -> grind.after_activity
     
 =taunt
-LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction, taunt_humiliate
+LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction, taunt_humiliate, taunt_dick_pics
 
+VAR num_dick_pics_to_send = 0
     ~ temp response_type = WAM_MISS
     {with_phone_activites ? current_activity:
         ~ response_type = WAM_CHOOSE
@@ -44,7 +45,7 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
         - with_angie:
             Your phone dings. Angie looks at you quizzically.  You glance at it, then put the phone away quickly.
             "Who was that?" She asks, smiling.
-            "Just work."
+            "Oh, nothing, just work stuff," you say.
         }
     
     }
@@ -57,17 +58,93 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
         - taunt_tribute: -> do_taunt_tribute(response_type) ->
         - taunt_addiction: -> do_taunt_addiction(response_type) ->
         - taunt_humiliate: -> do_taunt_humiliate(response_type) ->
+        - taunt_dick_pics: -> do_taunt_dick_pics(response_type) ->
         
     }
     ~ decstat(confidence)
     {current_activity == sleep and response_type != WAM_MISS:You manage to get back to sleep.}
 
 ->->
+= do_taunt_dick_pics(response_type)
 
+    {response_type ^ (WAM_READ + WAM_CHOOSE):
+     -> wa.m("Send me a pic of your dick.", response_type + Addiction) ->
+        ~incstat(lust)
+    {warn()} Obeying her will seriously mess up your life for the next 24 hours, and you'll never be the same again!
+     -> intent.allow_disobey_below_obedience_threshold(medium) ->
+     {obeyed_cmd:
+        {location:
+            - location_gym: You run into the toilet, push down your gym shorts and take a photo of your dick.
+            - location_bar: You run into the toilet, undo your pants and take a photo of your dick.
+            - else: 
+                {current_activity == sleep: 
+                    You grab the phone from the bedside table,  and take a photo of your boner.
+                 - else: You unzip your fly and haul out your hard dick.  You take a pic and send it.
+                }
+                
+        }
+        -> ffa(minute, 2) ->
+        {M_wa_S(YOU)} (img0001.jpg)
+        {M_wa_S(BELLA)} Send me one every hour, on the hour, for the next 24 hrs.  Every time you fail, you have to pay  $100. UNDERSTAND??"
+        {M_wa_S(YOU)} {Yes, Bella|yes i understand|yes mistress}
+        {M_wa_S(BELLA)} Oh, one more thing...
+        -> cont ->
+        {M_wa_S(BELLA)} Make sure you're nice and hard every time. 😈
+        -> cont ->
+        ~num_dick_pics_to_send = 24
+        {think()} (Fuck...)
+        -> cont ->
+        You set an hourly alarm on your phone.
+        -> cont ->
+
+     }
+    }
+    
+
+->-> 
+
+= dick_pic_challenge
+->p1("It's {ampm()}! {Hurry up and send that pic!|You know what you have to do!|Damn...|Oh boy...|Obey!|Just do it.|Oh my God|}") ->
+~ num_dick_pics_to_send--
+~ incstat(addiction)
+~ decstat(confidence)
+~ incstat(obedience)
+
+{location:
+    - location_gym: You run into the toilet, push down your gym shorts and take a photo of your dick.
+    - location_bar: You run into the toilet, undo your pants and take a photo of your dick.
+    - else:
+        {current_activity == sleep:
+            You grab the phone from the bedside table,  and take a photo of your boner.
+        - else: 
+            { num_dick_pics_to_send:
+             -23:  You unzip your fly and haul out your hard dick.  You take a pic and send it.
+             -22: It takes only a few strokes to get hard. You take a photo of your cock.
+             -21: You stroke your cock frantically until it's sort of hard. You're beginning to get an idea that this might be a difficult challenge...
+             -20: How many more to go? (strokes)
+             -19: You pump your dick and do your duty...
+             -12: Like Pavlov's dog, at the sound of the alarm, your cock springs to attention.  You take a photo.
+             -10: You're fully trained now.
+             -8: Obey.
+             -6: I belong to Bella.
+             -4: My cock is no longer under my control.
+             -2: This is my new life.
+             -0: Is this the last one? I don't want to stop.
+             -else: You take another dick pic.
+               
+            }
+           
+        }
+        
+}
+{num_dick_pics_to_send == 0: -> p1("Well done, you made it through the challenge! But at what cost?") ->}
+
+
+->->
 = do_taunt_addiction(response_type)
 
     {response_type ^ (WAM_READ + WAM_CHOOSE):
-     -> wa.m("{You love me|No escape|Good boy|💋|😈|welcome to My world|your reprogrammed|human atm|good slave|hi slave}", response_type+ Addiction) ->
+     -> wa.m("{You love me|No escape|Good boy|💋|😈|welcome to My world  👑| your reprogrammed|human atm|good slave|hi slave}", response_type+ Addiction) ->
         You feel an aching desire for her.
         ~incstat(lust)
     }
@@ -77,15 +154,23 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 = do_taunt_humiliate(response_type)
 
     {response_type ^ (WAM_READ + WAM_CHOOSE):
-     -> wa.m("{kneel|jerk to my pics|youre pathetic|kiss my shoes|worship|{~i want to|beg me to|im gonna} {~piss|shit|spit} in your mouth}", response_type + Confidence + Addiction) ->
-
-        You can't help it, but the message triggers you.
+     -> wa.m("{kneel|jerk to my pics|say I'm a pathetic loser|kiss my shoes|worship Me|Lie on yr back. {~i want to|beg me to|im gonna} {~piss|shit|spit} in your mouth}", response_type + Confidence + Addiction ) ->
+        The message triggers you...
         ~incstat(lust)
+        -> intent.allow_disobey_below_obedience_threshold(medium) ->
+        {obeyed_cmd: 
+            You can't help but obey.
+        - else:
+            You manage to resist.
+            ~decstat(addiction)
+        }
+
     
     }
     
 
-->->        
+->->
+
 // Bella sends you a pic, then does "repeat" commands
 = do_taunt_send_pic_and_repeat_after_me(response_type)
     // HACK:  All possible items minus available items will give a media item which, when looked up,
@@ -135,9 +220,28 @@ LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction,
 = do_taunt_tribute(response_type)
 
     ~ temp cmd = cmd_tribute+Submissiveness
-    ~ temp v = RANDOM(1,2 * LIST_VALUE(obedience)) * 50
-    ~ temp msg = "Show me how obedient you are. Send me {v} now"
+    // Tribute round number close to half his assets
+    ~ temp v = _cc / 2
+    ~ v = v / 10
+    ~ v = v * 10
+
+    {
+      - v < 100: 
+        ->-> // don't demand tribute
+      - v > 10000:
+       ~ v = 10000
+      - v > 1000:
+        ~ v = 1000
+      - v > 500:
+        ~ v = 500
+      - else:
+        ~ v = v
+    }
+    ~ temp msg = "Show me how obedient you are. Send me ${comma_ify(v)} now"
     ~incstat(addiction)
  -> wa.m(msg, response_type + num2list(v) + cmd) ->
+
+    ~decstat(addiction)
+
  ->->
  

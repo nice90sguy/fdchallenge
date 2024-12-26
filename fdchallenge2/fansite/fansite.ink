@@ -6,6 +6,7 @@ LIST fansite_activities = fsa_add_credits, fsa_chat, fsa_shop, fsa_video_session
 // This hack is so that "logout" can be called from anywhere.
 // The way the activity builder is designed, it makes it hard to use redirects as tunnel params, because they need to get propagated
 VAR fansite_return_to = ->grind.after_activity
+VAR unlocked_fansite = false
 === fansite
 {fansite == 1 and fansite_return_to == ->grind.after_activity:
 {bella()} Welcome to My Fan Page! I'm sure you'll be here a lot!
@@ -55,6 +56,9 @@ Time: {l0(tm_hour)}:{l0(tm_min)} <> ->bella_status->
 {credits >= cost_per_message:
 ~ possible_activities += fsa_chat
 }
+{not enough_credits:
+    ~ possible_activities = (fsa_logout, fsa_add_credits, fsa_chat)
+}
  + + (do) ->
 
     {possible_activities ? fsa_chat:<- fansite_chat.opt}
@@ -67,6 +71,7 @@ Time: {l0(tm_hour)}:{l0(tm_min)} <> ->bella_status->
  - -
 -
 + (after_activity) ->
+    ~ current_activity -= LIST_ALL(fansite_activities)
         -> cont ->
    -> fansite
 -

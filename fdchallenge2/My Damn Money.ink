@@ -77,33 +77,59 @@ VAR _LITEROTICA_EXPORT = true
 -> main
 
 == main
-* [Fan Login 💳 ]
-    You haven't unlocked this option yet. Become My fan first!
-    ->main
 
-* [Become My Fan 😍] Good boy. Let's see if you're worthy...
+*  [Story 😍] 
+    {warn()} By committing to play this game, I hereby confirm that:
+    + + (T_and_C)->
+        * * * [I'm sexually submissive]
+        * * * [I will be mindfucked, hypnotised, and manipulated] 
+        * * * [My life will be completely controlled by {BELLA_FULL_NAME()}]
+        * * * [I will be driven to financial ruin] 
+        * * * [I will be degraded, humiliated and verbally abused, and will enjoy every minute of it] 
+        * * * {CHOICE_COUNT() == 0} ->
+        Good boy. I'll hold you to that.
     -> cont ->meeting_bella ->back_home ->one_week_later -> tbc
+        - - - -> T_and_C
+    - -
+    
 
 
 + [Options ⚙️]
     + +(opt_stats) [{SHOW_STATS:Hide|Show} Stat Changes]
         ~ SHOW_STATS = not SHOW_STATS
-        {SHOW_STATS: {hint()} You'll see changes to your stats as they occur. {opt_stats==1:{warn()} This will clutter the output with lots of icons, especially during the grind phase of the game! You might want to play through the game first without this option.}|{hint()} You won't see any stat changes.}
+        {SHOW_STATS: 
+            {hint()} You'll see changes to your stats as they occur. 
+            {opt_stats==1:
+                {warn()} This will clutter the output with lots of icons, especially during the grind phase of the game! You might want to play through the game first without this option. The stats are:
+                Short-term stats: - Change during the day
+                {stat_icon(Sleepiness)} - {stat_name(Sleepiness)} {stat_icon(Hunger)} - {stat_name(Hunger)} {stat_icon(Lust)} - {stat_name(Lust)}
+
+                Long-term stats: - Change over days
+                {stat_icon(Fitness)} - {stat_name(Fitness)} {stat_icon(Submissiveness)} - {stat_name(Submissiveness)} {stat_icon(Confidence)} - {stat_name(Confidence)}
+                Relationship stats:
+                {stat_icon(Addiction)} - {stat_name(Addiction)} {stat_icon(AngieYandere)} - {stat_name(AngieYandere)} {stat_icon(MelanieRelationship)} - {stat_name(MelanieRelationship)}
+            }
+            
+        -else: {hint()} You won't see any stat changes.
+        }
+    + + (opt_debug) [Turn {_DEBUG:off|on} debug tracing]
+    ~ _DEBUG = not _DEBUG
+    {opt_debug==1:{warn()} This will clutter the output with masses of debug trace messages!}
+    {hint()} Debugging is now {_DEBUG:on|off}.
+
     - - -> main
 
-* [I don't want to play your mind games 😁] Ok bye -> END
 
 
-* {_DEBUG} [(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
+* [(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
     * * [Sub Path]
         ~ path = sub
     * * [Adventure Path]
         ~ path = adventure
         -> Angie.plane_meeting ->
+        ~ unlocked_fansite = true
     - -
-    ~ _DEBUG = false
-    -> cc.deposit(1000) ->
-
+    -> cc.deposit(5000) ->
     ~ set_dMy(26,July,2024)
     ~ set_hms(6, 35, 5)
 
@@ -111,7 +137,14 @@ VAR _LITEROTICA_EXPORT = true
     -> stats.reset(path) ->
     ~ setstat(sleepiness, min)
     ~ current_activity = sleep
-    -> grind.morning_alarm ->
+    ~ grind_return_to = ->here
+    -> fansite_credits.add(1000, 1000) ->
+    -> inventory.unlock_item(media_1_, 100) ->
+    -> inventory.unlock_item(media_2_, 100) ->    
+    ~ grind_days = 7
+    -> grind
+    + (here) ->
+    -
     -> END
 
 == fanlogin

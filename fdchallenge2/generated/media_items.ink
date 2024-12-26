@@ -20,7 +20,25 @@ VAR available_items = (media_1_, media_2_, media_3_, media_4_, media_5_, media_6
 ~ return _media_from_id(id, media_list-media_item)
 
 LIST lookup_media_arg_t = lum_desc, lum_narr
-
+=== function media_title(id)
+    ~ temp p_media = media_from_id(id)
+    {p_media:
+    	- media_1_: 
+    	    ~return "Goddess Mind-Fuck"
+    	- media_2_: 
+    	    ~return "Fall deeper under my spell"
+    	- media_3_: 
+    	    ~return "Your new purpose"
+    	- media_4_: 
+    	    ~return "Goon to My Shiny Heels"
+    	- media_5_: 
+    	    ~return "Lucky Chair"    	    
+    	- media_6_: 
+    	    ~return "You don't need Sex, You have Me"
+    	- media_7_: 
+    	    ~return "Pay off My Student Debt"    	    
+    }
+        
 === lookup_media(id, ref arg)
 ~ temp p_media = media_from_id(id)
 ~ arg += p_media
@@ -29,7 +47,7 @@ LIST lookup_media_arg_t = lum_desc, lum_narr
 
 	-media_1_: 
         ~ arg += (video, Ass, Hypnosis, Legs, Edging, Lingerie, Addict, Kneel,Worship, Praise, Heels)
-        {arg ? lum_desc:Goddess Mind-Fuck}
+        {arg ? lum_desc: {media_title(media_1_)}}
         {arg ? lum_narr:
  <i>She's wearing red lace underwear. She glides casually around her living room; her  red stilletto heels make a clicking sound on the wooden parquet floor.
  "Get on your knees."
@@ -61,7 +79,8 @@ LIST lookup_media_arg_t = lum_desc, lum_narr
 }
 	-media_2_:
         ~ arg += (video, Hypnosis, Edging, Addict)
-        {arg ? lum_desc:Fall deeper under my spell}
+        {arg ? lum_desc: {media_title(media_2_)}}
+
         {arg ? lum_narr:
 <i>A red and green rotating spiral...
 -> p1("Get lost in it...") ->
@@ -87,7 +106,7 @@ LIST lookup_media_arg_t = lum_desc, lum_narr
 }
 	-media_3_: 
         ~ arg += (video, Hypnosis, Breasts, Joi, Kneel)
-        {arg ? lum_desc:Your new purpose}
+        {arg ? lum_desc: {media_title(media_3_)}}
         {arg ? lum_narr:
 <i>A close-up of her cleavage, with a gold heart pendant nestling between her smooth, round breasts. She's slowly sliding middle-finger up and down, between them.
 "This is your challenge for today, my mindless gooners," <i>she says.
@@ -123,7 +142,7 @@ You explode...
 }
 	-media_4_: 
         ~ arg += (video, Hypnosis, Edging, Goon, Heels)
-        {arg ? lum_desc:Goon to My Shiny Heels}
+        {arg ? lum_desc: {media_title(media_4_)}}
         {arg ? lum_narr:	
  // Hypnosis_Edging_Heels_
  // Goon to My Shiny Heels
@@ -146,7 +165,7 @@ You explode...
 }
 	-media_5_: 
         ~ arg += (video, Ass, Worship, Humiliation, Homewrecker)
-        {arg ? lum_desc:Lucky Chair}
+        {arg ? lum_desc: {media_title(media_5_)}}
         {arg ? lum_narr:
 <i>We're in an "office", on the "boss's" side of a desk.  {BELLA_NAME} walks in, carrying a transparant plastic chair.  She's in the typical porno office attire, white shirt tucked into short black skirt. Bare legs.
 "Hi!  I hope you don't mind that I brought my own chair, I just have a weird thing about it in job interviews, it's a sort of superstition."
@@ -229,7 +248,7 @@ You explode...
 }
 	-media_6_: 
         ~ arg += (video, Chastity, Humiliation, Joi, Addict)
-        {arg ? lum_desc:You don't need Sex, You have Me}
+        {arg ? lum_desc: {media_title(media_6_)}}
         {arg ? lum_narr:
 <i>She's wearing tight jeans and a black tee shirt.  She's sitting crossed legged at the foot of a stairwell, wearing trainers.
 "It's time for you to admit it."
@@ -257,7 +276,7 @@ You explode...
 }
     -media_7_:
          ~ arg += (video, Brat, Breasts, ATM)
-        {arg ? lum_desc:Pay off My Student Debt}
+        {arg ? lum_desc: {media_title(media_7_)}}
         {arg ? lum_narr:
             <i>A bratty student flashes her tits at you and forces you to give her your credit card
             <i>(Yeah I ran out of Mojo writing this one... nng)

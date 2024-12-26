@@ -15,7 +15,7 @@ Long-term stats:<p><>
 {DispStat(confidence)}<br><>
 {DispStat(obedience)}<br><>
 {DispStat(fitness)}<br><>
-{DispStat(addiction)}<br><>
+
 </p>
 Short-term stats:<p><>
 {DispStat(hunger)}<br><>
@@ -24,8 +24,10 @@ Short-term stats:<p><>
 </p>
 Relationship stats:<p><>
 
+
+{DispStat(addiction)}<br><>
+{DispStat(melanie_relationship)}<br><>
 {path==adventure:{DispStat(angie_relationship)}<br><>}
-// {DispStat(melanie_relationship)}<br><>
 // </p>
 \----------------------------------------------------<br><>
 
@@ -186,7 +188,7 @@ VAR SHOW_STATS=false
     - Lust:  
         Horniness
     - Addiction:  
-        Findom addiction ({BELLA_NAME})
+        {BELLA_NAME} (Findom addiction)
     - Confidence:  
         Self-esteem
     - Fitness:  
@@ -196,7 +198,7 @@ VAR SHOW_STATS=false
     - AngieYandere:  
        {msg_name(ANGIE)} (Yandere)       
     - MelanieRelationship:  
-       Closeness to {girlfriend_name} (Love Interest)      
+       {girlfriend_name} (Love Interest)      
 }
 == function stat_icon(_stat)
 {stat_type(_stat):

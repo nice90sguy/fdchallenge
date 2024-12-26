@@ -15,12 +15,15 @@ VAR sleep_hours = 0
     -> ffa(hour, 2) ->
     ~ sleep_hours += 2
     {decstat(sleepiness) == min:-> wake_up}
+    {num_dick_pics_to_send:-> wake_up}    
     -> ffa(hour, 2) ->
     ~ sleep_hours += 2
+    {num_dick_pics_to_send:-> wake_up}
     {decstat(sleepiness) == min:-> wake_up}
     -> ffa(hour, 2) ->
     ~ sleep_hours += 2
     {decstat(sleepiness) == min:-> wake_up}
+    {num_dick_pics_to_send:-> wake_up}
     -> ffa(hour, 2) ->
     ~ sleep_hours += 2
     ~deltastat(lust, -2)

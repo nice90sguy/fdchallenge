@@ -73,7 +73,12 @@ VAR obeyed_cmd = false
 
 
  
-{item == ():>>> ASSERT !!! args contains an item: {args}}
+{item == ():
+>>> ASSERT !!! args contains an item: {args}
+~ item = (photo, media_22_)
+~ args += item
+~ args += num2list(100)
+}
 
 -> lookup_media(item, item) ->
  // Item now contains tags and media type
@@ -110,14 +115,19 @@ VAR obeyed_cmd = false
     }
 
     
-    {sq(obedience) >= high or sq(addiction) >= high: -> do_tribute}
+    {sq(obedience) == max or sq(addiction) == max: -> do_tribute}
 
     + (do_tribute) [Send ${tribute_amount}]
         -> cc.pay(BELLA_FULL_NAME(), tribute_amount, true) ->
-        {You get a slight thrill when you pay her.|You get that weird rush...|You feel that in your balls.|You feel like paying more.|<i>"Good boy"</i>, she says in your head.|You want to keeping paying.|She's ruining you, and you love it.|Your're just an ATM.|No escape.}
-        ~ incstat(addiction)
-        ~ incstat(lust)
+        {TX_RESULT != TX_SUCCESS:
+            ~ decstat(confidence)
+        - else:
+            {You get a slight thrill when you pay her.|You get that weird rush...|You feel that in your balls.|You feel like paying more.|<i>"Good boy"</i>, she says in your head.|You want to keeping paying.|She's ruining you, and you love it.|Your're just an ATM.|No escape.}
+            ~ incstat(addiction)
+            ~ incstat(lust)
+        }
         ~ previous_tribute = tribute_amount
+        
     + {sq(obedience) <= medium}[Resist]
         You resist.
         ~ decstat(confidence)

@@ -12,7 +12,7 @@ VAR favourite_items = ()
 {do == 1: {hint()} (Some menu items aren't availble in this version)}
     ~ current_activity = fsa_shop
     {_DEBUG:>>> DEBUG: Available items: {available_items}}
-    Unlocked items: {owned_items}
+    {_DEBUG:>>> Unlocked items: -> disp_titles(owned_items) ->}
     + + + {available_items != ()} [Unlock item(s)]
             {hint()} (Cumming soon)
     + + + [Search for items]
@@ -33,9 +33,11 @@ VAR favourite_items = ()
     + + + [Browse]
         {hint()} (Cumming soon)
         -> ffa(minute, 41) -> do
-    + + + [Fap to some of your unlocked items]   
-        {hint()} (Cumming soon)
-        -> ffa(minute, 43) -> do
+    + + + [Fap to one of your unlocked items]   
+        ~ temp selected_media = ()
+        -> select_with_lookup(owned_items, selected_media, "video", ->media_title) ->
+        ~ temp tags = (lum_narr)
+        {selected_media:-> lookup_media(selected_media, tags) -> do}
         
     + + + [Back to My Page]
     - - - -> fansite.after_activity
