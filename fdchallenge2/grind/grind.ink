@@ -12,18 +12,21 @@ After every activity, builds a list of options
 
 // Note to dev: Don't check against this list, use the VARS below
 // depending on your location
-LIST _all_activities = sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, swim, weights, running_machine, running, walking, return_home, socialize
+LIST _all_activities = sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, swim, weights, running_machine, running, walking, cafe_return_home, socialize, hangout_cafe, coffee
 
 
 VAR home_activities = ()
-~ home_activities = (sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, socialize)
+~ home_activities = (sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, socialize, hangout_cafe)
 
 VAR gym_activities = ()
-~ gym_activities = (swim, weights, running_machine, messages, return_home)
+~ gym_activities = (swim, weights, running_machine, messages)
 
 
 VAR park_activities = ()
-~ park_activities = (running, walking, introspect, return_home)
+~ park_activities = (running, walking, introspect)
+
+VAR cafe_activities = ()
+~ cafe_activities = (coffee, snack, work, logon_fansite, youtube, messages, cafe_return_home)
 
 // Exercise is Fitness, self-esteem improving
 VAR exercise_activites = ()
@@ -75,7 +78,7 @@ VAR grind_return_to = ->error
 
 ~ set_interval_cb(3600,->on_the_hour)
 // Set the callback, but not the time yet
-~ set_timer_cb(FAR_FUTURE,->grind_messages.taunt)
+~ set_timer_cb(FAR_FUTURE,->Bella.taunt)
 
 
 // {grind}
@@ -115,7 +118,7 @@ VAR grind_return_to = ->error
 VAR prev_interval = FAR_FUTURE
 = on_the_hour
 {num_dick_pics_to_send > 0:
-    -> grind_messages.dick_pic_challenge ->
+    -> Bella.dick_pic_challenge ->
 
  - else: 
     {analog_clk()}
@@ -130,65 +133,75 @@ VAR prev_interval = FAR_FUTURE
 - else:
     ~ prev_interval = epoch_time
 }
-    {true:
-    {_DEBUG:>>> Clock: {ampm()}}
-    }
 
-    // Specific things that happen at certain hours of the day:
-    {tm_hour:
-        -0:
-            -> day_rollover -> update_hunger_sleepiness ->
-        -6: -> update_hunger_sleepiness ->
-        -7: {current_activity==sleep:-> morning_alarm ->}
-        -12: -> update_hunger_sleepiness ->
-        -18: -> update_hunger_sleepiness ->
-    }
+{_DEBUG:>>> Clock: {ampm()}}
+    
 
-    {true or (tm_wday != 0):
-        {tm_hour:
-        - bella_online_start_hour:
-            ~ set_bella_online(true)
-
-        - bella_online_end_hour:
-            ~ set_bella_online(false)
-        }
-    }
-
-    ~ temp forced_activities = check_max_stats()
-    // If you can't do forced activites at your current location, you need to go home and do them there
-    {(possible_activities ^ forced_activities) == ():
-        { location != location_home:
-        {_DEBUG:>>> Need to go home: None of {forced_activities} available at {location}.}
-        {location:
-            - location_gym:
-                You run home as quick as you can, and...
-            - location_park:
-                You run home as quick as you can, and...
-            - location_bar:
-                {forced_activities == sleep:You're too tired to socialize anymore.} You say goodbye and leave the bar, and stagger home...
-            - else:
-                You have to go home now.
-        }
-
-    }
-    -> cont ->
+// Specific things that happen at certain hours of the day:
+{tm_hour:
+    -0:
+        -> day_rollover -> update_hunger_sleepiness ->
+    -6: -> update_hunger_sleepiness ->
+    -7: {current_activity==sleep:-> morning_alarm ->}
+    -12: -> update_hunger_sleepiness ->
+    -18: 
+        -> update_hunger_sleepiness ->
+        {location == location_cafe:
+            The cafe is closing.
+            -> p1("Go Home") -> 
             ~ location = location_home
-            -> grind.build_opts
-    }
-    // If only one possible activity now, jump to it
-    {(LIST_COUNT(possible_activities) == 1) and (possible_activities != current_activity):
-        -> opts
-    }
-    // Randomly taunt some time in the next hour, more often if on sub path
-    {path == sub:
-        {RANDOM(1, 100) <= 25:
-            ~ _next_timer = now() + RANDOM(10,50) * 60
+            ~ _ffm(30)
+            -> build_opts
         }
-    - else:
-        {RANDOM(1, 1000) <= sqi(obedience):
-            ~ _next_timer = now() + RANDOM(10,50) * 60
-        }
+        
+}
+
+{true or (tm_wday != 0):
+    {tm_hour:
+    - bella_online_start_hour:
+        ~ set_bella_online(true)
+
+    - bella_online_end_hour:
+        ~ set_bella_online(false)
     }
+}
+
+~ temp forced_activities = check_max_stats()
+// If you can't do forced activites at your current location, you need to go home and do them there
+{(possible_activities ^ forced_activities) == ():
+    { location != location_home:
+    {_DEBUG:>>> Need to go home: None of {forced_activities} available at {location}.}
+    {location:
+        - location_gym:
+            You run home as quick as you can, and...
+        - location_park:
+            You run home as quick as you can, and...
+        - location_bar:
+            {forced_activities == sleep:You're too tired to socialize anymore.} You say goodbye and leave the bar, and stagger home...
+        - else:
+            You have to go home now.
+    }
+
+}
+-> cont ->
+        ~ location = location_home
+        -> grind.build_opts
+}
+// If only one possible activity now, jump to it
+{(LIST_COUNT(possible_activities) == 1) and (possible_activities != current_activity):
+    -> opts
+}
+// Randomly taunt some time in the next hour, more often if on sub path
+{path:
+- sub:
+    {RANDOM(1, 100) <= 25:
+        ~ _next_timer = now() + RANDOM(10,50) * 60
+    }
+- adventure:
+    {RANDOM(1, 1000) <= sqi(obedience):
+        ~ _next_timer = now() + RANDOM(10,50) * 60
+    }
+}
 
 ->->
 
@@ -237,8 +250,8 @@ Final stat ({path} path):
 {_DEBUG: >>> (REMOVE STAT DISPLAY) ->stats.display->}
 
 // Bella's work proposition, after 4 days, before evening, and she hasn't propositioned you already
-{path==adventure and day_rollover>=4 and (current_period < evening) and (not work_proposition_bella):
--> work_proposition_bella -> build_opts
+{path==adventure and day_rollover>=4 and (current_period < evening) and (not Bella.work_proposition):
+-> Bella.work_proposition -> build_opts
 }
 
 ~ possible_activities = ()
@@ -253,8 +266,13 @@ Final stat ({path} path):
         ~ possible_activities = gym_activities
     - location_park:
         ~ possible_activities = park_activities
+    - location_cafe:
+          ~ possible_activities = cafe_activities
 }
+{path==dom and day_rollover==0 and (current_period == morning) and unread_message_count:
+    ~ possible_activities = (breakfast, messages)
 
+}
 // Restrict activites based on time of day
 // Some of these may get removed with further checks below, e.g. can't have two breaksfasts in one day
 
@@ -291,7 +309,18 @@ Final stat ({path} path):
     ~ possible_activities -= breakfast
 
 }
+// Cant go out to cafe until after breakfast
+{not (activities_done_today ? breakfast):
 
+    ~ possible_activities -= hangout_cafe
+
+}
+// Cafe only open between 9 and 6
+{tm_hour < 9 or tm_hour >= 18:
+
+    ~ possible_activities -= hangout_cafe
+
+}
 // No need to jerk off if lust min
 {sq(lust) <= low:
     ~ possible_activities -= jerk_off
@@ -365,7 +394,11 @@ Final stat ({path} path):
 
     }
 }
-
+// Cafe closes at 6
+{location == location_cafe and tm_hour >= 18:
+    The cafe closes at six.
+    ~ possible_activities = cafe_return_home
+}
 
 
 // sq(Sleepiness) < medium, don't sleep
@@ -394,6 +427,10 @@ Final stat ({path} path):
                 ~ possible_activities -= full_days_work
             }
     }
+}
+
+{path == dom:
+    ~ possible_activities -= logon_fansite
 }
 
 ~ temp forced_activities = check_max_stats()
@@ -435,12 +472,15 @@ TODO slug_life_reset
     {possible_activities ? breakfast: <-grind_breakfast.opt}
     {possible_activities ? full_days_work: <-grind_full_days_work.opt}
     {possible_activities ? work: <-grind_work.opt}
+    {possible_activities ? hangout_cafe: <-grind_cafe.opt}
     {possible_activities ? sleep:<- grind_sleep.opt}
     {possible_activities ? youtube: <-grind_youtube.opt}
     {possible_activities ? exercise: <-grind_exercise.opt}
     {possible_activities ? porn: <-grind_porn.opt}
     {possible_activities ? jerk_off: <-grind_jerk_off.opt}
+    {possible_activities ? coffee: <-grind_cafe_coffee.opt}
     {possible_activities ? snack: <-grind_snack.opt}
+    {possible_activities ? cafe_return_home: <-grind_cafe_return_home.opt}
     {possible_activities ? dinner: <-grind_dinner.opt}
     {possible_activities ? socialize: <-grind_bar.opt}
     {possible_activities ? logon_fansite: <-grind_logon_fansite.opt}
@@ -452,6 +492,9 @@ TODO slug_life_reset
     {possible_activities ? swim: <-grind_gym_swim.opt}
     {possible_activities ? weights: <-grind_gym_weights.opt}
     {possible_activities ? running_machine: <-grind_gym_running_machine.opt}
+
+
+
 //  <- opt_esc
 
 

@@ -14,7 +14,6 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 ~ temp from =  args ^ LIST_ALL(MSG_PEOPLE)
 
  ~ temp t = now()  // Message has just arrived
- 
  // Default sender is Bella
 {from == ():
     ~ args += BELLA
@@ -88,7 +87,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 // Allow option to read old messages, if any, if WAM_READ_MISSED
 
    
-+ {unread_message_count and response_type ? WAM_READ_MISSED} [Read them] -> read_missed_messages ->
++ {unread_message_count and response_type ? WAM_READ_MISSED} [Read them] -> read_missed_messages(false) ->
 + {sq(obedience) <= medium and sq(addiction) <= medium and unread_message_count and response_type ? WAM_READ_MISSED} [Delete them without reading] -> unread_message_log.clear ->
 
 + ->
@@ -98,10 +97,11 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 ~ speech_type = _old_speech_type
 ->->
 
-= read_missed_messages
+= read_missed_messages(auto)
 ~ temp t =  0
 ~ temp arg = ()
 ~ temp msg = ""
+{auto: -> read_oldest}
 + (loop_missed_msgs)  ->
      {unread_message_count==0:
      ->->
@@ -109,14 +109,14 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
           {question()} Read your {unread_message_count > 1:{unread_message_count}} missed message{unread_message_count > 1:s}:
      }
 
-  +  + [Yes {unread_message_count > 1: (Oldest first)}] -> 
+  + + (read_oldest) [Yes {unread_message_count > 1: (Oldest first)}] -> 
         -> unread_message_log.pop_oldest(msg, arg, t) ->
          -> respond_to_msg(msg, arg, t) -> loop_missed_msgs
-  +  + {unread_message_count > 1}[Yes (Newest first)] -> 
+  + + {unread_message_count > 1}[Yes (Newest first)] -> 
         -> unread_message_log.pop_newest(msg, arg, t) ->
          -> respond_to_msg(msg, arg, t) -> loop_missed_msgs
-  +  + {unread_message_count}[I've changed my mind]
-    ->->
+  + + {unread_message_count}[No]
+    ->-> 
 
 -
 

@@ -95,7 +95,7 @@ VAR obedience = (Submissiveness, _stat_sensitivity_1)
 VAR addiction = (Addiction, _stat_sensitivity_1)
 VAR confidence = (Confidence, _stat_sensitivity_1)
 VAR fitness = (Fitness, _stat_sensitivity_2)
-VAR angie_relationship = (AngieYandere, _stat_sensitivity_5)
+VAR angie_relationship = (AngieYandere, _stat_sensitivity_1)
 VAR melanie_relationship = (MelanieRelationship, _stat_sensitivity_whole_step)
 /*
 stats are designed to be opaque.   You should only read and set their "quantized" values, one of min, low, medium, high, max.

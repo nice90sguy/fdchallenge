@@ -57,7 +57,7 @@ VAR last_displayed_year = 0
 == function hint
 <p>🧠 <i><>
 
-== function bella
+== function bella_icon
 <p>👩🏻 <i><>
 
 == function devil_angry

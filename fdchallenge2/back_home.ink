@@ -9,19 +9,23 @@ VAR timestamp_backhome = 0
 + {path == adventure} -> adventure_path ->
 - 
 {_DEBUG:>>> Gather back_home}
-What you need, you decide, is to forget about her, and start taking care of yourself. You change into your running shorts and shoes, and jog to the supermarket, where you stock up on healthy stuff.
-You take a long, hot shower, which relaxes you.
+
+What you need, you decide, is to forget about {path==dom:women altogether|her}, and start taking care of yourself. You change into your running shorts and shoes, and jog to the supermarket, where you stock up on healthy stuff.
+-> ffa(hour, 2) ->
+You get home.  What you need now, is a long, hot shower.
+-> slug_shower ->
+
 
 
 ~ _ffd(1)
-
-You go bed without even looking at your phone, and forget all about her.
+You go bed without even looking at your phone{path == dom: again|, and forget all about her}.
 -> cont ->
     ~setstat(sleepiness, min)
     ~setstat(hunger, medium)
     ~current_activity = sleep
-~ _ffh(7)
-
+~ _ffh(6)
+-> Angie.cafe_meeting_invite ->
+~ _ffh(1)
 ~ grind_return_to = ->here
 
 
@@ -30,6 +34,21 @@ You go bed without even looking at your phone, and forget all about her.
 + (here) ->
 -
 -> one_week_later
+
+= slug_shower
+You feel better after your shower. You wipe the steam off the mirror with a towel and appraise yourself.  You're getting a little flabby, you really should start exercising.
+
+
+You're jet-lagged. What time is it anyway? You look at your phone to check the time. It's {approx_time(now())}.
+
+
+{path==dom:You notice that message from {msg_name(ANGIE)}. She was really cute...  But it might appear a little desperate to respond so soon.  You decide to}
+ * <> stick to your plan, and not respond yet.
+ * <> change your mind, and send her a message right now.
+    -> Angie.first_phone_chat ->
+ - 
+
+->->
 
 = sub_path
 You arrive home, and unpack.  You find your phone in the bottom of your travel case. You plug it in.
@@ -51,7 +70,15 @@ There's been something there, a connection in your subconscious mind, an irratio
 ->->
 
 = dom_path
-TODO back_home dom path
+Eventually, on {today()} {period_of_day()}, you arrive back home with a neckache and in a crabby mood.  You plug your phone in, and wait for it to charge.
+-> stats.reset(dom) -> 
+-> ffa(minute, 15) ->
+-> tp ->
+Fifteen minutes later, it's fully charged.  You check whether you have any messages.  There's one, from an unknown number:
+    -> wa.read_missed_messages(true) ->
+    You look at the time of the message, and figure out it must be from {msg_name(ANGIE)}.  Checking your notepad, you confirm it.
+    Great.  But you're not going to call her back.  Wait a couple of days. Play it cool.
+    -> cont ->
 ->->
 
 = adventure_path
@@ -105,11 +132,11 @@ You shut the laptop and stand up.  Your post-orgasm bliss fades, and you start t
 -> p1e("And you'll never see her again.") ->
 
 + [Do it {devil_happy()}]
- -> p1e("{bella()} As if you had a choice {_emo("(laugh)")} ...") ->
+ -> p1e("{bella_icon()} As if you had a choice {_emo("(laugh)")} ...") ->
  ~incstat(addiction)
  ~incstat(obedience)
 + [Escape while you still have a chance {angel()}]
-    -> p1e("{bella()} Too late. {_emo("(laugh)")} That's right, you never had a choice.") ->
+    -> p1e("{bella_icon()} Too late. {_emo("(laugh)")} That's right, you never had a choice.") ->
 -
 
 -> ffa(minute,5) ->

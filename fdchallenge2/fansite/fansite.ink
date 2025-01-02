@@ -9,7 +9,7 @@ VAR fansite_return_to = ->grind.after_activity
 VAR unlocked_fansite = false
 === fansite
 {fansite == 1 and fansite_return_to == ->grind.after_activity:
-{bella()} Welcome to My Fan Page! I'm sure you'll be here a lot!
+{bella_icon()} Welcome to My Fan Page! I'm sure you'll be here a lot!
 
 The first thing you need to do is to add some credits, it looks like you don't have any yet!  You won't be able to do much here unless you have plenty of them!
 I suggest you purchase as many credits as you can, because the more you buy, the cheaper they are!

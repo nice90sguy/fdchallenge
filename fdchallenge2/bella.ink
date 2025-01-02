@@ -1,0 +1,343 @@
+=== Bella ===
+= name
+Bella
+->->
+=taunt
+LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction, taunt_humiliate, taunt_dick_pics
+
+VAR num_dick_pics_to_send = 0
+    ~ temp response_type = WAM_MISS
+    {with_phone_activites ? current_activity:
+        ~ response_type = WAM_CHOOSE
+    }
+    // >>> TAUNT at {hhmmss(now())}
+    // -> ffa(minute, 3) ->
+    // ->->
+    // Dont wake from deep sleep
+    {current_activity == sleep and sq(sleepiness) >= medium:
+        ~ response_type = WAM_MISS
+    }
+
+    
+    {response_type != WAM_MISS:
+    
+        {
+        - current_activity == sleep:You're woken at {ampm()} by a message:
+        
+        - (work, full_days_work) ? current_activity:
+            ~ response_type = WAM_READ
+            Your concentration is ruined at {approx_time(now())} by a message:
+        
+        - current_activity == swim:
+            You've just started changing out of your swimming gear when your phone dings:
+        - current_activity == jerk_off:
+            She must have hidden cameras!  At the worst possible time, your phone distracts you:
+        - state_flags ? gs_with_angie:
+            Your phone dings. Angie looks at you quizzically.  You glance at it, then put the phone away quickly.
+            "Who was that?" She asks, smiling.
+            "Oh, nothing, just work stuff," you say.
+        }
+    
+    }
+
+
+    {LIST_RANDOM(LIST_ALL(taunts)):
+        
+        - taunt_send_pic_and_repeat_after_me: ->do_taunt_send_pic_and_repeat_after_me(response_type) ->
+        // - taunt_haggle_game: -> do_taunt_haggle_game(response_type) ->
+        - taunt_tribute: -> do_taunt_tribute(response_type) ->
+        - taunt_addiction: -> do_taunt_addiction(response_type) ->
+        - taunt_humiliate: -> do_taunt_humiliate(response_type) ->
+        - taunt_dick_pics: -> do_taunt_dick_pics(response_type) ->
+        
+    }
+    ~ decstat(confidence)
+    {current_activity == sleep and response_type != WAM_MISS:You manage to get back to sleep.}
+
+->->
+= do_taunt_dick_pics(response_type)
+
+    {response_type ^ (WAM_READ + WAM_CHOOSE):
+     -> wa.m("Send me a pic of your dick.", response_type + Addiction) ->
+        ~incstat(lust)
+    {warn()} Obeying her will seriously mess up your life for the next 24 hours, and you'll never be the same again!
+     -> intent.allow_disobey_below_obedience_threshold(medium) ->
+     {obeyed_cmd:
+        {location:
+            - location_gym: You run into the toilet, push down your gym shorts and take a photo of your dick.
+            - location_bar: You run into the toilet, undo your pants and take a photo of your dick.
+            - else: 
+                {current_activity == sleep: 
+                    You grab the phone from the bedside table,  and take a photo of your boner.
+                 - else: You unzip your fly and haul out your hard dick.  You take a pic and send it.
+                }
+                
+        }
+        -> ffa(minute, 2) ->
+        {M_wa_S(YOU)} (img0001.jpg)
+        {M_wa_S(BELLA)} Send me one every hour, on the hour, for the next 24 hrs.  Every time you fail, you have to pay  $100. UNDERSTAND??"
+        {M_wa_S(YOU)} {Yes, Bella|yes i understand|yes mistress}
+        {M_wa_S(BELLA)} Oh, one more thing...
+        -> cont ->
+        {M_wa_S(BELLA)} Make sure you're nice and hard every time. 😈
+        -> cont ->
+        ~num_dick_pics_to_send = 24
+        {think()} (Fuck...)
+        -> cont ->
+        You set an hourly alarm on your phone.
+        -> cont ->
+
+     }
+    }
+    
+
+->-> 
+
+= dick_pic_challenge
+->p1("It's {ampm()}! {Hurry up and send that pic!|You know what you have to do!|Damn...|Oh boy...|Obey!|Just do it.|Oh my God|}") ->
+~ num_dick_pics_to_send--
+~ incstat(addiction)
+~ decstat(confidence)
+~ incstat(obedience)
+
+{location:
+    - location_gym: You run into the toilet, push down your gym shorts and take a photo of your dick.
+    - location_bar: You run into the toilet, undo your pants and take a photo of your dick.
+    - else:
+        {current_activity == sleep:
+            You grab the phone from the bedside table,  and take a photo of your boner.
+        - else: 
+            { num_dick_pics_to_send:
+             -23:  You unzip your fly and haul out your hard dick.  You take a pic and send it.
+             -22: It takes only a few strokes to get hard. You take a photo of your cock.
+             -21: You stroke your cock frantically until it's sort of hard. You're beginning to get an idea that this might be a difficult challenge...
+             -20: How many more to go? (strokes)
+             -19: You pump your dick and do your duty...
+             -12: Like Pavlov's dog, at the sound of the alarm, your cock springs to attention.  You take a photo.
+             -10: You're fully trained now.
+             -8: Obey.
+             -6: I belong to Bella.
+             -4: My cock is no longer under my control.
+             -2: This is my new life.
+             -0: Is this the last one? I don't want to stop.
+             -else: You take another dick pic.
+               
+            }
+           
+        }
+        
+}
+{num_dick_pics_to_send == 0: -> p1("Well done, you made it through the challenge! But at what cost?") ->}
+
+
+->->
+= do_taunt_addiction(response_type)
+
+    {response_type ^ (WAM_READ + WAM_CHOOSE):
+     -> wa.m("{You love me|No escape|Good boy|💋|😈|welcome to My world  👑| your reprogrammed|human atm|good slave|hi slave}", response_type+ Addiction) ->
+        You feel an aching desire for her.
+        ~incstat(lust)
+    }
+    
+
+->-> 
+= do_taunt_humiliate(response_type)
+
+    {response_type ^ (WAM_READ + WAM_CHOOSE):
+     -> wa.m("{kneel|jerk to my pics|say I'm a pathetic loser|kiss my shoes|worship Me|Lie on yr back. {~i want to|beg me to|im gonna} {~piss|shit|spit} in your mouth}", response_type + Confidence + Addiction ) ->
+        The message triggers you...
+        ~incstat(lust)
+        -> intent.allow_disobey_below_obedience_threshold(medium) ->
+        {obeyed_cmd: 
+            You can't help but obey.
+        - else:
+            You manage to resist.
+            ~decstat(addiction)
+        }
+
+    
+    }
+    
+
+->->
+
+// Bella sends you a pic, then does "repeat" commands
+= do_taunt_send_pic_and_repeat_after_me(response_type)
+    // HACK:  All possible items minus available items will give a media item which, when looked up,
+    // won't be found.  The default for media items that are not in the index is to categorized as a photo.  See the -else statement in the long "switch" statement in lookup_media.
+    ~ temp available_photos = LIST_INVERT(available_items)
+    
+    { available_photos == ():
+>>> {BELLA_NAME} has no more photos to send!
+        ->->
+    }
+    -> wa.m("💋", response_type + cmd_send_item + LIST_RANDOM(available_photos) +  photo  + Lust) ->
+    {response_type ^ (WAM_READ + WAM_CHOOSE):
+        -> wa.m("{How hot?|lol i bet your drooling 🤤|Stare and go dumb|So weak...|Complete surrender.}", WAM_CONTPAUSE + Submissiveness) ->
+
+        -> wa.m("{thank you|I love you|I'm {BELLA_NAME}'s loser|No escape.|\{BELLA_NAME\}}", WAM_CONTINUOUS + cmd_repeat_after_me + Confidence) ->
+        {not obeyed_cmd: ->taunt_disobeyed->->}
+        -> wa.m("Again.", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
+        {not obeyed_cmd: ->taunt_disobeyed->->}
+        -> wa.m("{Good boy. Again|Keep going|repeat 💋}", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
+        {not obeyed_cmd: ->taunt_disobeyed->->}
+        -> wa.m("{Again!|more|and again|Again.}", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
+        {not obeyed_cmd: ->taunt_disobeyed->->}
+        -> wa.m("{Good boy.|You 😍 me lol|So fuckin pathetic}", WAM_CONTPAUSE + Submissiveness + Lust + Confidence) ->
+        
+        ~incstat(lust)
+        ~incstat(addiction)
+    }
+
+
+->->
+= taunt_disobeyed
+-> wa.m("{~Ah sweet, trying to resist 💋|lol You know you can't win|So weak...|Your cock is mine, don't fight it lol|Resistance is futile lol}", WAM_CONTPAUSE) ->
+    ~ decstat(obedience)
+    ~ incstat(confidence)
+    ~ decstat(addiction)
+->->
+
+// Bella sends you a pic, then does "repeat" commands
+= do_taunt_haggle_game(response_type)
+    ~ temp cmd = cmd_haggle_game
+    ~ temp v = RANDOM(10,25) * 10
+    ~ temp msg = "It's crazy deal time!"
+
+ -> wa.m(msg, response_type + num2list(v) + cmd) ->
+->->
+
+= do_taunt_tribute(response_type)
+
+    ~ temp cmd = cmd_tribute+Submissiveness
+    // Tribute round number close to half his assets
+    ~ temp v = _cc / 2
+    ~ v = v / 10
+    ~ v = v * 10
+
+    {
+      - v < 100: 
+        ->-> // don't demand tribute
+      - v > 10000:
+       ~ v = 10000
+      - v > 1000:
+        ~ v = 1000
+      - v > 500:
+        ~ v = 500
+      - else:
+        ~ v = v
+    }
+    ~ temp msg = "Show me how obedient you are. Send me ${comma_ify(v)} now"
+    ~incstat(addiction)
+ -> wa.m(msg, response_type + num2list(v) + cmd) ->
+
+    ~decstat(addiction)
+
+ ->->
+ 
+// Work proposition from Al and from Bella 
+
+
+VAR tagged_videos = ()
+VAR untagged_videos = ()
+VAR skipped_videos = ()
+
+= work_proposition
+-> wa.m("We need to talk",WAM_READ+WAM_PAUSE) ->
+You don't know what she means, but you suddenly feel dread.  She's definitely serious about something.  You respond quickly:
+{M_wa_S(YOU)}Ok.
+
+{M_wa_S(BELLA)} You're a tech guy arent you
+You're not sure where she's going with this:
+-> cont ->
+{M_wa_S(YOU)}Yes.
+{M_wa_S(BELLA)} i have a great job for you
+You wait for her to go on. The app shows that she's busy typing...
+-> cont ->
+...and typing...
+-> cont ->
+-> ffa(minute, 3) ->
+Eventually you get a long message from her:
+{M_wa_S(BELLA)} 
+I have some videos on my site that need their tags checked, there are a lot of them.  Some of them will also need to be converted to .mp4 files.  i will pay you for the work of course,  a fair rate, dont worry.  you need to start today. i will send you the links to the files in a minute and then you can start immediately.  i suggest you empty your balls before you start work from now on, you will not be very productive otherwise lol
+{M_wa_S(BELLA)} the work won't take long, if you do it non stop. I'll pay you ${payment_for_correct_video_tag} per video if you tag them correctly. 
+{M_wa_S(BELLA)} oh in case you were wondering, no you dont have a choice and yes, im serious about all this.  
+{M_wa_S(BELLA)} any questions?
+
+
+{M_wa_S(YOU)}no
+
+{M_wa_S(BELLA)}good. start now
+~ employer = bella_org
+-> cont ->
+That seems to be the end of that conversation.
+~ available_employers = bella_org
+{hint()}  Choose "Work for {BELLA_NAME}" from the activity menu!
+
+
+-> search_media(video, LIST_ALL(media), untagged_videos) ->
+
+// Number of videos: {LIST_COUNT(untagged_videos)}
+
+// Total cost of videos: {LIST_TOTAL(untagged_videos)}
+// ~ temp video_ = LIST_RANDOM(untagged_videos)
+// -> tag_a_video(video_) ->
+
+->->
+
+VAR payment_for_correct_video_tag = 100
+
+==  tag_a_video(video_)
+~ temp lum_arg = ()
+
+->lookup_media(video_, lum_arg) ->
+{_DEBUG:>>> (CHEAT)<i> Media Info = {lum_arg}}
+~ temp actual_tags = (lum_arg ^ LIST_ALL(search_tags))-video
+
+{_DEBUG:>>> Video: ({video_})}
+    -> ffa(minute, 5) ->
+    ~ lum_arg = lum_desc
+    It's titled: "<> ->lookup_media(video_, lum_arg) ->
+    <>"
++ [Make a wild guess at the tags]
+    -> ffa(minute, 5) ->
++ [Watch the video first]
+    ~ lum_arg = lum_narr
+    ->lookup_media(video_, lum_arg) ->
+    -> ffa(minute, 15) ->
+    ~ incstat(lust)
++ [Come back to this one later] ->
+    -> list_utils.move_item(video_, untagged_videos, skipped_videos) ->-> 
+-
+-> ffa(minute,10) ->
+~ temp guessed_tags = ()
+~ temp num_actual_tags = LIST_COUNT(actual_tags)
+
+The video has {print_number(num_actual_tags)} tag{num_actual_tags!=1:s}.
+-> multiselect(LIST_ALL(search_tags)-photo-video, guessed_tags, num_actual_tags, num_actual_tags, "tag") ->
+~ temp matched_tags = actual_tags ^ guessed_tags
+~ temp num_wrong_tags = num_actual_tags - LIST_COUNT(matched_tags)
+{num_wrong_tags:
+    - 0:
+        ~incstat(confidence)
+        ->cc.receive(employer_name(), payment_for_correct_video_tag, true) ->
+        -> list_utils.move_item(video_, untagged_videos, tagged_videos) ->
+        Right!  {print_number_c(LIST_COUNT(tagged_videos))} down, {print_number(LIST_COUNT(untagged_videos)+LIST_COUNT(skipped_videos))} to go!
+        ->->
+    
+    - num_actual_tags:
+        ~decstat(confidence)
+        You were way off the mark with your guesses!     
+     -else:
+        You got {list_with_commas(matched_tags)} right, but the other {print_number(num_wrong_tags)} {num_wrong_tags==1:was|were} wrong. You'll need to come back to it later.
+
+}
+// only reach here if not all correct   
+-> list_utils.move_item(video_, untagged_videos, skipped_videos) ->->   
+
+
+
+->->
+
+
+ 

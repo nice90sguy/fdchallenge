@@ -133,7 +133,7 @@ VAR num_times_actually_did_exercise = 0
     You head out, and get home<> -> later(false) -> 
     <>.
     ~ activities_done_today += (exercise,weights)
-    ~incstat(lust)
+    ~ incstat(lust)
     ~ incstat(hunger)
     ~ incstat(confidence)
     ~ incstat(fitness)

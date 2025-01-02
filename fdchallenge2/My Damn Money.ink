@@ -34,6 +34,7 @@ INCLUDE grind/work.ink
 INCLUDE grind/sleep.ink
 INCLUDE grind/breakfast.ink
 INCLUDE grind/bar.ink
+INCLUDE grind/cafe.ink
 
 INCLUDE fansite/fansite.ink
 INCLUDE fansite/add_credits.ink
@@ -41,15 +42,21 @@ INCLUDE fansite/chat.ink
 INCLUDE grind/messages.ink
 INCLUDE grind/stat.ink
 INCLUDE fansite/shop.ink
-
+INCLUDE location.ink
 INCLUDE bar/bar.ink
 INCLUDE generated/media_items.ink
 INCLUDE work.ink
-INCLUDE work_proposition.ink
 INCLUDE one_week_later.ink
 INCLUDE ../lib/list2num.ink
+INCLUDE bella.ink
 INCLUDE angie.ink
-INCLUDE location.ink
+INCLUDE cafe.ink
+
+
+
+
+
+
 
 
 
@@ -73,7 +80,7 @@ VAR _LITEROTICA_EXPORT = true
 // FOO
 
 // -> END
-(Version 0.053)
+(Version 0.060)
 -> main
 
 == main
@@ -112,7 +119,7 @@ VAR _LITEROTICA_EXPORT = true
             
         -else: {hint()} You won't see any stat changes.
         }
-    + + (opt_debug) [Turn {_DEBUG:off|on} debug tracing]
+    + + (opt_debug){_DEBUG} [Turn {_DEBUG:off|on} debug tracing]
     ~ _DEBUG = not _DEBUG
     {opt_debug==1:{warn()} This will clutter the output with masses of debug trace messages!}
     {hint()} Debugging is now {_DEBUG:on|off}.
@@ -121,7 +128,7 @@ VAR _LITEROTICA_EXPORT = true
 
 
 
-* [(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
+* {_DEBUG}[(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
     * * [Sub Path]
         ~ path = sub
     * * [Adventure Path]
@@ -148,7 +155,7 @@ VAR _LITEROTICA_EXPORT = true
     -> END
 
 == fanlogin
-{bella()} The [Fan Login] option is for Fan Club members Only!  <br>Not in My Fan Club yet? You know what to do!
+{bella_icon()} The [Fan Login] option is for Fan Club members Only!  <br>Not in My Fan Club yet? You know what to do!
 
 * [I'm already in Your Fan Club, and I know my pin code (Game)]
     ->tbc

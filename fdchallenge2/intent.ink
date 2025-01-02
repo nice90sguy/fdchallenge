@@ -4,7 +4,7 @@ Manage commands (illocutionary forces, e.g. greet, comma)
 and purposes (perlocutionary forces -- stat-changing effects of Bella's actions/words)
 
 */
-LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_again, cmd_tribute_more, cmd_double_it,cmd_send_item, cmd_repeat_after_me, cmd_haggle_game, cmd_greet, cmd_unlock_item, cmd_noecho
+LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_again, cmd_tribute_more, cmd_double_it,cmd_send_item, cmd_repeat_after_me, cmd_haggle_game, cmd_greet, cmd_unlock_item, cmd_noecho, cmd_setflag, cmd_clearflag, cmd_noemit, cmd_meet
 
 // Some commands may change stats, but the stat_changing_commands are available too,
 // and are meant to be use as a mixin for other commands to boost/decrease stats in addition to the 
@@ -43,6 +43,17 @@ VAR obeyed_cmd = false
 -> cmd_adhoc("Obey Her", threshold)
 
 
+= command_meet(msg, t, args)
+~ temp where = args ^ LIST_ALL(location)
+~ temp when = list2num(args) // epoch time
+~ temp with = args ^ LIST_ALL(MSG_PEOPLE)
+{when == 0:
+    ~ when = now() + 3600
+}
+You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
+
+->->
+
 = command_repeat_after_me(phrase, t, args)
 // If it's an order to repeat a second time, e.g. "Say it again", the phrase is the order, 
 // and you have to say last_phrase_to_repeat.
@@ -68,7 +79,6 @@ VAR obeyed_cmd = false
 ->->
 // args should contain an item
 = command_send_item(msg, t, args)
--> M(msg, t, args+BELLA) ->
 ~ temp item = args ^ LIST_ALL(media)
 
 
@@ -193,8 +203,30 @@ triggers command_greet("Hello", now(), (BELLA))
 
 */
 = respond(msg, t, args)
+
 //  {_DEBUG:>>> RESPOND: {msg} {t}, {args}}
+~ temp gs_flags = args ^ LIST_ALL(state_flags)
 ~ temp cmds  = args ^ LIST_ALL(commands)
+~ temp from = args ^ LIST_ALL(MSG_PEOPLE)
+{from == ANGIE_FULL_NAME:
+    ~ from = ANGIE
+}
+{not (cmds ^ cmd_noemit):
+     -> M(msg, t, args) ->
+}
+// Set/Clear game state flags
+{gs_flags != ():
+    {
+     - cmds ^ cmd_setflag:
+        ~ state_flags += gs_flags
+        >>> GAME STATE: + {gs_flags}
+     - cmds ^ cmd_clearflag:
+      ~ state_flags -= gs_flags
+        >>> GAME STATE: - {gs_flags}
+     - else:
+        >>> Error: Game state flag(s) {gs_flags} were in command arg, but no cmd_setflag or cmd_clearflag command.
+    }
+}
 
 // Stat-changing commands
 
@@ -223,7 +255,7 @@ triggers command_greet("Hello", now(), (BELLA))
 
 // NOTE, testing for equality, not inclusion.
 {cmds == cmd_again:
-    -> respond(msg, t, last_args + cmd_again) ->
+    -> respond(msg, t, last_args + cmd_again + cmd_noemit) ->
     ~ last_args -= cmd_again
 - else:
 
@@ -247,18 +279,22 @@ triggers command_greet("Hello", now(), (BELLA))
 //             -> cont -> grind.do ->
 //         }
     - cmds ? cmd_logon:
-
-            -> M(msg, t, args) ->
             You log on to her fan site...
             -> cont -> fansite ->
     - cmds ? cmd_greet:
         {now()-t > 60:You know you're late replying, but...}
-        ->wa.r3choices("Hi!", "Hello {BELLA_NAME}", "🍆 😆",) ->
+        ->wa.r3choices("Hi!", "Hello {msg_name(from)}", "🍆 😆",) ->
+        ~ incstat(obedience)
+
+    - cmds ? cmd_meet:
+        {now()-t > 3600:You know you're late replying, but...}
+        -> M_Y("Sure {msg_name(from)}!") ->
+        -> command_meet(msg, t, args) ->
         ~ incstat(obedience)
         
     - cmds ? cmd_yes:
         {now()-t > 3600:You know you're late replying, but...}
-        -> M_Y("yes bella") ->
+        -> M_Y("yes {msg_name(from)}") ->
         ~ incstat(obedience)
     
     - cmds ? cmd_tribute:
@@ -283,11 +319,8 @@ triggers command_greet("Hello", now(), (BELLA))
       - else:
       {not (cmds == ()): 
            {_DEBUG:>>> UNHANDLED COMMAND(S) {cmds}}
-    
-        - else:
-         {_DEBUG:>>> (respond) NO_COMMAND TO PROCESS, emitting message}
-        -> M(msg, t, args) ->
-        }
+       }
+
     }
     // Only set last_args if not cmd_again
     ~ last_args = cmds

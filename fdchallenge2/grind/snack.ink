@@ -11,20 +11,25 @@
             - else: You know snacking's not so healthy
         } <>, but you're just so damn hungry right now.
     }
-
+ {location == location_cafe: <> And the pastries here are so damned delicious!}
 }
-+ + (do){current_activity != snack or sq(confidence) == min} [Eat a snack] ->
++ + (do){current_activity != snack or sq(confidence) == min} [{location == location_cafe:Buy a pastry|Eat a snack}] ->
     ~ current_activity = snack
-    You eat <>
-    {
-     - sq(confidence) >= high:
-        {~a banana|an apple|some peanuts}
-     - sq(confidence) == medium:
-        {~a cheese sandich|some leftover pasta. You don't bother heating it up}
-     - else:
-        {~a bag of potato chips|a chocolate bar|two chocolate bars}
-        ~ decstat(fitness)
-    } <>.
+    {location == location_cafe:
+        You buy a pastry.
+        -> cc.pay(CAFE_NAME, 5, true) ->
+    - else:
+        You eat <>
+        {
+         - sq(confidence) >= high:
+            {~a banana|an apple|some peanuts}
+         - sq(confidence) == medium:
+            {~a cheese sandich|some leftover pasta. You don't bother heating it up}
+         - else:
+            {~a bag of potato chips|a chocolate bar|two chocolate bars}
+            ~ decstat(fitness)
+        } <>.
+    }
     -> ffa(minute, 15) ->
     ~ decstat(hunger)
 

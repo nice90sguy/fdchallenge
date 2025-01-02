@@ -68,8 +68,10 @@ Again, without thinking, you do as she says.  Your dick is ready to burst now. W
 ->->
 
 = dom_path 
-TODO back in hotel room dom path
--> tbc
+Back in your room, you manage to gather up your clothes and stuff them into your suitcase, ready for your early departure to the airport tomorrow morning.  
+You jump into bed, turn out the lights, and close your eyes.  You can still see her though.  You can still smell her perfume.  Your grab your dick and begin stroking, but then the anger and humiliation at the way she ripped you off stops you.  You manage to fall asleep, with her words in your ear: 
+"Too late now, Jack, you've blown your chance..."
+->->
 
 = adventure_path 
 /*
@@ -122,7 +124,9 @@ You manage to get a couple of hours sleep, but she's in there in your dreams. Th
 -> Angie.plane_meeting ->
     Before you know it, you've landed.  You've even forgotten all about that woman you met last night.  Until now, when you realise that subconsciously, you've never stopped thinking about her since you first set eyes on her. Who the fuck was she?  And what was her name? You gotta find out as soon as you get home.
 - dom:
-    TODO airplane dom
+-> Angie.plane_meeting ->
+    Before you know it, you've landed.  You've even forgotten all about that hooker last night. "{BELLA_FULL_NAME()}", the barman said, like everyone should know her.  Maybe you should Google her.  No, just forget about her.
+    You pat the breast pocket of your jacket, feeling for your notepad.  Yeah, you lose some, you win some.  You should definitely give {msg_name(ANGIE)} a call when you get back.  Maybe in a couple of days.  Play it cool.
 }
 
 -> eod ->
