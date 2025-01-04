@@ -1,43 +1,50 @@
 === one_week_later
 
-// Create an offline message for you to read iff adventure path
--> M_chat("One week later", now(), BELLA) ->
+~ _ffd(1)
 
-~ location = location_park
+-> ff2h(10) ->
 
-// ~ set_timer_cb(FAR_FUTURE-epoch_time,->grind_messages.taunt)
-~ff(day,1)
-~ff(hour,10)
-~ff(minute, 12)
+~ _ffm(12)
 ~ set_interval_cb(3600,->on_the_hour)
--> ldtp() ->
-<i>One week has passed since you got back from your week in New York...
 
-You're sitting on a bench in your local park, after a half-hour run.  You took your phone with you this time, although you usually leave it at home.  That was a little.. Weird.
-Yeah, everything's "weird" since you got back from New York.  No, since before that... since She walked into the bar.  
-You're definitily not right - you tap your forehead - <i>up there.
+{Bella.become_her_tenant:
+    -> slug_one_week_later_tenant ->
+ - else:
+    // Create an offline message for you to read iff adventure path
+    // -> M_chat("One week later", now(), BELLA) ->
+    
+    ~ location = location_park
+    -> ldtp() ->
+    // ~ set_timer_cb(FAR_FUTURE-epoch_time,->grind_messages.taunt)
 
-You pick up your phone and look for messages from her.  None.  Maybe you should log on and see if she's left any messages on her chat page...
 
-// {hint()} From this point in the game, you can choose to display your stat changes every time they occur, which will give you insight into the result of your choices.
-// <><br>Do you want to do that now?
-//   + [Yes]
-//     Ok, you'll see stat changes from now on.
-//     ~ SHOW_STATS = true
-//   + [No]
-//     Ok, your stat changes will remain hidden.
-//     ~ SHOW_STATS = true
-//   -
-
-<i>She's really got to you.  It's not really her, its you, you realize: It's your addictive personality,  which she's tapped into.  
-<i>Of course she's unbelievably sexy, and few guys could resist the continual barrage of seduction she's been bombarding you with. And that's how she got to you, of course; but its more than that; she instantly found your weak spot, almost as soon as she met you in the hotel bar; you get turned on every time you send her money. She's <i>sexualized</i> the act of paying her. 
-<i>You're a findom addict.  
-
-<i>Even the word turns you on now.
-
-"God, help me."
+    <i>One week has passed since you got back from your week in New York...
+    
+    You're sitting on a bench in your local park, after a half-hour run.  You took your phone with you this time, although you usually leave it at home.  That was a little.. Weird.
+    Yeah, everything's "weird" since you got back from New York.  No, since before that... since She walked into the bar.  
+    You're definitely not right - you tap your forehead - <i>up there.
+    
+    You pick up your phone and look for messages from her.  None.  Maybe you should log on and see if she's left any messages on her chat page...
+    
+    // {hint()} From this point in the game, you can choose to display your stat changes every time they occur, which will give you insight into the result of your choices.
+    // <><br>Do you want to do that now?
+    //   + [Yes]
+    //     Ok, you'll see stat changes from now on.
+    //     ~ SHOW_STATS = true
+    //   + [No]
+    //     Ok, your stat changes will remain hidden.
+    //     ~ SHOW_STATS = true
+    //   -
+    
+    <i>She's really got to you.  It's not really her, its you, you realize: It's your addictive personality,  which she's tapped into.  
+    <i>Of course she's unbelievably sexy, and few guys could resist the continual barrage of seduction she's been bombarding you with. And that's how she got to you, of course; but its more than that; she instantly found your weak spot, almost as soon as she met you in the hotel bar; you get turned on every time you send her money. She's <i>sexualized</i> the act of paying her. 
+    <i>You're a findom addict.  
+    
+    <i>Even the word turns you on now.
+    
+    "God, help me."
+}
 -> cont ->
-{datetime(epoch_time)}
 ~ speech_type = speech_type_wa
 -> wa.m("Hi {YOUR_NAME}",  MELANIE+WAM_READ) ->
 You're too shocked by the timing of her message to reply to it.  Could <i>{girlfriend_name}</i> be the only person who can help you now?
@@ -47,7 +54,7 @@ You're too shocked by the timing of her message to reply to it.  Could <i>{girlf
 
 -> cont ->
 
--> tbc
+
 
 // <-  grind_stat.narrate
 
@@ -57,14 +64,28 @@ You're too shocked by the timing of her message to reply to it.  Could <i>{girlf
     -sub:->sub_choices -> 
     -dom:->dom_choices ->
 }
+-> tbc
 
+= slug_one_week_later_tenant
 
+-> ldtp() ->
+   <i>One week has passed since you got back from your week in New York...
+   
+   You've woken up after a strangely peaceful night's sleep.  For once you didn't get any messages from {BELLA_NAME}. Strange... Maybe she's busy with something else. Presumably, unlike you, she actually has a life.
+   You're about to go online and serve her on her fansite, when you remember your dream:
+   <i>You're standing at the bottom of a well, and {BELLA_NAME} is looking down at you, smiling. 
+   <i>"Help me," you call out to her, but instead she pours a bucket of... not water. Champagne? Piss?  onto your head, and you feel the water level rise to your chin.  Then she disappears, and leaves you.
+   <i>But then a shadow appears above you, and you look up, but it's not her, its...
+    
+
+->->
 = sub_choices
 /*
     Bella: Will ruin you, taking more and more, forcing you to sell items
    Melanie wll try to contact you, but you ignore her.
     
 */
+
 ->->
 = adventure_choices
 

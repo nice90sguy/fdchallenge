@@ -5,7 +5,7 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, ANGIE_FULL_NAME, ANGIE_UNKNOWN, YOU, AL
     - AL:
         ~ return "Al"
     - BELLA: 
-        ~ return BELLA_FULL_NAME()
+        ~ return BELLA_FULL_NAME
     - MELANIE:
         ~ return girlfriend_name
     - ANGIE:
@@ -17,7 +17,7 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, ANGIE_FULL_NAME, ANGIE_UNKNOWN, YOU, AL
     - YOU:
         ~ return "You"
     - else:
-        ~ return BELLA_FULL_NAME()
+        ~ return BELLA_FULL_NAME
 }
 
 

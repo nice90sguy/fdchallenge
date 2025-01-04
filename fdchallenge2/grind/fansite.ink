@@ -15,19 +15,19 @@ You know it's a bad idea, but maybe you could {bella_online():have a "chat" with
     -> cont ->
     -> wa.m("Tribute 10k", WAM_READ + WAM_PAUSE) ->
     -> intent.command_tribute("Tribute 10k", now(), num2list(10000)) ->
-    {TX_RESULT == TX_SUCCESS:
+    {last_tribute > 0 and TX_RESULT == TX_SUCCESS:
         -> wa.m("Good boy. Again", WAM_READ + WAM_PAUSE) ->
         -> intent.command_tribute("Tribute 10k", now(), num2list(0)) ->
-        {TX_RESULT == TX_SUCCESS:
+        { last_tribute > 0 and TX_RESULT == TX_SUCCESS:
             -> wa.m("Again", WAM_READ + WAM_PAUSE) ->
             -> intent.command_tribute("Tribute 10k", now(), num2list(0)) ->
-            {TX_RESULT == TX_SUCCESS:
+            {last_tribute > 0  and TX_RESULT == TX_SUCCESS:
                 -> wa.m("More", WAM_READ + WAM_PAUSE) ->
                 -> intent.command_tribute("Tribute 10k", now(), num2list(0)) ->
-                {TX_RESULT == TX_SUCCESS:
+                {last_tribute > 0  and TX_RESULT == TX_SUCCESS:
                 -> wa.m("more", WAM_READ + WAM_PAUSE) ->
                 -> intent.command_tribute("Tribute 10k", now(), num2list(0)) ->
-                    {TX_RESULT == TX_SUCCESS:
+                    {last_tribute > 0  and TX_RESULT == TX_SUCCESS:
                         ~ unlocked_fansite = true
                         -> wa.m("The pin code is 78284. enjoy 💋", WAM_READ + WAM_PAUSE) ->
 

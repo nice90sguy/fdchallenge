@@ -1,5 +1,6 @@
 VAR chat_offline_messages = ""
 VAR chat_last_args = ()
+VAR chat_last_cb = 0
 VAR chat_last_t = 0
 VAR chat_last_msg = ""
 
@@ -13,11 +14,7 @@ LIST fsa_chat_activities = fsa_chat_greet
 
     // Set cost per message based on addiction
 
-    {sq(addiction) < max:
-            ~ cost_per_message = 1
-    - else:
-            ~ cost_per_message = 10
-    }
+
 
     //     ~ nmsg()
     //     ~ amsg("<b>💋 Welcome to My Chat!</b>")
@@ -37,7 +34,7 @@ LIST fsa_chat_activities = fsa_chat_greet
 
     {chat_last_args != ():
         -> p1("Respond") ->
-        -> intent.respond(chat_last_msg, chat_last_t, chat_last_args+cmd_noecho) ->
+        -> intent.respond(chat_last_msg, chat_last_t, chat_last_args+cmd_noecho, chat_last_cb) ->
         ~ chat_last_args = ()
     }
 
@@ -70,7 +67,7 @@ LIST fsa_chat_activities = fsa_chat_greet
 
 ~ set_bella_online(false) // Should already be false
 -> p1("Respond") ->
--> intent.respond(chat_last_msg, chat_last_t, chat_last_args) ->
+-> intent.respond(chat_last_msg, chat_last_t, chat_last_args, chat_last_cb) ->
 ~ chat_last_args = ()
 
 
@@ -90,7 +87,7 @@ You're beginning to wake up to the weird impulsiveness, not to say insanity of w
 Does she even remember who you are?
 -> cont ->
 ~decstat(confidence)
--> M_Y("I dont know if you remember me, I'm the guy whose oysters you ate! It was my last night in New York") ->
+-> M_Y("I dont know if you remember me, I'm the guy {path==adventure:whose oysters you ate!|you met at the hotel the other night!} It was my last night in New York") ->
 -> M_B("ofc I remember") ->
 
 She doesn't continue after that, and you're stumped for what to say.  She's not very talkative!
@@ -124,8 +121,8 @@ You type it again, to double-check:
 You figure out that every time you send a message, the site charges you. And that {BELLA_NAME} is seemingly able to change the price!
 -> M_B("type hello world again, you nerd  {YOUR_NAME} lol") ->
 You ignore her, but she types it again!
--> intent.respond("hello world", now(), BELLA+cmd_repeat_after_me) ->
-{obeyed_cmd:-> intent.respond("Good boy. Again.", now(), BELLA+cmd_again) -> }
+-> intent.respond("hello world", now(), BELLA+cmd_repeat_after_me, 0) ->
+{obeyed_cmd:-> intent.respond("Good boy. Again.", now(), BELLA+cmd_again, 0) -> }
 -> M_B("lol dont worry im setting the price back to only one credit for a message.  You need your credits for more than chatting {devil_happy()}") ->
 ~ cost_per_message = 1
 -> ffa(minute, 1) ->
@@ -155,13 +152,13 @@ VAR enough_credits = true
 {choice:
 
     -1:
-        -> intent.respond("{Jerk and goon 🤤|UNLOCK IT||Go on.|Unlock|Stroke|Open it}", now(), cmd_send_item+LIST_RANDOM(available_items)) ->
+        -> intent.respond("{Jerk and goon 🤤|UNLOCK IT||Go on.|Unlock|Stroke|Open it}", now(), cmd_send_item+LIST_RANDOM(available_items), 0) ->
         -> ffa(minute, 15) ->
     -2:
-        -> intent.respond("{I will obey {BELLA_NAME}|I love you|I'm your slave|You own me|I belong to {BELLA_NAME}}", now(), cmd_repeat_after_me + Submissiveness) ->
+        -> intent.respond("{I will obey {BELLA_NAME}|I love you|I'm your slave|You own me|I belong to {BELLA_NAME}}", now(), cmd_repeat_after_me + Submissiveness, 0) ->
     -3:
-        -> intent.respond("{I'm worthless|No escape|I'm your ATM|I'm your paypig|oink}", now(), cmd_repeat_after_me + Confidence) ->
-        -> intent.respond("{Fifty. Now.|Spoil.|Send|spoil me|spoil your Goddess|pay.}", now(), Confidence + cmd_tribute + num2list(50)) ->
+        -> intent.respond("{I'm worthless|No escape|I'm your ATM|I'm your paypig|oink}", now(), cmd_repeat_after_me + Confidence, 0) ->
+        -> intent.respond("{Fifty. Now.|Spoil.|Send|spoil me|spoil your Goddess|pay.}", now(), Confidence + cmd_tribute + cmd_noemit + num2list(50), 0) ->
         -> ffa(minute,2) ->
     -4:
         -> M_B("Take off your pants,and get on your knees.") ->
@@ -170,7 +167,7 @@ VAR enough_credits = true
         -> cont ->
         -> M_B("now, start stroking.") ->
 
-        -> intent.respond("I live for {BELLA_NAME}", now(), cmd_repeat_after_me) ->
+        -> intent.respond("I live for {BELLA_NAME}", now(), cmd_repeat_after_me, 0) ->
         -> M_B("now, start stroking faster.") ->
         ->p1("speed up") ->
         -> M_B("Faster!") ->

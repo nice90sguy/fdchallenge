@@ -1,6 +1,6 @@
-LIST location = location_home, location_gym, location_park, location_bar, location_cafe, location_hotel_bar, (location_hotel_room), location_airplane, location_laptop
+LIST location = location_apartment, location_gym, location_park, location_bar, location_cafe, location_hotel_bar, (location_hotel_room), location_airplane, location_laptop, location_hovel
 
-
+VAR location_home = location_apartment
 == ldtp()
 
 {location != ():Location: <b>{location_desc()}}</b><br><>
@@ -19,7 +19,8 @@ LIST location = location_home, location_gym, location_park, location_bar, locati
     - location_hotel_room: 🛏️ Hotel Bedroom, Manhattan, NY
     - location_hotel_bar: 🍸Hotel Bar, Manhattan, NY   
     - location_airplane: ✈️Airplane, Somewhere over the Atlantic
-    - location_home: 🏠 Your apartment
+    - location_apartment: 🏠 Your apartment
+    - location_hovel: 🐀 Guest Apartment, Skankly Towers
     - location_gym: 🏋🏻‍♂️ Local gym
     - location_park: 🏞️Local park
     - location_bar: 🍻Prince of Wales Pub
@@ -34,7 +35,8 @@ LIST location = location_home, location_gym, location_park, location_bar, locati
     - location_hotel_room: in the bedroom
     - location_hotel_bar: in the bar 
     - location_airplane: on the plane
-    - location_home: at your place
+    - location_apartment: at your place
+    - location_hovel: at your miserable bedsit 
     - location_gym: at the gym
     - location_park: in the park
     - location_bar: at the pub

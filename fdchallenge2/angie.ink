@@ -18,39 +18,121 @@
     if you're yandere, she hangs around with you, sex.  Each time you have sex, you get more trapped, cant eat, sleep.  If you reach max yandere, you open up bella chat, where you get her number, and she starts taunts. Each sex with angie reduces bella addiction, each bella interaction reduces angie yandere.
     The higher the yandere, the more dangerous she becomes.  If she takes your phone, she closes bella path
     
+    Angie stats: These continually increase until max, all you can do is delay it, never reduce it.
+    If you ignore her, the more she pesters you.
     
+    min - you don't communicate with her at all, she pesters you
+    low - you've met her, but keep your distance, she pesters you
+    med - you met her in the cafe, and got on well, but no sex yet
+    high - you've fucked, or jerked off together in the shower
+    max - youre addicted to her
     
 */
 === Angie
+
 = cafe_meeting_invite
->>> FOO
+{_DEBUG:>>> SENT INVITE}
     ~ temp meeting_t = next_hm(11,0)
-    -> wa.m("Hi sexy. Fancy meeting up up later?", WAM_MISS + ANGIE_FULL_NAME + cmd_meet + location_cafe + num2list(meeting_t)) ->
-     ~ set_timer_cb(meeting_t - epoch_time,->Angie.meet_in_cafe_cb)
+    -> wa.m_cb("Hi there {sq(angie_relationship == high):sexy}. Fancy meeting up for a coffee sometime today? Say, eleven?", WAM_MISS + ANGIE_FULL_NAME + cmd_meet + location_cafe + num2list(meeting_t), ->Angie.meet_in_cafe) ->
+
     
 ->->
+/*
+This is a "callback" that never returns.
+At the beginning, set IN_CALLBACK to false, do stuff, then tunnel on to grind.after_activity
+*/
+= meet_in_cafe
 
-= meet_in_cafe_cb
+~ IN_CALLBACK = false
+
 {location != location_cafe:
-    {warn()} You didn't meet {msg_name(ANGIE)}!
+    // Edge case, you're on your way there.
+    {current_activity == hangout_cafe:
+        {warn()} It's {ampm()}. You're running late!
+        -> p1("Call her and tell her you're on your way") ->
+         "That's ok, no rush," she says.
+    - else:
+        {warn()} It's {ampm()} and you forgot to meet {msg_name(ANGIE)}!
+        ~ decstat(confidence)
+        -> p1("Call her and apologize") ->
+        ~ incstat(obedience)
+        You call her up.
+        "That's ok," she says, lightly.  "I'm still here. How long will it take you to get here?"
+        "Half and hour, max," you say.
+        "Make it fifteen minutes, and I'll still be here."
+        You jump in an Uber and get there in fifteen minutes.
+        -> cc.pay("Uber", 10, true) ->
+        -> ffa(minute, 15) ->
+    }
+    ~ location = location_cafe
+    You walk into the cafe and see her there.  She smiles and waves, and you sit down opposite her. 
+    "I'm so sorry, I just caught up in things, and lost track of time!"
+    You sit down opposite her, and look at her. 
+    ->  slug_cafe_meeting ->
+
 - else:
-    You meet Angie.
+    Angie walks in and looks around. She sees you and smiles.
+    She sits down  opposite you and takes off her jacket. 
+    ~incstat(angie_relationship)
+    ->  slug_cafe_meeting ->
+
+
 }
+~ IN_CALLBACK = false
+-> grind.after_activity
+
+= slug_cafe_meeting
+ She's wearing a low-cut pink long-sleeved tee shirt, revealing her cleavage, and you can't help noticing her tattoo,  right above her breast, of a bee. But you look up at her face quickly, before she notices.
+ 
+ "Like it?" She asks you, smiling.
+ 
+ * {phone_sex}[Comment on it] ->
+    "It's very... noticeable," you laugh. "So, why a bee?"
+    "Because I'm sweet as honey."
+    "And presumably because you have a bit of sting too?"
+    "Me??" She says, playing a hand over her chest innocently. "No, I'm not the stinging type."
+    
+ * [Show interest in her as a person] ->
+    "Yeah, it's kind of cool."
+    "I was going for hot, but never mind."
+    
+ - 
+
+    -> ffa(hour, 1) ->
+    -> cont ->
 ->->
-
 = plane_meeting
-A woman sits in the next seat to you.  She's very nice-looking, with a big smile and great legs, which you notice while untangling your seatbelt from hers.  You end up talking with her. Her name's {msg_name(ANGIE)}. You watch a couple of inflight movies together, laughing at the same places in the movie.  You're obviously suited, with the same sense of humor; and she wants to exchange numbers. 
-
+A woman sits in the next seat to you.  She's very nice-looking, with a big smile and great legs, which you notice while untangling your seatbelt from hers.  
+She seems familiar.  It turns out she lives not far from you, and goes to the same gym and cafe as you!  That must be where you've seen her, you think.
+You end up talking with her. Her name's {msg_name(ANGIE)}. You watch a couple of inflight movies together, laughing at the same places in the movie.
+She wants to exchange phone numbers. 
 You reach for your phone in your backpack, but it's not there.  Fuck, did you leave it at the hotel? No, you distinctly remember packing it. Oh yeah, you put it in your suitcase which has gone in the hold. <>
     You get her to write down her number in your notepad, old-school.
-    -> wa.m("Hi", WAM_SILENT+WAM_MISS+ANGIE_UNKNOWN) ->
+{hint()} Whichever option you choose now, you haven't seen the last of her!
+    * [Give her a fake number]
+        You give her a fake number. There's something about her that rings alarm bells.
+        ~ setstat(angie_relationship, min)
+    * [Give her your real number]
+        You give her your number, with a vague sense of foreboding.
+        -> wa.m_cb("Hi", WAM_SILENT+WAM_MISS+ANGIE_UNKNOWN+WAM_CALLBACK,  ->respond_to_angie_hi) ->
+        ~ setstat(angie_relationship, low)
+    -
+
+    
+
 
 
 
 ->->
 
+= respond_to_angie_hi
+>>> angie_relationship: {list2num(angie_relationship)}% ({sq(angie_relationship)})
+    You look at the time of the message, and figure out it must be from {msg_name(ANGIE)}.  Checking your notepad, you confirm it.
+    Great.  But you're not going to call her back.  Wait a couple of days. Play it cool.
+    -> cont ->
+->->
 // You've just come out of the shower
-= first_phone_chat
+= phone_sex
 You reply to her message.
 {M_wa_S(YOU)} hi {msg_name(ANGIE)}.  :)
 ->ffa(minute, 2)->
@@ -121,7 +203,7 @@ You know you're expected to reciprocate.  You let the towel drop to the floor, a
 >>> TODO
     
 -
-
+~ setstat(angie_relationship, high)
 ->->
 
 = first_bar_meeting
@@ -169,25 +251,4 @@ You hang out with {msg_name(ANGIE)}.
 TODO Yandere
 >>> Yandere
 ->->
-// Opts for bar encounters
-=== angie_bar
 
-= opt
-
-{opt:
-// First time
-    -1:
-    You see a familiar-looking woman at a table, working on a laptop. You try to remember where you know her from.
-    
-// The second read-count of angie_bar.opt will always occur on the same night if you DON'T say hi to her, because meeting either the regulars of Al will end with looping the opts in the bar for that night.
-//  If you do talk to Angie, then read-count will be 2 on the next time you go to the bar, but Angie.first_bar_meeting will be true, so the follwing text will not be emitted. <phew>
-    - 2:
-        That woman is here again.  You really should go and talk to her.
-    - 3:
-    {not Angie.first_bar_meeting: You look around the bar, and notice that the woman with the laptop isn't here tonight.}
-}
-
-+ + (do) {opt < 3} [Go and talk to her] 
-        ->  Angie.first_bar_meeting -> 
-        ~ activities_done_today += (ba_with_angie,socialize)
-        ->bar_return_home

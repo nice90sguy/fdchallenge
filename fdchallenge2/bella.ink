@@ -1,10 +1,138 @@
 === Bella ===
+LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction, taunt_humiliate, taunt_dick_pics
+
+VAR available_taunts = ()
+
+->->
+
+/*
+After you remorgage your flat, Bella "suggests" you sell your house.
+She rents out a bedset to you at a ridiculously high daily rent, and her tributes
+increase.
+*/
+
+VAR old_timer_cb = 0
+
+= become_her_tenant
+// First call, schedule convo
+
+{become_her_tenant == 1:
+    ~ old_timer_cb = _timer_cb
+    ~ set_timer_cb(2 * about_an_hour(), ->become_her_tenant)
+{_DEBUG:>> SCHEDULED MESSAGE}
+    ->->
+}
+{_DEBUG:>>> TEST {not need_more_money or not grind_banking.remortgage or become_her_tenant> 2:NOT} PASSED TO BECOME BELLA'S TENANT}
+
+-> wa.m("We need to talk",WAM_READ+WAM_PAUSE, ) ->
+She sounds serious.  You respond instantly:
+{M_wa_S(YOU)}ok
+
+{M_wa_S(BELLA)} I have a suggestion...
+
+-> p1("Wait for her to continue") ->
+{M_wa_S(BELLA)} you own your place, right
+-> p1("Uh-oh...") ->
+{M_wa_S(YOU)}yes
+{M_wa_S(BELLA)} How much is it worth?
+~ temp price = 0
+* [Tell her the truth]
+    ~ price = 500000
+    {M_wa_S(YOU)}i guess around three-fifty.
+    {M_wa_S(BELLA)} Is that all?  😆
+    {M_wa_S(YOU)}maybe more, i'm not sure {BELLA_NAME}
+    -> p1e("{M_wa_S(BELLA)} sell it to me.") ->
+    {M_wa_S(YOU)}What??
+    {M_wa_S(BELLA)} I'll offer you 500K for it. cash.
+    -> p1e("You're unable to reply") ->
+    <>, you're too stunned by her sudden generous offer.
+* [Inflate the price]
+    ~ price = 350000
+    {M_wa_S(YOU)}i guess around five hundred thousand.
+    -> p1e("{M_wa_S(BELLA)} sell it to me.") ->
+    {M_wa_S(YOU)}What??
+    {M_wa_S(BELLA)} I'll offer you 350K for it. cash.
+    -> p1e("You're unable to reply") ->
+    <>, you're too stunned by her sudden offer. And she got its value right on the nose.  She's obviously been doing her research.
+-
+-> cont ->
+{M_wa_S(BELLA)} Do it.
+-> p1e("Hesitate, there has to be a catch") ->    
+{M_wa_S(BELLA)} do it, {YOUR_NAME}.    
+-> p1("Agree") ->    
+{M_wa_S(YOU)}Ok.
+{M_wa_S(BELLA)}But there's one condition 
+-> p1("I knew it") ->
+-> p1("Bella is typing...") ->
+-> p1("and typing...") ->
+{M_wa_S(BELLA)} you must agree to move out of your place tonight, into a new place. I'm gonna give you the address and where to pick up keys from. its one of my London properties that i reserve specially for my fans who visit there, but im letting you stay there instead.
+{M_wa_S(BELLA)}  it has security cams so i can check on you.  later we will arrange for you to move your stuff. but for now, you have to stay there. now, i bet you want to know why im doing all this for you, don't you?
+-> cont ->
+It sounds like she wants to keep you prisoner there, but so what if there's security cams? You can just leave, it's not like she can do anything about it.  And you'll have made 150k over the value of your flat.  You can just go out and buy a nicer one!
+{M_wa_S(YOU)}Because... you like me?
+{M_wa_S(BELLA)} That's right. I like you, and I'm proud of the way you're learning to appreciate the value of money.
+-> p1e("{M_wa_S(BELLA)} so we have a deal.") ->
+{M_wa_S(YOU)}Yes
+{M_wa_S(BELLA)} Ok. I made the transfer now. Get going. I just sent you details
+-> cc.receive(BELLA_FULL_NAME, price, true) ->
+-> cont ->
+You check your account, and sure enough, she's transferred the money, just like that! How rich is she, actually, to be able to spend that much money as though it was small change to her?  
+
+In a daze, you pack a suitcase and your backpack and pick up the key to her place. To your consternation, it's at a local newsagent.  You tell the guy that {BELLA_FULL_NAME} sent you to collect a package, and he hands you an envelope with a key, and an address. 
+
+You take the tube to a run-down suburb, and find the place. It's a tower block, built in the 1960's, in a state of disrepair.  The elevator works, but stinks of piss.  You notice a syringe on the floor of the lift as it clanks and whines and slowly takes you up to the tenth floor.
+You walk along the outer walkway, passing doors boarded up with metal sheeting, until you get to the place. You walk in.
+-> cont ->
+To your surprise, it's not as bad as it looks from the outside.  It's a single, large room, with a single bed in the corner, a kitchen area, and a bathroom.  Although the furniture is basic, it's clean and the fixtures and fittings all work. 
+You feel a sense of gratitude and relief that the place isn't as bad as you feared.
+You investigate the cutlery in the kitchen drawers.  When you open the fridge, it's empty, except for a bottle of Champagne.
+-> wa.m("Take it out", WAM_READ) ->
+You're shocked. How did she know? 
+You look around wildly, expecting to see her there.  Then you notice the cams in the foor corners of the ceiling.  
+{M_wa_S(BELLA)} You saw the cams 📹
+{M_wa_S(BELLA)} Take it out, i said.  Read the label.
+You do as she says, and read the label.
+{M_wa_S(BELLA)} Say it aloud. I have audio as well as video.
+"Armand de Brignac Blanc de Noirs".
+
+{M_wa_S(BELLA)} Recognize it?
+"Yes."
+{M_wa_S(BELLA)} Pay me for it. ${LIST_VALUE(ace_of_spades)}.
+-> cont ->
+-> cc.pay(BELLA_FULL_NAME, LIST_VALUE(ace_of_spades), true) ->
+{M_wa_S(BELLA)} Good boy. Now open it. And drink a toast to your Goddess
+-> p1e("You do as she says") -> 
+<>, and raise your glass to the ceiling cameras. You gulp down the Champagne.  It's amazing, the best drink you've ever tasted.
+
+-> cont ->
+{M_wa_S(BELLA)}Again.
+You fill up you glass, feeling light-headed, and drink it as a single gulp.
+{M_wa_S(BELLA)}Finish it.  Go on, you deserve it, my Good boy
+You drink again... and again... 
+Unsteadily, you try to put the empty bottle back onto the counter, but you miss, and the bottle falls onto the floor and rolls away.
+In a daze, you stumble onto the bed, and pass out.
+~ _ffd(1)
+~ current_activity = sleep
+~ setstat(sleepiness, max)
+~ setstat(addiction, max)
+~ setstat(obedience, max)
+~ setstat(confidence, min)
+~ cost_per_message = cost_per_message * 10
+~ location_home = location_hovel
+~ location = location_home
+~ need_more_money = false
+~ _timer_cb = old_timer_cb
+-> grind.after_activity
+->->
+ 
 = name
 Bella
 ->->
 =taunt
-LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction, taunt_humiliate, taunt_dick_pics
-
+// Initialise available taunts first time
+{taunt == 1:
+    ~ available_taunts = LIST_ALL(taunts)
+}
 VAR num_dick_pics_to_send = 0
     ~ temp response_type = WAM_MISS
     {with_phone_activites ? current_activity:
@@ -41,7 +169,7 @@ VAR num_dick_pics_to_send = 0
     }
 
 
-    {LIST_RANDOM(LIST_ALL(taunts)):
+    {LIST_RANDOM(available_taunts):
         
         - taunt_send_pic_and_repeat_after_me: ->do_taunt_send_pic_and_repeat_after_me(response_type) ->
         // - taunt_haggle_game: -> do_taunt_haggle_game(response_type) ->
@@ -56,7 +184,7 @@ VAR num_dick_pics_to_send = 0
 
 ->->
 = do_taunt_dick_pics(response_type)
-
+    ~ available_taunts -= do_taunt_dick_pics // Only once
     {response_type ^ (WAM_READ + WAM_CHOOSE):
      -> wa.m("Send me a pic of your dick.", response_type + Addiction) ->
         ~incstat(lust)
@@ -209,7 +337,7 @@ VAR num_dick_pics_to_send = 0
 
 = do_taunt_tribute(response_type)
 
-    ~ temp cmd = cmd_tribute+Submissiveness
+    ~ temp cmd = cmd_tribute+Submissiveness+ cmd_noemit
     // Tribute round number close to half his assets
     ~ temp v = _cc / 2
     ~ v = v / 10
@@ -338,6 +466,3 @@ The video has {print_number(num_actual_tags)} tag{num_actual_tags!=1:s}.
 
 
 ->->
-
-
- 

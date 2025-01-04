@@ -73,14 +73,14 @@ VAR prev_ff_by = 0
 
 // fast forward by hours
 === function _ffh(h)
-~ epoch_time += h * _interval
+~ epoch_time += h * 3600
 ~ gmtime(epoch_time)
 //<i>{h} hour{h > 1:s} later...
 
 // fast forward to an exact hour
 === ff2h(h)
 // modulo hour
-    ~ epoch_time -= epoch_time % _interval
+    ~ epoch_time -= epoch_time % 3600
     -> ffa(hour, h) ->
     ->->
 

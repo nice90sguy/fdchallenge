@@ -8,7 +8,7 @@
 <i>It's the only clickable item on the page, so you click it...
 -> cont ->
 Welcome to my private Fan Club  page!
-I'm {BELLA_FULL_NAME()}.
+I'm {BELLA_FULL_NAME}.
 TODO add name to knowledge
 <i>At last, you know her name!
 -> cont ->
@@ -56,9 +56,9 @@ Now. Take off your pants, and take out your dick, and grab hold of it.
 {obeyed_cmd:
 Don't move your hand yet.
  -> p1e("<i>No, Ma'am... (Damn...)") ->
- Now, start stroking, slowly, and repeat after me: "{BELLA_FULL_NAME()} controls my money."
+ Now, start stroking, slowly, and repeat after me: "{BELLA_FULL_NAME} controls my money."
 
--> p1e("<i>\"{BELLA_FULL_NAME()} controls my money.\"") ->
+-> p1e("<i>\"{BELLA_FULL_NAME} controls my money.\"") ->
 -else:
 <i>She laughs and says,</i> "It's okay if you don't want to."
  -> p1e("<i>\"Thank you for your understanding\"") ->
@@ -68,9 +68,9 @@ Don't move your hand yet.
 }
 
 
-{obeyed_cmd:"{BELLA_FULL_NAME()} controls my bank account."}
+{obeyed_cmd:"{BELLA_FULL_NAME} controls my bank account."}
 
-{obeyed_cmd:<i>"{BELLA_FULL_NAME()} controls my bank account."|->cont->}
+{obeyed_cmd:<i>"{BELLA_FULL_NAME} controls my bank account."|->cont->}
 
 "My money belongs to {BELLA_NAME}."
 
@@ -123,7 +123,7 @@ Please answer all questions:
     Field cannot be blank
     -> loop2
 -
--> wa.m("Here are My bank details: Name: {BELLA_FULL_NAME()} a/c no. 12330001 s/c 01-09-09", WAM_READ) ->
+-> wa.m("Here are My bank details: Name: {BELLA_FULL_NAME} a/c no. 12330001 s/c 01-09-09", WAM_READ) ->
 -> wa.m("The membership fee is ${FAN_CLUB_SIGNON_FEE}.", WAM_READ) ->
 -> cont ->
 

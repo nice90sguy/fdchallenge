@@ -2,15 +2,21 @@
 
 VAR DID_READ_MESSAGE = false
 
-LIST WAM_RESPONSE_TYPE = WAM_READ, WAM_IGNORE, WAM_MISS,  WAM_CHOOSE, WAM_SILENT, WAM_READ_MISSED, WAM_PAUSE, WAR_HUMILIATED, WAR_POLITE, WAR_FRIENDLY, WAR_ADDICTED, WAR_OBEDIENT
+LIST WAM_RESPONSE_TYPE = WAM_READ, WAM_IGNORE, WAM_MISS,  WAM_CHOOSE, WAM_SILENT, WAM_READ_MISSED, WAM_PAUSE, WAM_CALLBACK, WAR_HUMILIATED, WAR_POLITE, WAR_FRIENDLY, WAR_ADDICTED, WAR_OBEDIENT
 
 VAR WAM_CONTINUOUS =  (WAM_READ, WAM_SILENT)
 VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 
 
 === wa
-  
 = m(msg, args)
+    -> m_cb(msg, args, 0)
+    
+// If there's a callback divert AND a command in the args, the callback will be passed
+// to the intent.respond() command dispatcher, and may be consumed by a command 
+// If there's a callback AND WAM_CALLBACK in the args, the callback will be
+// called on reading the message (which might be a lot later that when it was sent.
+= m_cb(msg, args, cb)
 ~ temp from =  args ^ LIST_ALL(MSG_PEOPLE)
 
  ~ temp t = now()  // Message has just arrived
@@ -67,7 +73,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 + (readit)[{response_type ? WAM_READ:Read it now|👠 Read it now! }]
 
     -> ffa(second,10) ->
-     -> respond_to_msg(msg, args, t) ->
+     -> respond_to_msg(msg, args, cb, t) ->
 
     ~ DID_READ_MESSAGE = true
     {response_type ? WAM_PAUSE:
@@ -79,8 +85,10 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
         // remove all commands from the message, you've missed it
     // {_DEBUG:>>> MISSED COMMAND(s): {args ^ LIST_ALL(commands)}}
     // ~ args = args - LIST_ALL(commands)
-    -> unread_message_log.add(msg, args) ->
-    ~ decstat(obedience)
+    -> unread_message_log.add(msg, args, cb) ->
+    { not (response_type ? WAM_MISS):
+        ~ decstat(obedience)
+    }
 
 -
 
@@ -101,6 +109,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 ~ temp t =  0
 ~ temp arg = ()
 ~ temp msg = ""
+~ temp cb = 0
 {auto: -> read_oldest}
 + (loop_missed_msgs)  ->
      {unread_message_count==0:
@@ -110,11 +119,11 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
      }
 
   + + (read_oldest) [Yes {unread_message_count > 1: (Oldest first)}] -> 
-        -> unread_message_log.pop_oldest(msg, arg, t) ->
-         -> respond_to_msg(msg, arg, t) -> loop_missed_msgs
+        -> unread_message_log.pop_oldest(msg, arg, cb, t) ->
+         -> respond_to_msg(msg, arg, cb, t) -> loop_missed_msgs
   + + {unread_message_count > 1}[Yes (Newest first)] -> 
-        -> unread_message_log.pop_newest(msg, arg, t) ->
-         -> respond_to_msg(msg, arg, t) -> loop_missed_msgs
+        -> unread_message_log.pop_newest(msg, arg, cb, t) ->
+         -> respond_to_msg(msg, arg, cb, t) -> loop_missed_msgs
   + + {unread_message_count}[No]
     ->-> 
 
@@ -123,19 +132,23 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 
 ->->
 
-= respond_to_msg(ref msg, ref args, ref t)
+= respond_to_msg(ref msg, ref args, ref ->cb, ref t)
 {_DEBUG:>>> RESPOND TO MESSAGE: {msg}, {t} {args}}
 // Do nothing if the time is zero (no message in slot)
 {t:
     // If the message contains any commands, dispatch to command handler,
     // Which may or may not emit the message
     {(args ^ LIST_ALL(commands)) != ():
-
-        -> intent.respond(msg, t, args) ->
+        -> intent.respond(msg, t, args, cb) ->
+    
     -else: 
          {_DEBUG:>>> respond_to_msg NO_COMMAND_IN_MESSAGE}
     // emit the message if it's not blank
         ->M_wa(msg, t, args) ->
+    // If there's a callback asscociated with the message, call it now
+        {args ^ WAM_CALLBACK != ():
+            -> cb ->
+        }
     }
 }
 ->->
@@ -191,6 +204,17 @@ VAR _msglog_t_7 = 0
 VAR _msglog_t_8 = 0
 VAR _msglog_t_9 = 0
 
+VAR _msglog_cb_0 = 0
+VAR _msglog_cb_1 = 0
+VAR _msglog_cb_2 = 0
+VAR _msglog_cb_3 = 0
+VAR _msglog_cb_4 = 0
+VAR _msglog_cb_5 = 0
+VAR _msglog_cb_6 = 0
+VAR _msglog_cb_7 = 0
+VAR _msglog_cb_8 = 0
+VAR _msglog_cb_9 = 0
+
 CONST MAX_MSG_LOG_NUM = 9
 
 VAR unread_message_count = 0
@@ -200,7 +224,7 @@ VAR unread_message_count = 0
 -> END
 
 // Adds a message to the front of the queue (slot zero)
-= add(msg, arg)
+= add(msg, arg, cb)
 
 {_msglog_t_9 != 0:
     {warn()} You've lost some old messages! Better read them as soon as possible!
@@ -232,6 +256,17 @@ VAR unread_message_count = 0
 ~ _msglog_arg_1 = _msglog_arg_0
 ~ _msglog_arg_0 = arg
 
+~ _msglog_cb_9 = _msglog_cb_8
+~ _msglog_cb_8 = _msglog_cb_7
+~ _msglog_cb_7 = _msglog_cb_6
+~ _msglog_cb_6 = _msglog_cb_5
+~ _msglog_cb_5 = _msglog_cb_4
+~ _msglog_cb_4 = _msglog_cb_3
+~ _msglog_cb_3 = _msglog_cb_2
+~ _msglog_cb_2 = _msglog_cb_1
+~ _msglog_cb_1 = _msglog_cb_0
+~ _msglog_cb_0 = cb
+
 ~ _msglog_t_9 = _msglog_t_8
 ~ _msglog_t_8 = _msglog_t_7
 ~ _msglog_t_7 = _msglog_t_6
@@ -249,14 +284,15 @@ VAR unread_message_count = 0
 
     ~ temp msg = ""
     ~ temp arg = ()
+    ~ temp cb = 0
     ~ temp t = 0
-    -> pop_oldest(msg, arg, t) ->
+    -> pop_oldest(msg, arg, cb, t) ->
     {t > 0:->clear}
 {_DEBUG: unread_message_count after clear() is {unread_message_count} (should be 0)}
 ->->
 
     
-= pop_newest(ref msg, ref cmd, ref t)
+= pop_newest(ref msg, ref cmd, ref cb, ref t)
 
 ~ msg = _msglog_txt_0
 ~ _msglog_txt_0 = _msglog_txt_1
@@ -282,6 +318,18 @@ VAR unread_message_count = 0
 ~ _msglog_arg_8 = _msglog_arg_9
 ~ _msglog_arg_9 = ()
 
+~ cb = _msglog_cb_0
+~ _msglog_cb_0 = _msglog_cb_1
+~ _msglog_cb_1 = _msglog_cb_2
+~ _msglog_cb_2 = _msglog_cb_3
+~ _msglog_cb_3 = _msglog_cb_4
+~ _msglog_cb_4 = _msglog_cb_5
+~ _msglog_cb_5 = _msglog_cb_6
+~ _msglog_cb_6 = _msglog_cb_7
+~ _msglog_cb_7 = _msglog_cb_8
+~ _msglog_cb_8 = _msglog_cb_9
+~ _msglog_cb_9 = 0
+
 ~ t = _msglog_t_0
 ~ _msglog_t_0 = _msglog_t_1
 ~ _msglog_t_1 = _msglog_t_2
@@ -301,58 +349,68 @@ VAR unread_message_count = 0
 ->->
 
 // Gets oldest message and sets its date to zero
-= pop_oldest(ref msg, ref arg,  ref t)
+= pop_oldest(ref msg, ref arg,  ref cb, ref t)
 
 {
 - _msglog_t_9:
     ~ msg = _msglog_txt_9
     ~ t = _msglog_t_9
     ~ arg = _msglog_arg_9
+    ~ cb = _msglog_cb_9
     ~ _msglog_t_9 = 0
 - _msglog_t_8:
     ~ msg = _msglog_txt_8
     ~ t = _msglog_t_8
     ~ arg = _msglog_arg_8
+    ~ cb = _msglog_cb_8
     ~ _msglog_t_8 = 0
 - _msglog_t_7:
     ~ msg = _msglog_txt_7
     ~ t = _msglog_t_7
     ~ arg = _msglog_arg_7
+    ~ cb = _msglog_cb_7
     ~ _msglog_t_7 = 0
 - _msglog_t_6:
     ~ msg = _msglog_txt_6
     ~ t = _msglog_t_6
     ~ arg = _msglog_arg_6
+    ~ cb = _msglog_cb_6
     ~ _msglog_t_6 = 0
 - _msglog_t_5:
     ~ msg = _msglog_txt_5
     ~ t = _msglog_t_5
     ~ arg = _msglog_arg_5
+    ~ cb = _msglog_cb_5
     ~ _msglog_t_5 = 0
 - _msglog_t_4:
     ~ msg = _msglog_txt_4
     ~ t = _msglog_t_4
     ~ arg = _msglog_arg_4
+    ~ cb = _msglog_cb_4
     ~ _msglog_t_4 = 0
 - _msglog_t_3:
     ~ msg = _msglog_txt_3
     ~ t = _msglog_t_3
     ~ arg = _msglog_arg_3
+    ~ cb = _msglog_cb_3
     ~ _msglog_t_3 = 0
 - _msglog_t_2:
     ~ msg = _msglog_txt_2
     ~ t = _msglog_t_2
     ~ arg = _msglog_arg_2
+    ~ cb = _msglog_cb_2
     ~ _msglog_t_2 = 0
 - _msglog_t_1:
     ~ msg = _msglog_txt_1
     ~ t = _msglog_t_1
     ~ arg = _msglog_arg_1
+    ~ cb = _msglog_cb_1
     ~ _msglog_t_1 = 0
 - _msglog_t_0:
     ~ msg = _msglog_txt_0
     ~ t = _msglog_t_0
     ~ arg = _msglog_arg_0
+    ~ cb = _msglog_cb_0
     ~ _msglog_t_0 = 0
 }
 // If found a message, decrement count
@@ -439,4 +497,27 @@ VAR unread_message_count = 0
         ~ return _msglog_arg_9 
 }
 
+== function _mlog_cb(n)
+{n:
+    - 0:
+        ~ return _msglog_cb_0
+    - 1:
+        ~ return _msglog_cb_1
+    - 2:
+        ~ return _msglog_cb_2        
+    - 3:
+        ~ return _msglog_cb_3       
+    - 4:
+        ~ return _msglog_cb_4
+    - 5:
+        ~ return _msglog_cb_5
+    - 6:
+        ~ return _msglog_cb_6
+    - 7:
+        ~ return _msglog_cb_7       
+    - 8:
+        ~ return _msglog_cb_8        
+    - 9:
+        ~ return _msglog_cb_9 
+}
 

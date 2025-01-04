@@ -23,12 +23,16 @@ LIST fs_tx_status = FS_TX_SUCCESS, FS_TX_FAIL
     + + +  [5000 credits for $4,000]
         -> fansite_credits.add(5000, 4000) ->
         
+    + + +  {_cc >= 50000} [50,000 credits for $50,000]
+        -> fansite_credits.add(50000, 50000) ->
+        
     + + +  [I've changed my mind]
 
     - - -
     {not could_chat && credits >= cost_per_message: 
      {hint()} You can now chat with {BELLA_NAME}!
     }
+    ~ enough_credits = (credits >= cost_per_message)
 -> fansite.after_activity
 ->->
 

@@ -46,8 +46,8 @@ Relationship stats:<p><>
         ~ setstat(confidence,low)
         ~ setstat(obedience,low)
         ~ setstat(fitness,medium)
-        ~ setstat(angie_relationship,medium)
-        ~ setstat(melanie_relationship,low)        
+        ~ setstat(angie_relationship,min)
+        ~ setstat(melanie_relationship,min)        
 - sub:
         ~ setstat(sleepiness,min)
         ~ setstat(lust,low)
@@ -56,14 +56,18 @@ Relationship stats:<p><>
         ~ setstat(confidence,low)
         ~ setstat(obedience,medium)
         ~ setstat(fitness,low)
+        ~ setstat(angie_relationship,min)
+        ~ setstat(melanie_relationship,min)    
 - dom:
         ~ setstat(sleepiness,min)
         ~ setstat(lust,low)
         ~ setstat(hunger,low)
-        ~ setstat(addiction,min)
         ~ setstat(confidence,high)
         ~ setstat(obedience,min)
         ~ setstat(fitness,medium)
+        ~ setstat(addiction,min)
+        ~ setstat(angie_relationship,min)
+        ~ setstat(melanie_relationship,min)    
 - else:
 >>> Can't reset to {_path}
 }

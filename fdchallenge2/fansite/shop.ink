@@ -30,9 +30,9 @@ VAR favourite_items = ()
         + + + + [No]
         - - - - -> do
         -> ffa(minute, 6) ->
-    + + + [Browse]
+    + + + [Browse for a couple of hours]
         {hint()} (Cumming soon)
-        -> ffa(minute, 41) -> do
+        -> ffa(second, 2 * about_an_hour()) -> do
     + + + [Fap to one of your unlocked items]   
         ~ temp selected_media = ()
         -> select_with_lookup(owned_items, selected_media, "video", ->media_title) ->

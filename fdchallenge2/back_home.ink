@@ -18,13 +18,14 @@ You get home.  What you need now, is a long, hot shower.
 
 
 ~ _ffd(1)
+~ SHOW_STATS = true
 You go bed without even looking at your phone{path == dom: again|, and forget all about her}.
 -> cont ->
     ~setstat(sleepiness, min)
     ~setstat(hunger, medium)
     ~current_activity = sleep
 ~ _ffh(6)
--> Angie.cafe_meeting_invite ->
+{path==dom and sq(angie_relationship) > low: -> Angie.cafe_meeting_invite ->}
 ~ _ffh(1)
 ~ grind_return_to = ->here
 
@@ -42,11 +43,17 @@ You feel better after your shower. You wipe the steam off the mirror with a towe
 You're jet-lagged. What time is it anyway? You look at your phone to check the time. It's {approx_time(now())}.
 
 
-{path==dom:You notice that message from {msg_name(ANGIE)}. She was really cute...  But it might appear a little desperate to respond so soon.  You decide to}
- * <> stick to your plan, and not respond yet.
- * <> change your mind, and send her a message right now.
-    -> Angie.first_phone_chat ->
- - 
+{path==dom:
+You notice that message from {msg_name(ANGIE)} again. She was really cute...  
+But it might appear a little desperate to respond so soon.  You decide to
+}
+
+ * {path==dom} <> stick to your plan, and not respond yet.
+    
+ * {path==dom}  <> change your mind, and send her a message right now.
+    -> Angie.phone_sex ->
+ * ->
+ -
 
 ->->
 
@@ -76,9 +83,6 @@ Eventually, on {today()} {period_of_day()}, you arrive back home with a neckache
 -> tp ->
 Fifteen minutes later, it's fully charged.  You check whether you have any messages.  There's one, from an unknown number:
     -> wa.read_missed_messages(true) ->
-    You look at the time of the message, and figure out it must be from {msg_name(ANGIE)}.  Checking your notepad, you confirm it.
-    Great.  But you're not going to call her back.  Wait a couple of days. Play it cool.
-    -> cont ->
 ->->
 
 = adventure_path
@@ -140,7 +144,7 @@ You shut the laptop and stand up.  Your post-orgasm bliss fades, and you start t
 -
 
 -> ffa(minute,5) ->
--> cc.pay(BELLA_FULL_NAME(), FAN_CLUB_SIGNON_FEE, true) ->
+-> cc.pay(BELLA_FULL_NAME, FAN_CLUB_SIGNON_FEE, true) ->
 // Bella sends an offline chat message to you.
 TODO Make her onboarding message
 -> M_chat("Whenever you enter My chat room, always greet Me, and always respond to any offline messages I may have left you.  And do it immediately.  That will notify me that you're online.", now(), ()) ->

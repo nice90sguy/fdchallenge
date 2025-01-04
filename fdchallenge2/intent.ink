@@ -15,7 +15,7 @@ LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_again, c
 LIST responses = resp_obedient
 
 
-VAR previous_tribute = 10
+VAR last_tribute = 10
 
 // For cmd_again
 VAR last_args = ()
@@ -43,7 +43,8 @@ VAR obeyed_cmd = false
 -> cmd_adhoc("Obey Her", threshold)
 
 
-= command_meet(msg, t, args)
+= command_meet(msg, t, args, cb)
+>>> CMD INVITE
 ~ temp where = args ^ LIST_ALL(location)
 ~ temp when = list2num(args) // epoch time
 ~ temp with = args ^ LIST_ALL(MSG_PEOPLE)
@@ -52,6 +53,7 @@ VAR obeyed_cmd = false
 }
 You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
 
+ ~ set_timer_cb(when - epoch_time, cb)
 ->->
 
 = command_repeat_after_me(phrase, t, args)
@@ -117,7 +119,7 @@ You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
 
     ~ temp tribute_amount = list2num(args)
     {tribute_amount == 0: // You repeat your previous tribute!
-        ~ tribute_amount = previous_tribute
+        ~ tribute_amount = last_tribute
     - else:
         {msg=="":
             ~ msg = "{~Pay me |Send |Send me|Tip|Tip me|} {tribute_amount}."
@@ -128,7 +130,7 @@ You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
     {sq(obedience) == max or sq(addiction) == max: -> do_tribute}
 
     + (do_tribute) [Send ${tribute_amount}]
-        -> cc.pay(BELLA_FULL_NAME(), tribute_amount, true) ->
+        -> cc.pay(BELLA_FULL_NAME, tribute_amount, true) ->
         {TX_RESULT != TX_SUCCESS:
             ~ decstat(confidence)
         - else:
@@ -136,10 +138,11 @@ You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
             ~ incstat(addiction)
             ~ incstat(lust)
         }
-        ~ previous_tribute = tribute_amount
+        ~ last_tribute = tribute_amount
         
     + {sq(obedience) <= medium}[Resist]
         You resist.
+        ~ last_tribute = 0
         ~ decstat(confidence)
 
     -
@@ -202,7 +205,7 @@ triggers command_greet("Hello", now(), (BELLA))
 
 
 */
-= respond(msg, t, args)
+= respond(msg, t, args, cb)
 
 //  {_DEBUG:>>> RESPOND: {msg} {t}, {args}}
 ~ temp gs_flags = args ^ LIST_ALL(state_flags)
@@ -211,7 +214,7 @@ triggers command_greet("Hello", now(), (BELLA))
 {from == ANGIE_FULL_NAME:
     ~ from = ANGIE
 }
-{not (cmds ^ cmd_noemit):
+{not (cmds ^ (cmd_noemit, cmd_again)):
      -> M(msg, t, args) ->
 }
 // Set/Clear game state flags
@@ -255,7 +258,7 @@ triggers command_greet("Hello", now(), (BELLA))
 
 // NOTE, testing for equality, not inclusion.
 {cmds == cmd_again:
-    -> respond(msg, t, last_args + cmd_again + cmd_noemit) ->
+    -> respond(msg, t, last_args + cmd_again + cmd_noemit, 0) ->
     ~ last_args -= cmd_again
 - else:
 
@@ -289,7 +292,7 @@ triggers command_greet("Hello", now(), (BELLA))
     - cmds ? cmd_meet:
         {now()-t > 3600:You know you're late replying, but...}
         -> M_Y("Sure {msg_name(from)}!") ->
-        -> command_meet(msg, t, args) ->
+        -> command_meet(msg, t, args, cb) ->
         ~ incstat(obedience)
         
     - cmds ? cmd_yes:

@@ -12,12 +12,18 @@ After every activity, builds a list of options
 
 // Note to dev: Don't check against this list, use the VARS below
 // depending on your location
-LIST _all_activities = sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, swim, weights, running_machine, running, walking, cafe_return_home, socialize, hangout_cafe, coffee
+LIST _all_activities = sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, swim, weights, running_machine, running, walking, cafe_return_home, hangout_pub, hangout_cafe, coffee, ba_with_al, ba_regulars, ba_return_home
 
+VAR bar_activities = ()
+~ bar_activities = (ba_with_al, ba_regulars, ba_return_home)
+
+LIST people_in_bar = al
 
 VAR home_activities = ()
-~ home_activities = (sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, socialize, hangout_cafe)
+~ home_activities = (sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, hangout_pub, hangout_cafe)
 
+VAR hovel_activities = ()
+~ hovel_activities = (sleep, work, jerk_off,  breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages)
 VAR gym_activities = ()
 ~ gym_activities = (swim, weights, running_machine, messages)
 
@@ -46,7 +52,7 @@ VAR morning_only_activites = (breakfast,full_days_work)
 VAR afternoon_only_activites = ()
 
 
-VAR evening_only_activites = (socialize, dinner , takeout)
+VAR evening_only_activites = (hangout_pub, dinner , takeout)
 
 VAR night_only_activites = (introspect, sleep)
 
@@ -260,19 +266,30 @@ Final stat ({path} path):
 // ------------------------------------------------------
 // initial list of possible activities based on location
 {location:
-    - location_home:
+    - location_apartment:
         ~ possible_activities = home_activities
+    - location_hovel:
+        ~ possible_activities = hovel_activities
     - location_gym:
         ~ possible_activities = gym_activities
     - location_park:
         ~ possible_activities = park_activities
     - location_cafe:
           ~ possible_activities = cafe_activities
+    - location_bar:
+          ~ possible_activities = bar_activities
 }
+
 {path==dom and day_rollover==0 and (current_period == morning) and unread_message_count:
     ~ possible_activities = (breakfast, messages)
 
 }
+
+// Can't see Al in bar if he's not there
+{location == location_bar and (not (people_in_bar ? al)):
+    ~ possible_activities -= ba_with_al
+}
+
 // Restrict activites based on time of day
 // Some of these may get removed with further checks below, e.g. can't have two breaksfasts in one day
 
@@ -316,7 +333,12 @@ Final stat ({path} path):
 
 }
 // Cafe only open between 9 and 6
-{tm_hour < 9 or tm_hour >= 18:
+{tm_hour > 6 and tm_hour < 9:
+    The cafe doesn't open until nine.
+    ~ possible_activities -= hangout_cafe
+
+}
+{tm_hour >= 18:
 
     ~ possible_activities -= hangout_cafe
 
@@ -331,7 +353,7 @@ Final stat ({path} path):
 
         ~ possible_activities -= full_days_work
 -else:
-    You already ate breakfast{current_period==morning:, you can now get down to a full day's work!|.}
+    {sq(addiction) < max: You already ate breakfast{current_period==morning:, you can now get down to a full day's work!|.}}
 }
 // Prevent second dinner
 {activities_done_today ? dinner:
@@ -346,16 +368,16 @@ Final stat ({path} path):
     }
 }
 // Prevent socializing more than once a day
-{possible_activities ? socialize:
-    {(activities_done_today ? socialize):
-        You can't socialize any more.
-        ~ possible_activities -= socialize
+{possible_activities ? hangout_pub:
+    {(activities_done_today ? hangout_pub):
+        You can't go back to the pub again.
+        ~ possible_activities -= hangout_pub
     }
 }
 // Prevent working beyond the afternoon
 {current_period > afternoon:
 
-    It's too late to work now.
+    {current_activity != sleep:It's too late to work now.}
     ~ possible_activities -= (work, full_days_work)
 
 }
@@ -388,7 +410,7 @@ Final stat ({path} path):
 
 - else:
     {at_computer_activites ?  current_activity:
-        While you're at your computer, you could always do a little "surfing"...
+        {current_activity != sleep:While you're at your computer, you could always do a little "surfing"...}
     ~ possible_activities += porn
     ~ possible_activities += logon_fansite
 
@@ -410,8 +432,8 @@ Final stat ({path} path):
 
 // Sleepiness high, unable to work, exercise, go out
 {sq(sleepiness) >= high:
-    You're too tired to go out, or work...
-    ~ possible_activities -= (exercise, work, socialize)
+    {current_activity != sleep:You're too tired to go out, or work...}
+    ~ possible_activities -= (exercise, work, hangout_pub)
 
 }
 
@@ -448,7 +470,11 @@ Final stat ({path} path):
 }
 
 
-
+// If you're on sub path, and there are unread messages, and you can read them, make that the ponly option
+{path == sub and (possible_activities ? messages) and unread_message_count:
+You have to read your messages before anything else.
+    ~ possible_activities = messages
+}
 // Stuck in an endless loop?
 // reset your confidence, and start a new regimen from next Monday!
 {possible_activities - banking == ():
@@ -482,17 +508,22 @@ TODO slug_life_reset
     {possible_activities ? snack: <-grind_snack.opt}
     {possible_activities ? cafe_return_home: <-grind_cafe_return_home.opt}
     {possible_activities ? dinner: <-grind_dinner.opt}
-    {possible_activities ? socialize: <-grind_bar.opt}
+    {possible_activities ? hangout_pub: <-grind_bar.opt}
     {possible_activities ? logon_fansite: <-grind_logon_fansite.opt}
     {possible_activities ? banking: <-grind_banking.opt}
     {possible_activities ? introspect: <-grind_introspect.opt}
     {possible_activities ? messages: <-grind_messages.opt}
+    
     {possible_activities ? running: <-grind_park_running.opt}
     {possible_activities ? walking: <-grind_park_walking.opt}
+    
     {possible_activities ? swim: <-grind_gym_swim.opt}
     {possible_activities ? weights: <-grind_gym_weights.opt}
     {possible_activities ? running_machine: <-grind_gym_running_machine.opt}
-
+    
+    {possible_activities ? ba_with_al:<- grind_bar_with_al.opt}
+    {possible_activities ? ba_regulars:<- grind_bar_regulars.opt}
+    {possible_activities ? ba_return_home:<- grind_bar_return_home.opt}
 
 
 //  <- opt_esc
@@ -518,7 +549,7 @@ TODO slug_life_reset
  // When any of sleepiness, hunger, lust, addiction are maxed, they will be the only option available, so the narrative can end quickly.
 
  {sq(sleepiness) == max:
-    You can hardly keep your eyes open...
+    {current_activity != sleep:You can hardly keep your eyes open...}
     ->->
  }
  {sq(hunger) == max:
@@ -586,7 +617,7 @@ TODO slug_life_reset
 
     // Over-complex:
     // max addiction and min confidence, not sleeping, and not doing a fansite activity, and evening or night
-    - sq(addiction) == max and sq(confidence) == min and current_activity != sleep and (path == adventure) and ("{current_activity}" !? "fsa_" and period_of_day() >= evening):
+    - sq(addiction) == max and sq(confidence) == min and current_activity != sleep  and ("{current_activity}" !? "fsa_" and period_of_day() >= evening):
         ~ tmp_poss_act += logon_fansite
 
     }

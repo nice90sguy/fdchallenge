@@ -2,12 +2,19 @@
 VAR _cc = 0
 VAR _limit = -1000
 
+=== function cc_balance()
+{ _cc < 0:
+    ${comma_ify(-_cc)} overdrawn
+- else:
+    ${comma_ify(_cc)} 
+}
+~ return
 
 === cc
 ->init
 
 LIST TX_RESULT = (TX_FAILED), TX_SUCCESS
-
+VAR need_more_money = false
 = disp_balance
 <p> 💳 <i>Current Balance: <>
 { _cc < 0:
@@ -17,6 +24,8 @@ LIST TX_RESULT = (TX_FAILED), TX_SUCCESS
 }
 </p>
 ->->
+
+
 
 = deposit(amount)
   ~ _cc +=  amount
@@ -34,11 +43,11 @@ LIST TX_RESULT = (TX_FAILED), TX_SUCCESS
 {_cc - amount < _limit:
      {_DEBUG:>>> Transaction failed (Balance {_cc} - Amount {amount} < overdraft limit {_limit})}
     {warn()} Your bank has declined your transaction.
-    {to==BELLA_FULL_NAME():
+    You need to get more money!
+    -> cont ->
+    ~ need_more_money = true
 
-    ~otr("There are serious consequences if you can't pay {BELLA_NAME}!")
-
-    }  
+    
 - else: 
     ~  _cc -= amount
     ~ TX_RESULT = TX_SUCCESS

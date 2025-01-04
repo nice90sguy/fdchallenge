@@ -45,19 +45,22 @@ VAR available_employers = ()
     {employer:
         - ():->grind.after_activity
         - silverman:
+            -> ffa(second, 1 * about_an_hour()) ->
             You do an hour or so's work. It's tiring.
             ~ incstat(sleepiness)
-            -> ffa(second, 1 * about_an_hour()) ->
+
             ~ pay = hourly_contract_rate() 
         - food_bank:
+            -> ffa(second, 3 * about_an_hour()) ->
             You do a few hours or so's work for Al. It feels good to apply your skills for a good cause.
             ~ incstat(confidence)
             ~ pay = 3 * hourly_contract_rate() 
-            -> ffa(second, 3 * about_an_hour()) ->
+
         - own_project:
+            -> ffa(second, 2 * about_an_hour()) ->    
             You do a couple of hour's or so's work on that game you've been developing, that you'll never finish...
             ~ incstat(confidence)
-            -> ffa(second, 2 * about_an_hour()) ->      
+  
         - bella_org:
 
             {untagged_videos == ():

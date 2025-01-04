@@ -94,20 +94,27 @@ Out of curiosity, you scan the menu looking for the most expensive item they hav
 -> ffa(minute, 5) ->
 {hint()}
 You don't know it at the time, but the future direction of your life hangs on this decision...
+* [Help me decide what to choose]
+{bella_icon()} Choosing the shrimp is safe, but a little timid.  You're a bit of a pushover, and easy to control. You're feeling shitty after your break-up, and your weakness could be exploited.
+{bella_icon()} If you go for the oysters, it shows that you have a taste for adventure, and like to take risks.  You're trying to move on after {girlfriend_name}. You have an addictive side, which could lead to trouble if you're not careful.
+{bella_icon()} Going for the Bouillabaise shows that you have low self-esteem, and need to prove yourself.  But deep down, you just want to be loved.  You're still smarting after your break-up with {girlfriend_name}.
+{hint()} None of these choices completely closes any doors, but makes some of those doors a lot easier to open than others!
+* [No hints, I'll decide for myself]
+-
 
 You're leaning towards...
 
-+ [Jumbo Shrimp (${LIST_VALUE(shrimp)})] ...the shrimp.
+* [Jumbo Shrimp (${LIST_VALUE(shrimp)})] ...the shrimp.
     ~ bar_menu_options = shrimp
     ~ path = sub
     
 
 
-+ [Shigoku Oysters (${LIST_VALUE(oysters)})] ...the oysters.
+* [Shigoku Oysters (${LIST_VALUE(oysters)})] ...the oysters.
     ~ bar_menu_options = oysters
     ~ path = adventure
 
-+ [Bouillabaise (${LIST_VALUE(bouillabaise)})] ...the Bouillabaise.
+* [Bouillabaise (${LIST_VALUE(bouillabaise)})] ...the Bouillabaise.
     ~ bar_menu_options = bouillabaise
     ~ path = dom
 
@@ -246,7 +253,7 @@ She sends you a third message!  {unread_message_count:This time you can't ignore
 
 -> wa.m("<u>htpps:\/\/bit\/ly\/467738", WAM_READ) ->  
 
-"\"{BELLA_FULL_NAME()}\".  Nice name. Ok, I'll take a look at your site later," You say.
+"\"{BELLA_FULL_NAME}\".  Nice name. Ok, I'll take a look at your site later," You say.
 "Yes, you will."  
 {BELLA_NAME}'s three word response is slightly weird and unsettling.  Like she's giving you an order.  What's even weirder about it, is that it made your dick twitch.
 -> cont -> 
@@ -257,7 +264,7 @@ She sends you a third message!  {unread_message_count:This time you can't ignore
 ->->
 
 = didnt_ignore_first_message
-So that's her name:  {BELLA_FULL_NAME()}.
+So that's her name:  {BELLA_FULL_NAME}.
 ~ knowledge += bella_name
 You respond:
 ->wa.r3choices("Hi!", "Hello {BELLA_NAME}", "🍆 😆",)->
@@ -447,7 +454,7 @@ He looks at the check and says, "No, that's right, two JDs, one Bouillabaise, on
 
 "You mean you didn't recognize her?" says the bartender.
 
-"That was {BELLA_FULL_NAME()}."
+"That was {BELLA_FULL_NAME}."
 
 ->cont ->
 

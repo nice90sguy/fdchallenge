@@ -125,7 +125,7 @@ You manage to get a couple of hours sleep, but she's in there in your dreams. Th
     Before you know it, you've landed.  You've even forgotten all about that woman you met last night.  Until now, when you realise that subconsciously, you've never stopped thinking about her since you first set eyes on her. Who the fuck was she?  And what was her name? You gotta find out as soon as you get home.
 - dom:
 -> Angie.plane_meeting ->
-    Before you know it, you've landed.  You've even forgotten all about that hooker last night. "{BELLA_FULL_NAME()}", the barman said, like everyone should know her.  Maybe you should Google her.  No, just forget about her.
+    Before you know it, you've landed.  You've even forgotten all about that hooker last night. "{BELLA_FULL_NAME}", the barman said, like everyone should know her.  Maybe you should Google her.  No, just forget about her.
     You pat the breast pocket of your jacket, feeling for your notepad.  Yeah, you lose some, you win some.  You should definitely give {msg_name(ANGIE)} a call when you get back.  Maybe in a couple of days.  Play it cool.
 }
 
@@ -332,7 +332,7 @@ You look up and see that she's holding your phone.
     "You really have no idea of the value of a dollar, do you?" She says, looking down at you with pity.
     "Tell you what, as it's your first time playing..."
     She taps on your phone, and your hear it make a "Ding!" sound...
-    {HAGGLE_RESULT==RESERVE_NOT_REACHED:-> cc.receive(BELLA_FULL_NAME(), HAGGLE_LAST_BID, true) ->}
+    {HAGGLE_RESULT==RESERVE_NOT_REACHED:-> cc.receive(BELLA_FULL_NAME, HAGGLE_LAST_BID, true) ->}
     "Try again. And don't be a cheapskate this time."
     ~ reserve += 50
     ~ starting_bid = starting_bid + 50
@@ -340,7 +340,7 @@ You look up and see that she's holding your phone.
     -> haggle("my amazing ass", reserve, starting_bid) ->
 
     + + (fucked_up_first_haggle_game) {HAGGLE_RESULT == RESERVE_NOT_REACHED} ->
-    -> cc.pay(BELLA_FULL_NAME(), 100, false) ->
+    -> cc.pay(BELLA_FULL_NAME, 100, false) ->
     "Looks like you still have a lot to learn. Here's your first lesson:"
     She taps on your phone angrily, then throws it on the sofa. She pulls off her heels, puts her jeans and tee shirt back on, and slides her feet into her shoes quickly, and walks out.
     You stand up and walk over to the wardrobe mirror and look at your boner, which is still pulsing hopefully.
@@ -365,7 +365,7 @@ You look up and see that she's holding your phone.
         {punishment_amount > _cc:
             ~ punishment_amount = _cc
         }
-        -> cc.pay(BELLA_FULL_NAME(), punishment_amount, false) -> 
+        -> cc.pay(BELLA_FULL_NAME, punishment_amount, false) -> 
         -> fucked_up_first_haggle_game
         
     + + ->
@@ -404,7 +404,7 @@ Start your new life now, by replying \"Yes {BELLA_NAME} \" to this message."
 -> wa.m(long_message, WAM_MISS + cmd_yes) ->
 
 ~ long_message = "And transfer $100 to me."
--> wa.m(long_message, WAM_MISS + cmd_tribute + num2list(100)) ->
+-> wa.m(long_message, WAM_MISS + cmd_tribute + cmd_noemit + num2list(100)) ->
 
 
 -> cont ->

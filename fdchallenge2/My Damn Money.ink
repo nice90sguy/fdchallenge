@@ -9,7 +9,6 @@ INCLUDE state.ink
 INCLUDE stat.ink
 INCLUDE bank.ink
 INCLUDE haggle.ink
-INCLUDE list2string.ink
 INCLUDE intent.ink
 INCLUDE message.ink
 INCLUDE whatsapp.ink
@@ -43,7 +42,6 @@ INCLUDE grind/messages.ink
 INCLUDE grind/stat.ink
 INCLUDE fansite/shop.ink
 INCLUDE location.ink
-INCLUDE bar/bar.ink
 INCLUDE generated/media_items.ink
 INCLUDE work.ink
 INCLUDE one_week_later.ink
@@ -80,7 +78,7 @@ VAR _LITEROTICA_EXPORT = true
 // FOO
 
 // -> END
-(Version 0.060)
+(Version 0.070)
 -> main
 
 == main
@@ -90,7 +88,7 @@ VAR _LITEROTICA_EXPORT = true
     + + (T_and_C)->
         * * * [I'm sexually submissive]
         * * * [I will be mindfucked, hypnotised, and manipulated] 
-        * * * [My life will be completely controlled by {BELLA_FULL_NAME()}]
+        * * * [My life will be completely controlled by {BELLA_FULL_NAME}]
         * * * [I will be driven to financial ruin] 
         * * * [I will be degraded, humiliated and verbally abused, and will enjoy every minute of it] 
         * * * {CHOICE_COUNT() == 0} ->

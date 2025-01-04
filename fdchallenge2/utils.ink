@@ -87,7 +87,7 @@ VAR last_displayed_year = 0
 VAR DISPLAY_ANALOG_CLOCK=true
 == function analog_clk
 {DISPLAY_ANALOG_CLOCK:
- <>   {tm_hour % 12:
+    {tm_hour % 12:
         -1:🕐
         -2:🕑
         -3:🕒
@@ -101,7 +101,7 @@ VAR DISPLAY_ANALOG_CLOCK=true
         -11:🕚
         -0:🕛
     }
-    <>
+    
 }
 
 LIST speech_type = (speech_type_voice), speech_type_wa, speech_type_chat
