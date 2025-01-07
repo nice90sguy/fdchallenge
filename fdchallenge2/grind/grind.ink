@@ -12,15 +12,15 @@ After every activity, builds a list of options
 
 // Note to dev: Don't check against this list, use the VARS below
 // depending on your location
-LIST _all_activities = sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, swim, weights, running_machine, running, walking, cafe_return_home, hangout_pub, hangout_cafe, coffee, ba_with_al, ba_regulars, ba_return_home
+LIST _all_activities = sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, swim, weights, running_machine, running, walking, cafe_return_home, hangout_pub, hangout_cafe, coffee, ba_with_al, ba_regulars, ba_return_home, angie_sex
 
 VAR bar_activities = ()
 ~ bar_activities = (ba_with_al, ba_regulars, ba_return_home)
 
 LIST people_in_bar = al
 
-VAR home_activities = ()
-~ home_activities = (sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, hangout_pub, hangout_cafe)
+VAR apartment_activities = ()
+~ apartment_activities = (sleep, work, full_days_work, jerk_off,  porn, exercise, breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages, hangout_pub, hangout_cafe)
 
 VAR hovel_activities = ()
 ~ hovel_activities = (sleep, work, jerk_off,  breakfast, snack, dinner, takeout, logon_fansite, banking, youtube, introspect, messages)
@@ -83,8 +83,7 @@ VAR grind_return_to = ->error
 ~ grind_end_day = grind_start_day + grind_days
 
 ~ set_interval_cb(3600,->on_the_hour)
-// Set the callback, but not the time yet
-~ set_timer_cb(FAR_FUTURE,->Bella.taunt)
+
 
 
 // {grind}
@@ -197,17 +196,7 @@ VAR prev_interval = FAR_FUTURE
 {(LIST_COUNT(possible_activities) == 1) and (possible_activities != current_activity):
     -> opts
 }
-// Randomly taunt some time in the next hour, more often if on sub path
-{path:
-- sub:
-    {RANDOM(1, 100) <= 25:
-        ~ _next_timer = now() + RANDOM(10,50) * 60
-    }
-- adventure:
-    {RANDOM(1, 1000) <= sqi(obedience):
-        ~ _next_timer = now() + RANDOM(10,50) * 60
-    }
-}
+
 
 ->->
 
@@ -267,7 +256,7 @@ Final stat ({path} path):
 // initial list of possible activities based on location
 {location:
     - location_apartment:
-        ~ possible_activities = home_activities
+        ~ possible_activities = apartment_activities
     - location_hovel:
         ~ possible_activities = hovel_activities
     - location_gym:
@@ -453,6 +442,9 @@ Final stat ({path} path):
 
 {path == dom:
     ~ possible_activities -= logon_fansite
+    {with_angie:
+        ~ possible_activities += angie_sex
+    }
 }
 
 ~ temp forced_activities = check_max_stats()
@@ -494,7 +486,7 @@ TODO slug_life_reset
 + (opts) ->
     ->  build_decision_narrative ->
  + + (do) ->
-
+    {possible_activities ? angie_sex:<- grind_angie_sex.opt}
     {possible_activities ? breakfast: <-grind_breakfast.opt}
     {possible_activities ? full_days_work: <-grind_full_days_work.opt}
     {possible_activities ? work: <-grind_work.opt}
@@ -619,6 +611,7 @@ TODO slug_life_reset
     // max addiction and min confidence, not sleeping, and not doing a fansite activity, and evening or night
     - sq(addiction) == max and sq(confidence) == min and current_activity != sleep  and ("{current_activity}" !? "fsa_" and period_of_day() >= evening):
         ~ tmp_poss_act += logon_fansite
+        ~ tmp_poss_act += messages
 
     }
 }

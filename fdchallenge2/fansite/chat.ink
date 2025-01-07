@@ -8,7 +8,6 @@ LIST fsa_chat_activities = fsa_chat_greet
 == fansite_chat
 = opt
 + + (do) [Chat with Me 💬]
-{do == 1: {hint()} (More features of chat cumming soon!)}
     ~ current_activity = fsa_chat
     ~ speech_type = speech_type_chat
 
@@ -29,7 +28,7 @@ LIST fsa_chat_activities = fsa_chat_greet
         ~ chat_offline_messages = ""
     }
     // First convo if first time chatting
-    {do == 1:-> adventure_initial_convo -> fansite.after_activity}
+    {do == 1 and path==adventure:-> adventure_initial_convo -> fansite.after_activity}
     // Check the last_args for any command
 
     {chat_last_args != ():
@@ -44,17 +43,24 @@ LIST fsa_chat_activities = fsa_chat_greet
 
         ~ incstat(obedience)
         -> ff2h(1) -> do ->
-    + + + [Leave Chat]
+
     + + + [Say Hello]
             -> M_Y("{Hello.|Hello|hello {BELLA_NAME}|Hi {BELLA_NAME}|Hi|hi|Hello godddess|hi goddess|goddess}") ->
 
        {bella_online():
-            -> M_B("{~Hello.|Hi|Hi loser.|hi}") ->
-            -> M_B("{~Send.|Tip Me|tribute|pay me, slave|greet me properly}") ->
-     -> intent.command_tribute("{~Send.|Tip Me|}", now(), cmd_tribute +  Confidence + num2list(sqi(addiction))) ->            
-            -> taunt ->
+            {RANDOM(1,5) == 5:
+                -> p1("Bella is typing...") ->
+                -> M_B("{~Hello.|Hi|Hi loser.|hi}") ->
+                -> M_B("{~Send.|Tip Me|tribute|pay me, slave|greet me properly}") ->
+         -> intent.command_tribute("{~Send.|Tip Me|}", now(), cmd_tribute +  Confidence + num2list(sqi(addiction))) ->            
+                -> taunt ->
+            - else:
+                She's online, but ignores you.
+                You hang around for half an hour, hoping she'll respond.
+                -> ffa(minute, 28) ->
+            }
         }
-
+    + + + {sq(obedience) < max}[Leave Chat]
     - - -
 
     ~ activities_done_today += fsa_chat

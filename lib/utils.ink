@@ -19,11 +19,13 @@ VAR continue_prompt = true
 { l < LIST_MAX(LIST_ALL(l)):
 
     ~l++
+    ~ return l
 }
 
 == function DEC(ref l)
 { l > LIST_MIN(LIST_ALL(l)):
     ~l--
+    ~ return l
 }
 
 // e.g. 

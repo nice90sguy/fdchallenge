@@ -28,18 +28,23 @@
     max - youre addicted to her
     
 */
+LIST angie_taunts = angie_taunt_fear
+
+VAR with_angie = false
 === Angie
 
 = cafe_meeting_invite
 {_DEBUG:>>> SENT INVITE}
     ~ temp meeting_t = next_hm(11,0)
+    >>> {hhmm(meeting_t)}
     -> wa.m_cb("Hi there {sq(angie_relationship == high):sexy}. Fancy meeting up for a coffee sometime today? Say, eleven?", WAM_MISS + ANGIE_FULL_NAME + cmd_meet + location_cafe + num2list(meeting_t), ->Angie.meet_in_cafe) ->
 
     
 ->->
 /*
 This is a "callback" that never returns.
-At the beginning, set IN_CALLBACK to false, do stuff, then tunnel on to grind.after_activity
+See Angine.cafe_meeting_invite
+At the beginning, set IN_CALLBACK to false, do stuff, then tunnel on to grind.after_activity.
 */
 = meet_in_cafe
 
@@ -58,7 +63,7 @@ At the beginning, set IN_CALLBACK to false, do stuff, then tunnel on to grind.af
         ~ incstat(obedience)
         You call her up.
         "That's ok," she says, lightly.  "I'm still here. How long will it take you to get here?"
-        "Half and hour, max," you say.
+        "Half an hour, max," you say.
         "Make it fifteen minutes, and I'll still be here."
         You jump in an Uber and get there in fifteen minutes.
         -> cc.pay("Uber", 10, true) ->
@@ -78,8 +83,9 @@ At the beginning, set IN_CALLBACK to false, do stuff, then tunnel on to grind.af
 
 
 }
-~ IN_CALLBACK = false
--> grind.after_activity
+
+-> grind_cafe_return_home.do
+
 
 = slug_cafe_meeting
  She's wearing a low-cut pink long-sleeved tee shirt, revealing her cleavage, and you can't help noticing her tattoo,  right above her breast, of a bee. But you look up at her face quickly, before she notices.
@@ -97,9 +103,125 @@ At the beginning, set IN_CALLBACK to false, do stuff, then tunnel on to grind.af
     "I was going for hot, but never mind."
     
  - 
-
-    -> ffa(hour, 1) ->
+She leans forward and looks you in the eyes, with a wide, smile, and sighs happily.
+But she doesn't seem to want to say anything.
+Eventually you ask her, smiling too to hide your unease, "What?"
+She looks down shyly, then stares absently at her empty coffee cup.
+You're about to ask her if she wants another coffee, when she she looks at you intently and asks, "Do you believe in love at first sight?"
+* [Yes (Psycho alert)]
+    "I..."
+* [Ummm... (Psycho alert)]
+    "I, urm..."
+-
+"I do," she says, before you can formulate a response.
+<i>That settles it then... 
+She goes on:  "I felt that way about Jimmy."
+"Your ex?"
+She nods quickly.
+<i>Damaged goods,</i> you think. Well, maybe she's not so different from you.
+-> p1("Wait patiently for her to continue") ->
+"I was so sure about him, you know?", she says, giving you another of her unnerving, wide-eyed stares. She's still smiling, which you're now interpreting as an attempt to keep up a brave face.
+"So, you broke up?"
+"No."
+-> p1("Awkward silence") ->
+"So, you and... Jimmy are still together."
+"No."
     -> cont ->
+"He... died."
+Involuntarily you reach out and take her hands in yours.  They're little, delicate hands, cool hands.  With bright green fingernails.
+"That must have been so terrible for you," you say.
+"Not really", she says, pulling her hands away suddenly and looking away, with a sullen, angry expression. "He'd already broken our trust. I didn't love him anymore by then."
+She continues, "He was... afraid of love. Afraid of me, in a way."
+You say, gently, "Well, that's kind of a guy thing.  We're not that good with emotions."
+She looks at you angrily and says, "Why are you defending him?"
+"I'm not trying to defend him, I'm just trying to-"
+"-You don't know what he did."
+You can guess.
+"He fucked someone behind your back?"
+"No". She shakes her head rapidly, on the verge of tears. "But he would have done, I'm sure, if he'd had the chance."
+"Sounds like he felt trapped," you say, imagining yourself in Jimmy's shoes.  She's clearly emotionally unstable, and super intense.
+She shrugs her shoulders, shaking off the memory of Jimmy, and all that negativity, and looks at you again with shining eyes.
+She sinks a little lower in her chair, looks around quickly, and then you suddenly feel something pressing on your groin. 
+->p1e("\"Angie, what are you...\"") ->
+You look down. She's taken off one of her trainers, and she's kneading your rapidly growing cock with her toes.
+"Hey..." You say, not really wanting her to stop.
+But then she thinks better of it, it seems, and lowers her foot to the ground.
+"Angie, you naughty girl," you laugh.  
+-> p1("So what if she's crazy, she's hot as fuck, and I'm horny as fuck") ->
+She slips off her seat and disappears under the table. You assume she's looking for her trainer, to put it back on, having thought better of her impulses.
+"That's right, Angie, there's a time and a place for -"
+-> p1e("Suddenly, you feel her hands undoing your zipper") ->
+<>.  You're too shocked to do anything.  You feel her cool fingers pulling out your dick, and then...
+-> cont ->
+Her lips clamp over the end of your dick.  You feel her tongue rotating quickly, bringing you to a very, quick, powerful...
+-> cont ->
+...orgasm.
+You look around the cafe.  Nobody noticed.
+"Ah, here it is," she says, and emerges from under the table, brandishing her trainer.
+She wipes her mouth with a paper napkin and looks at you, expecting you to say something.
+"Thank you," you say.
+"No, thank you," she says, stroking your hand.
+"Really?  You're thanking me for sucking me off?"
+"No.  I'm thanking you, for not being afraid of love."
+-> p1("AND... the Psycho is back...") ->
+"You're one up on me, now", she says.
+"You mean, I owe you an orgasm, right?"
+"Right."
+"Ok," you laugh, "next time we meet here, I'll reciprocate."
+"Oh, I don't think I can wait that long."
+"Angie, I have to get back home now."
+"Yes, let's go", she says.
+* (angie_stalker)[{angel()} It's time to set her straight...]
+    "Look, Angie.  You're... I mean, I really like you, but I think you're, I mean let's just take things a little slow.   I've just come out of relationship, and-"
+    -> p1e("\"-I know.\"") ->
+    "You do?"
+    "Yes, you told me on the plane.  Her name is {girlfriend_name} and she's an entertainment lawyer."
+    "Wow, did I tell you all that?"
+    "Well," she laughs, "You told me her name. She's very pretty."
+    -> p1("What the actual fuck...") ->
+    "'She's very pretty'?? How the hell do you know what she looks like?"
+    "I found her on Insta," she says, like it was obvious.
+    You look at her in disbelief. "You... found her on Insta."
+    She looks at you in the eye, and says, "I know she hurt you, but I promise you, I'll never do that to you."
+    "She didn't hurt me, Angie.  It's just, I... we weren't right for each other."
+    Angie beams widely, thinking that you've implied that she and you, on the other hand, are right for each other.
+    
+    "I'm sorry, Angie, but I'm not looking for a relationship right now.  can't we just be, you know, friends?"
+    "...with benefits, right?" She says.
+    "Well, yeah..."
+    She doesn't say anything, but picks up her phone and taps rapidly with two thumbs.
+    -> wa.m("😞💔", WAM_READ+ANGIE) ->
+    "Angie, I'm sorry you feel that way."
+    "No," she says, "that's you.  You poor guy."
+    
+* (angie_yandere)[{devil_happy()} ...but that blowjob was... rather good...]
+    "Okay.  It's only a short walk from here."
+    "I know," she says.
+    -> p1("You know??") ->    
+    "Yes, you told me on the plane.  Don't you remember anything we talked about?"
+    "Well, I was too busy looking at your legs most of the time."
+    "I noticed. Well,  you can look at my legs some more."
+    ~ with_angie = true
+* [{angel()} ...She's trouble, and you know it...]
+    -> angie_stalker 
+* [{devil_happy()} ...So what?  I can take care of myself.]
+    -> angie_yandere
+-
+
+{angie_stalker:
+    -> Taunt.add(angie_taunt_fear) ->
+    ~ _next_timer = now() + RANDOM(10,50) * 60
+    ~ _timer_cb = ->Taunt.do
+}
+-> cont ->
+
+
+-> ffa(hour, 1) ->
+
+-> cont ->
+
+You pay the bill, and go back to your place {with_angie:together}.
+
 ->->
 = plane_meeting
 A woman sits in the next seat to you.  She's very nice-looking, with a big smile and great legs, which you notice while untangling your seatbelt from hers.  
@@ -126,7 +248,7 @@ You reach for your phone in your backpack, but it's not there.  Fuck, did you le
 ->->
 
 = respond_to_angie_hi
->>> angie_relationship: {list2num(angie_relationship)}% ({sq(angie_relationship)})
+{_DEBUG: >>> angie_relationship: {list2num(angie_relationship)}% ({sq(angie_relationship)})}
     You look at the time of the message, and figure out it must be from {msg_name(ANGIE)}.  Checking your notepad, you confirm it.
     Great.  But you're not going to call her back.  Wait a couple of days. Play it cool.
     -> cont ->
@@ -206,6 +328,34 @@ You know you're expected to reciprocate.  You let the towel drop to the floor, a
 ~ setstat(angie_relationship, high)
 ->->
 
+= respond_to_taunt(msg, t, args)
+~ IN_CALLBACK = false
+{do_taunt_fear:
+    - 1: Thanks for that, Angie. {msg}
+    - else: Please stop.
+}
+-> cont ->
+->->
+= do_taunt_fear(response_type)
+
+ -> wa.m_cb("{once:
+    - Never let fear get the better of you.
+    - To love at all is to be vulnerable. Love anything and your heart will be wrung and possibly broken.
+    - The greatest mistake you can make in life is to be continually fearing you will make one.
+    - Love is what we were born with. Fear is what we learned here.
+    - You can’t always wait for the perfect time. Sometimes you have to dare to do it because life is too short to wonder what could have been.
+    - The only thing we have to fear is fear itself.
+    - The best thing to hold onto in life is each other.
+    - In the end, we only regret the chances we didn't take.
+    - -> Taunt.remove(angie_taunt_fear) ->
+ }", ANGIE + WAM_CHOOSE + cmd_cb, ->respond_to_taunt) ->
+ 
+
+    
+    
+
+->-> 
+/*
 = first_bar_meeting
 
 "Hi there," you say to her, but she's engrossed in her laptop.
@@ -247,8 +397,10 @@ You hang out with {msg_name(ANGIE)}.
 
 ->->
 
-= yandere
-TODO Yandere
->>> Yandere
+*/
+
 ->->
+
+
+
 

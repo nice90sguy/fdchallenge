@@ -43,7 +43,7 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, ANGIE_FULL_NAME, ANGIE_UNKNOWN, YOU, AL
 
 //Message from Bella with pause
 === M_BP(msg)
--> M(msg, now(), YOU) ->
+-> M(msg, now(), BELLA) ->
 -> ffa(second, 5) ->->
 
 //Message from you with pause

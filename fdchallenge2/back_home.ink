@@ -18,7 +18,7 @@ You get home.  What you need now, is a long, hot shower.
 
 
 ~ _ffd(1)
-~ SHOW_STATS = true
+// ~ SHOW_STATS = true
 You go bed without even looking at your phone{path == dom: again|, and forget all about her}.
 -> cont ->
     ~setstat(sleepiness, min)
@@ -31,6 +31,27 @@ You go bed without even looking at your phone{path == dom: again|, and forget al
 
 
 ~ grind_days = 7
+// Set up taunts
+
+{path:
+    - sub:
+        -> Taunt.set_frequency(6) ->
+        -> Taunt.add(LIST_ALL(bella_taunts)) ->
+    - dom:
+        -> Taunt.set_frequency(12) ->
+        -> Taunt.add(angie_taunt_fear) ->
+    - adventure:
+        -> Taunt.set_frequency(12) ->
+        -> Taunt.add(LIST_ALL(bella_taunts)) ->
+}
+
+-> cont ->
+
+-> Taunt.do -> // start the loop
+
+
+-> cont ->
+
 -> grind
 + (here) ->
 -

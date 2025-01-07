@@ -8,7 +8,7 @@ You have {unread_message_count:{print_number(unread_message_count)}|no} unread m
     // -> message_log.disp ->
     // -> p1("Respond to messages (newest first)") ->
     ~ speech_type = speech_type_wa
-    -> wa.read_missed_messages(false) ->
+    -> wa.read_missed_messages(true) ->
     ->ffa(minute, 10)->
     -> grind.after_activity
     

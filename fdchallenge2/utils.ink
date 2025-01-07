@@ -112,7 +112,9 @@ LIST speech_type = (speech_type_voice), speech_type_wa, speech_type_chat
         - "🙄": (rolls eyes)
         - "😁": (laughs)
         - "(laugh)" :😁
-        - "(rolleyes)": 🙄:
+        - "(rolleyes)": 🙄
+        - "(sad)": 😞
+        - "(broken_heart)": 💔
         - else:  {_DEBUG:>>> Can't interpret emoji for voice}
         
     }

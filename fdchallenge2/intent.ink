@@ -4,7 +4,7 @@ Manage commands (illocutionary forces, e.g. greet, comma)
 and purposes (perlocutionary forces -- stat-changing effects of Bella's actions/words)
 
 */
-LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_again, cmd_tribute_more, cmd_double_it,cmd_send_item, cmd_repeat_after_me, cmd_haggle_game, cmd_greet, cmd_unlock_item, cmd_noecho, cmd_setflag, cmd_clearflag, cmd_noemit, cmd_meet
+LIST commands = cmd_yes, cmd_no, cmd_kneel, cmd_logon, cmd_tribute, cmd_again, cmd_tribute_more, cmd_double_it,cmd_send_item, cmd_repeat_after_me, cmd_haggle_game, cmd_greet, cmd_unlock_item, cmd_noecho, cmd_setflag, cmd_clearflag, cmd_noemit, cmd_meet, cmd_cb
 
 // Some commands may change stats, but the stat_changing_commands are available too,
 // and are meant to be use as a mixin for other commands to boost/decrease stats in addition to the 
@@ -27,6 +27,8 @@ VAR last_phrase_to_repeat = ""
 VAR obeyed_cmd = false
 === intent
 
+= command_cb(msg, t, args, ->cb)
+-> cb(msg, t, args) ->->
 
 = cmd_adhoc(msg, obedience_threshold)
 
@@ -44,7 +46,7 @@ VAR obeyed_cmd = false
 
 
 = command_meet(msg, t, args, cb)
->>> CMD INVITE
+{_DEBUG: >>> CMD INVITE}
 ~ temp where = args ^ LIST_ALL(location)
 ~ temp when = list2num(args) // epoch time
 ~ temp with = args ^ LIST_ALL(MSG_PEOPLE)
@@ -263,24 +265,9 @@ triggers command_greet("Hello", now(), (BELLA))
 - else:
 
     { 
-    // Force an activity
-//     - cmds ? cmd_do_activity:
-//         -> M(msg, t, args) ->
-
-//         ~ temp fansite_activity = args ^ LIST_ALL(fansite_activities)
-//         {fansite_activity != ():
-//             ~ force_fansite_activity = true
-//             ~ possible_activities = fansite_activity
-// {_DEBUG: >>> Forced activity: {fansite_activity}}
-//             -> cont -> fansite.do ->
-//         }
-//         ~ temp grind_activity = args ^ LIST_ALL(_all_activities)
-//         {grind_activity != ():
-//             ~ force_grind_activity = true
-//             ~ possible_activities = grind_activity
-// {_DEBUG:>>> Forced activity: {grind_activity}}
-//             -> cont -> grind.do ->
-//         }
+    - cmds == cmd_cb:
+        -> command_cb(msg, t, args, cb) ->
+        
     - cmds ? cmd_logon:
             You log on to her fan site...
             -> cont -> fansite ->
@@ -319,10 +306,10 @@ triggers command_greet("Hello", now(), (BELLA))
             
     - cmds ? cmd_noecho:
            {_DEBUG:>>> cmd_noecho, not emitting message}    
-      - else:
+    - else:
       {not (cmds == ()): 
            {_DEBUG:>>> UNHANDLED COMMAND(S) {cmds}}
-       }
+      }
 
     }
     // Only set last_args if not cmd_again

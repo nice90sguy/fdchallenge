@@ -95,7 +95,9 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 // Allow option to read old messages, if any, if WAM_READ_MISSED
 
    
-+ {unread_message_count and response_type ? WAM_READ_MISSED} [Read them] -> read_missed_messages(false) ->
++ {unread_message_count and response_type ? WAM_READ_MISSED} [Read your unread messages now] -> read_missed_messages(true) ->
++ {unread_message_count and response_type ? WAM_READ_MISSED} [Maybe Later] -> 
+    
 + {sq(obedience) <= medium and sq(addiction) <= medium and unread_message_count and response_type ? WAM_READ_MISSED} [Delete them without reading] -> unread_message_log.clear ->
 
 + ->
@@ -110,23 +112,19 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 ~ temp arg = ()
 ~ temp msg = ""
 ~ temp cb = 0
-{auto: -> read_oldest}
+~ temp original_unread_message_count = unread_message_count
 + (loop_missed_msgs)  ->
      {unread_message_count==0:
      ->->
      - else: 
-          {question()} Read your {unread_message_count > 1:{unread_message_count}} missed message{unread_message_count > 1:s}:
+          -> p1("Read your {unread_message_count > 1:{original_unread_message_count == unread_message_count:first|next}} {original_unread_message_count > 1 and unread_message_count == 1:last} missed message:") ->
      }
 
-  + + (read_oldest) [Yes {unread_message_count > 1: (Oldest first)}] -> 
-        -> unread_message_log.pop_oldest(msg, arg, cb, t) ->
-         -> respond_to_msg(msg, arg, cb, t) -> loop_missed_msgs
-  + + {unread_message_count > 1}[Yes (Newest first)] -> 
-        -> unread_message_log.pop_newest(msg, arg, cb, t) ->
-         -> respond_to_msg(msg, arg, cb, t) -> loop_missed_msgs
-  + + {unread_message_count}[No]
-    ->-> 
 
+        -> unread_message_log.pop_oldest(msg, arg, cb, t) ->
+
+         -> respond_to_msg(msg, arg, cb, t) -> loop_missed_msgs
+         
 -
 
 

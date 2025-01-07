@@ -1,8 +1,8 @@
 === Bella ===
-LIST taunts = taunt_send_pic_and_repeat_after_me,taunt_tribute, taunt_addiction, taunt_humiliate, taunt_dick_pics
+LIST bella_taunts = bella_taunt_send_pic_and_repeat_after_me,bella_taunt_tribute, bella_taunt_addiction, bella_taunt_humiliate, bella_taunt_dick_pics
 
-VAR available_taunts = ()
 
+VAR num_dick_pics_to_send = 0
 ->->
 
 /*
@@ -128,63 +128,8 @@ In a daze, you stumble onto the bed, and pass out.
 = name
 Bella
 ->->
-=taunt
-// Initialise available taunts first time
-{taunt == 1:
-    ~ available_taunts = LIST_ALL(taunts)
-}
-VAR num_dick_pics_to_send = 0
-    ~ temp response_type = WAM_MISS
-    {with_phone_activites ? current_activity:
-        ~ response_type = WAM_CHOOSE
-    }
-    // >>> TAUNT at {hhmmss(now())}
-    // -> ffa(minute, 3) ->
-    // ->->
-    // Dont wake from deep sleep
-    {current_activity == sleep and sq(sleepiness) >= medium:
-        ~ response_type = WAM_MISS
-    }
-
-    
-    {response_type != WAM_MISS:
-    
-        {
-        - current_activity == sleep:You're woken at {ampm()} by a message:
-        
-        - (work, full_days_work) ? current_activity:
-            ~ response_type = WAM_READ
-            Your concentration is ruined at {approx_time(now())} by a message:
-        
-        - current_activity == swim:
-            You've just started changing out of your swimming gear when your phone dings:
-        - current_activity == jerk_off:
-            She must have hidden cameras!  At the worst possible time, your phone distracts you:
-        - state_flags ? gs_with_angie:
-            Your phone dings. Angie looks at you quizzically.  You glance at it, then put the phone away quickly.
-            "Who was that?" She asks, smiling.
-            "Oh, nothing, just work stuff," you say.
-        }
-    
-    }
-
-
-    {LIST_RANDOM(available_taunts):
-        
-        - taunt_send_pic_and_repeat_after_me: ->do_taunt_send_pic_and_repeat_after_me(response_type) ->
-        // - taunt_haggle_game: -> do_taunt_haggle_game(response_type) ->
-        - taunt_tribute: -> do_taunt_tribute(response_type) ->
-        - taunt_addiction: -> do_taunt_addiction(response_type) ->
-        - taunt_humiliate: -> do_taunt_humiliate(response_type) ->
-        - taunt_dick_pics: -> do_taunt_dick_pics(response_type) ->
-        
-    }
-    ~ decstat(confidence)
-    {current_activity == sleep and response_type != WAM_MISS:You manage to get back to sleep.}
-
-->->
 = do_taunt_dick_pics(response_type)
-    ~ available_taunts -= do_taunt_dick_pics // Only once
+    -> Taunt.remove(do_taunt_dick_pics) -> // Only once
     {response_type ^ (WAM_READ + WAM_CHOOSE):
      -> wa.m("Send me a pic of your dick.", response_type + Addiction) ->
         ~incstat(lust)

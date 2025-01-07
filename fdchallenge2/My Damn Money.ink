@@ -3,6 +3,7 @@ INCLUDE ../lib/gmtime.ink
 INCLUDE ../lib/time.ink
 INCLUDE ../lib/utils.ink
 INCLUDE ../lib/multiselect.ink
+INCLUDE ../lib/list2num.ink
 
 INCLUDE utils.ink
 INCLUDE state.ink
@@ -34,6 +35,7 @@ INCLUDE grind/sleep.ink
 INCLUDE grind/breakfast.ink
 INCLUDE grind/bar.ink
 INCLUDE grind/cafe.ink
+INCLUDE grind/angie.ink
 
 INCLUDE fansite/fansite.ink
 INCLUDE fansite/add_credits.ink
@@ -45,15 +47,11 @@ INCLUDE location.ink
 INCLUDE generated/media_items.ink
 INCLUDE work.ink
 INCLUDE one_week_later.ink
-INCLUDE ../lib/list2num.ink
+
 INCLUDE bella.ink
 INCLUDE angie.ink
 INCLUDE cafe.ink
-
-
-
-
-
+INCLUDE taunt.ink
 
 
 
@@ -67,7 +65,7 @@ VAR _LITEROTICA_EXPORT = true
 
 ~ SEED_RANDOM(857)
 ~ SHOW_STATS = false
-~ DISPLAY_ANALOG_CLOCK = true
+~ DISPLAY_ANALOG_CLOCK = false
 
 // TESTING
 // -> Angie.plane_meeting ->
@@ -78,7 +76,7 @@ VAR _LITEROTICA_EXPORT = true
 // FOO
 
 // -> END
-(Version 0.070)
+(Version 0.071)
 -> main
 
 == main
@@ -117,6 +115,13 @@ VAR _LITEROTICA_EXPORT = true
             
         -else: {hint()} You won't see any stat changes.
         }
+    + + (opt_analog_time)[{DISPLAY_ANALOG_CLOCK:Hide|Show} Clock]
+        ~ DISPLAY_ANALOG_CLOCK = not DISPLAY_ANALOG_CLOCK
+        {DISPLAY_ANALOG_CLOCK:
+            {hint()} You'll see a clock displaying the current time every hour.
+          -else: {hint()} You won't see the clock.
+          }
+    
     + + (opt_debug){_DEBUG} [Turn {_DEBUG:off|on} debug tracing]
     ~ _DEBUG = not _DEBUG
     {opt_debug==1:{warn()} This will clutter the output with masses of debug trace messages!}
@@ -124,19 +129,27 @@ VAR _LITEROTICA_EXPORT = true
 
     - - -> main
 
+* [🐞DEBUG - slug_cafe_meeting ]  
+    ~ set_dMy(29,July,2024)
+    ~ set_hms(11, 35, 5)
+    -> Angie.slug_cafe_meeting -> tbc
+    
 
-
-* {_DEBUG}[(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
+* [(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
+    ~ set_dMy(26,July,2024)
+    ~ set_hms(6, 35, 5)
     * * [Sub Path]
         ~ path = sub
     * * [Adventure Path]
         ~ path = adventure
         -> Angie.plane_meeting ->
         ~ unlocked_fansite = true
+    * * [Dom Path]
+        ~ path = dom
+        -> Angie.plane_meeting ->
     - -
     -> cc.deposit(5000) ->
-    ~ set_dMy(26,July,2024)
-    ~ set_hms(6, 35, 5)
+
 
     ~ timestamp_backhome = now()-SECS_DAY
     -> stats.reset(path) ->
