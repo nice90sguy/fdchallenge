@@ -76,7 +76,7 @@ VAR _LITEROTICA_EXPORT = true
 // FOO
 
 // -> END
-(Version 0.071)
+(Version 0.072)
 -> main
 
 == main
@@ -129,13 +129,13 @@ VAR _LITEROTICA_EXPORT = true
 
     - - -> main
 
-* [🐞DEBUG - slug_cafe_meeting ]  
+* {_DEBUG} [🐞DEBUG - slug_cafe_meeting ]  
     ~ set_dMy(29,July,2024)
     ~ set_hms(11, 35, 5)
     -> Angie.slug_cafe_meeting -> tbc
     
 
-* [(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
+* {_DEBUG} [(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
     ~ set_dMy(26,July,2024)
     ~ set_hms(6, 35, 5)
     * * [Sub Path]
