@@ -147,23 +147,23 @@ CONST approx_time_crudeness_m = 5
 // Alarm utils
 
 LIST ALARM_TYPE = ALARM_TYPE_INTERVAL, ALARM_TYPE_TIMER
-VAR _next_interval = FAR_FUTURE
-VAR _next_timer = FAR_FUTURE
+VAR __next_interval = FAR_FUTURE
+VAR __next_timer = FAR_FUTURE
 VAR _interval = 3600 // default one hour
 VAR _interval_cb = 0
-VAR _timer_cb = 0
+VAR __timer_cb = 0
 
 
 == function _did_stop_ffa_at_alarm_time(ref future_time)
 
-    {_next_interval <= _next_timer:
-        {future_time >= _next_interval:
-            ~ future_time = _next_interval
+    {__next_interval <= __next_timer:
+        {future_time >= __next_interval:
+            ~ future_time = __next_interval
             ~ return ALARM_TYPE_INTERVAL
         }
     - else:
-        {future_time >= _next_timer:
-            ~ future_time = _next_timer
+        {future_time >= __next_timer:
+            ~ future_time = __next_timer
             ~ return ALARM_TYPE_TIMER
         }
     }
@@ -173,23 +173,27 @@ VAR _timer_cb = 0
 
     ~ _interval = interval
     {interval == FAR_FUTURE:
-        ~ _next_interval = FAR_FUTURE
+        ~ __next_interval = FAR_FUTURE
     -else:
         {_DEBUG:{IN_CALLBACK:>>> !!! Should not set interval callback within callback {_interval_cb} {cb}}}
-        ~ _next_interval = (epoch_time / _interval) * _interval + _interval
+        ~ __next_interval = (epoch_time / _interval) * _interval + _interval
     }
+    ~ temp ret = _interval_cb
     ~ _interval_cb = cb
+    ~ return ret
     
 == function set_timer_cb(seconds_from_now, ->cb)
 
 
 {seconds_from_now == FAR_FUTURE:
-    ~ _next_timer = FAR_FUTURE
+    ~ __next_timer = FAR_FUTURE
 - else: 
-    {_DEBUG:{IN_CALLBACK:>>> !!! Should not set timer callback within callback {_timer_cb}  {cb}}}
-    ~ _next_timer = epoch_time + seconds_from_now
+    {_DEBUG:{IN_CALLBACK:>>> !!! Should not set timer callback within callback {__timer_cb}  {cb}}}
+    ~ __next_timer = epoch_time + seconds_from_now
 }
-    ~ _timer_cb = cb
+    ~ temp ret = __timer_cb
+    ~ __timer_cb = cb
+    ~ return ret
 // Prevent rentry
 VAR IN_CALLBACK = false
 //VAR ff_in_callback_time = 0
@@ -210,13 +214,13 @@ VAR IN_CALLBACK = false
     {alarm != ():
         ~ extra_time = future_time - stopped_time
         {alarm == ALARM_TYPE_INTERVAL:
-            ~ _next_interval += _interval
+            ~ __next_interval += _interval
         -else:
-            ~ _next_timer = FAR_FUTURE
+            ~ __next_timer = FAR_FUTURE
         }
         ~ IN_CALLBACK = true
         ~ epoch_time = gmtime(stopped_time)
-        {alarm==ALARM_TYPE_INTERVAL:-> _interval_cb ->|-> _timer_cb ->}
+        {alarm==ALARM_TYPE_INTERVAL:-> _interval_cb ->|-> __timer_cb ->}
 
         ~ IN_CALLBACK = false
         

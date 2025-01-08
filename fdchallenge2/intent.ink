@@ -28,6 +28,7 @@ VAR obeyed_cmd = false
 === intent
 
 = command_cb(msg, t, args, ->cb)
+
 -> cb(msg, t, args) ->->
 
 = cmd_adhoc(msg, obedience_threshold)
@@ -69,7 +70,7 @@ You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
     {obeyed_cmd:-> M_Y(last_phrase_to_repeat+"{||!|!!||}") ->}
 -else:
     {phrase == "\{BELLA_NAME\}":
-        -> M_B("{~Say,|keep repeating |keep typing }\my name") ->
+        -> M_B("{~Say |keep repeating |keep typing }\my name") ->
         ~ phrase = BELLA_NAME
     - else:
         -> M_B("{~Say,|repeat after me:|type }\"{phrase}\"") ->
@@ -270,7 +271,7 @@ triggers command_greet("Hello", now(), (BELLA))
         
     - cmds ? cmd_logon:
             You log on to her fan site...
-            -> cont -> fansite ->
+            -> cont -> fansite
     - cmds ? cmd_greet:
         {now()-t > 60:You know you're late replying, but...}
         ->wa.r3choices("Hi!", "Hello {msg_name(from)}", "🍆 😆",) ->

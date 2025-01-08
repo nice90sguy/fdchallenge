@@ -210,8 +210,8 @@ She wipes her mouth with a paper napkin and looks at you, expecting you to say s
 
 {angie_stalker:
     -> Taunt.add(angie_taunt_fear) ->
-    ~ _next_timer = now() + RANDOM(10,50) * 60
-    ~ _timer_cb = ->Taunt.do
+    ~ set_timer_cb(RANDOM(10,50) * 60, ->Taunt.do)
+
 }
 -> cont ->
 

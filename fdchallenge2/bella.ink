@@ -1,6 +1,7 @@
 === Bella ===
 LIST bella_taunts = bella_taunt_send_pic_and_repeat_after_me,bella_taunt_tribute, bella_taunt_addiction, bella_taunt_humiliate, bella_taunt_dick_pics
 
+LIST hovel_taunts = bella_taunt_spend
 
 VAR num_dick_pics_to_send = 0
 ->->
@@ -13,12 +14,95 @@ increase.
 
 VAR old_timer_cb = 0
 
+// In hovel, bella wakes you at 9 AM with your instruction for the day
+= daily_instruction
+
+
+->p1e("{warn()} It's <b>{l0(tm_hour)}:{l0(tm_min)}. </b> Your phone's ringing!") ->
+->p1("Answer it 📞") -> 
+    You answer it.
+{daily_instruction:
+    -1: 
+        -> M_chat("Good morning, slave.", now()-1800, (), ->null_cb ) ->
+        -> M_chat("Here are your instructions for the day:", now()-1700, (), ->null_cb ) ->
+        "Log on now."  You haven't heard her speaking to you since that night in New York.  Her voice instantly triggers you, and you're immediately hard.
+        -> M_chat("Send me your full bank details, including cards, CCW etc, for all yr accounts", now()-1700, cmd_cb, ->obey_1 ) ->
+        // exits this stitch here
+        -> wa.m("Logon Now.", WAM_CONTINUOUS + cmd_logon + cmd_noemit) 
+    -2:
+        "Good morning, sleepyhead!"
+        "Good morning."
+        "Get naked."
+        -> p1("Obey") ->
+        "My God, look at that erection!"
+        -> cont ->
+    -else:
+        "{Do you like your new home?|Happy?|Love me?|Enjoying your new life?|Spend all day naked.|I want you to clean the apartment today.|Go have a shower.|Isn't it a lovely morning?}"
+        -> p1e("\"{Yes Goddess|Yes Bella.}\"")->
+        "Good boy.  Speak tomorow, byeee!"
+
+}
+-> p1("She ends the call.") ->
+->->
+
+
+
+= obey_1
+You spend the next ten minutes sending her all you bank details.
+~ set_bella_online(true)
+{bella_chat()} check its all correct
+-> p1("Check all the details are correct") ->
+~ cost_per_message = 0
+its all correct, {BELLA_NAME} {you_chat()}
+{bella_chat()} you don't need to type. I can hear you, remember? And see you 🤣
+{bella_chat()}  one minute i will test 
+-> ffa(minute, 10) ->
+You wait.
+-> cc.pay("Saks Fifth Avenue", 775, true) ->
+-> cc.pay("Embraceable Me Clothing", 1560, true) ->
+-> cont ->
+{bella_chat()} yep looks good. Bye
+~ set_bella_online(false)
+-> Taunt.set_frequency(5) -> Taunt.clear -> Taunt.add(bella_taunt_spend) -> Taunt.do
+
+
+->->
+// Randomly spending your money
+= do_bella_taunt_spend(response_type)
+{not bella_online():
+    // Only spend when offline
+    { RANDOM(1,12):
+
+        -2: 
+        // Books
+        -> cc.pay("{~Borders Books|Fetish Comix Store|Jim's Antiquarian Books|Folio Rare Books}", RANDOM(10,50) * RANDOM(5,7), true)
+        -3:
+        // Art
+        -> cc.pay("Sothebys", RANDOM(10,25) * 1000, true) ->    
+        -4 :
+        // Misc
+        -> cc.pay("Amazon", RANDOM(10,25) * 23, true) ->   
+        -5: 
+            // Food
+        -> cc.pay("{~Dilshads Deli|Green Fingers|Pole and Line Seafood|Butcher and Baker}", RANDOM(10,20) * RANDOM(2,4), true) 
+        -6:
+            // Dining Out
+        -> cc.pay("{~Nobu|Nobu|Nobu|Pearl Restaurant|Ginos Sicily|Kerala Rice|Paddys Bar|Paddys Bar|Paddys Bar|Rooftop Bar and Grill}", RANDOM(250, 1000), true)    
+        -7:
+            // Beauty
+         -> cc.pay("{~Eve Perfumier|Tiffany|Mac Beauty|Victorias Secret}", 100 * RANDOM(25, 100), true)   
+         -8:
+              -> cc.pay("{~Saks Fifth Avenue|Embraceable Me Clothing|Dior Paris|Victoria Alperton Couture}", 5 * RANDOM(250, 1000), true)      
+        - else:
+            -> cc.pay("{~Starbucks|Peets Coffee|MunchHousen|Cha Cha Chai}", RANDOM(2,3) *5, true) -> do_bella_taunt_spend(response_type)
+    }
+}
+->->
 = become_her_tenant
 // First call, schedule convo
 
 {become_her_tenant == 1:
-    ~ old_timer_cb = _timer_cb
-    ~ set_timer_cb(2 * about_an_hour(), ->become_her_tenant)
+    ~ old_timer_cb = set_timer_cb(2 * about_an_hour(), ->become_her_tenant)
 {_DEBUG:>> SCHEDULED MESSAGE}
     ->->
 }
@@ -66,9 +150,9 @@ She sounds serious.  You respond instantly:
 -> p1("Bella is typing...") ->
 -> p1("and typing...") ->
 {M_wa_S(BELLA)} you must agree to move out of your place tonight, into a new place. I'm gonna give you the address and where to pick up keys from. its one of my London properties that i reserve specially for my fans who visit there, but im letting you stay there instead.
-{M_wa_S(BELLA)}  it has security cams so i can check on you.  later we will arrange for you to move your stuff. but for now, you have to stay there. now, i bet you want to know why im doing all this for you, don't you?
+{M_wa_S(BELLA)}  it has security cams so i can check on you 24/7.  later we will arrange for you to move your stuff. but for now, you have to stay there. now, i bet you want to know why im doing all this for you, don't you?
 -> cont ->
-It sounds like she wants to keep you prisoner there, but so what if there's security cams? You can just leave, it's not like she can do anything about it.  And you'll have made 150k over the value of your flat.  You can just go out and buy a nicer one!
+It sounds like she wants to keep you prisoner there, but so what if there's security cams? You can just leave, it's not like she can do anything about it.  {price == 500000:And you'll have made 150k over the value of your flat.  You can just go out and buy a nicer one!}
 {M_wa_S(YOU)}Because... you like me?
 {M_wa_S(BELLA)} That's right. I like you, and I'm proud of the way you're learning to appreciate the value of money.
 -> p1e("{M_wa_S(BELLA)} so we have a deal.") ->
@@ -121,9 +205,10 @@ In a daze, you stumble onto the bed, and pass out.
 ~ location_home = location_hovel
 ~ location = location_home
 ~ need_more_money = false
-~ _timer_cb = old_timer_cb
+-> Taunt.clear() -> Taunt.add(hovel_taunts) -> Taunt.set_frequency(12) ->
+
 -> grind.after_activity
-->->
+
  
 = name
 Bella
@@ -408,6 +493,24 @@ The video has {print_number(num_actual_tags)} tag{num_actual_tags!=1:s}.
 // only reach here if not all correct   
 -> list_utils.move_item(video_, untagged_videos, skipped_videos) ->->   
 
-
-
 ->->
+
+// Bella now speaks to you directly.
+= do_taunt_hovel
+{warn()} Your phone is ringing! 
+-> p1("Answer it") ->
+
+{do_taunt_hovel:
+- 1: 
+    "Put your phone on speaker."
+    -> p1("Obey") ->
+    "Good boy."
+
+- else:
+    TODO  taunt hovel
+}
+->->
+
+
+
+

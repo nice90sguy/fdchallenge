@@ -168,9 +168,9 @@ You shut the laptop and stand up.  Your post-orgasm bliss fades, and you start t
 -> cc.pay(BELLA_FULL_NAME, FAN_CLUB_SIGNON_FEE, true) ->
 // Bella sends an offline chat message to you.
 TODO Make her onboarding message
--> M_chat("Whenever you enter My chat room, always greet Me, and always respond to any offline messages I may have left you.  And do it immediately.  That will notify me that you're online.", now(), ()) ->
+-> M_chat("Whenever you enter My chat room, always greet Me, and always respond to any offline messages I may have left you.  And do it immediately.  That will notify me that you're online.", now(), (), ->null_cb) ->
 
--> M_chat("Do you understand? Reply 'Yes, {BELLA_NAME}' when you've read this.", now(), cmd_yes) ->
+-> M_chat("Do you understand? Reply 'Yes, {BELLA_NAME}' when you've read this.", now(), cmd_yes, ->null_cb) ->
 
 
 -> later(true) ->

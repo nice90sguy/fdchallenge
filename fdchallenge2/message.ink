@@ -31,7 +31,7 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, ANGIE_FULL_NAME, ANGIE_UNKNOWN, YOU, AL
 { speech_type:
     - speech_type_voice: -> M_v(msg, t, args) ->
     - speech_type_wa: -> M_wa(msg, t, args) ->
-    - speech_type_chat: -> M_chat(msg, t, args) ->
+    - speech_type_chat: -> M_chat(msg, t, args, ->null_cb) ->
 }
 
 {args ? WAM_PAUSE:-> cont ->}
@@ -97,7 +97,7 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, ANGIE_FULL_NAME, ANGIE_UNKNOWN, YOU, AL
  ->->
  
 
- === M_chat(msg, t, args)
+ === M_chat(msg, t, args, ->cb)
     ~ temp from =  args ^ LIST_ALL(MSG_PEOPLE)
     ~ temp e = "{from == BELLA:b|{from==YOU:i}}"
     ~ temp e_o = "{e != "":<{e}>}"
@@ -127,6 +127,7 @@ LIST MSG_PEOPLE = BELLA, MELANIE, ANGIE, ANGIE_FULL_NAME, ANGIE_UNKNOWN, YOU, AL
         ~ chat_last_args = args
         ~ chat_last_t = t
         ~ chat_last_msg = msg
+        ~ chat_last_cb = cb
     }
 ->->
 

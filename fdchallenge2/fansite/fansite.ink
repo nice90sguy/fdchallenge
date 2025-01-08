@@ -56,7 +56,17 @@ Time: {l0(tm_hour)}:{l0(tm_min)} <> ->bella_status->
 {credits >= cost_per_message:
 ~ possible_activities += fsa_chat
 }
+{chat_offline_messages != "":
+    {warn()} Bella has sent you chat messages while you were offline!
+}
+
+// Bella may have decided that you don't have enough credits, even though
+// You have sufficent credits for chatting
+{enough_credits:
+    ~ enough_credits = (credits >= cost_per_message)
+}
 {not enough_credits:
+    {warn()} You need to get credits if you want to chat with {BELLA_NAME}.
     ~ possible_activities = (fsa_logout, fsa_add_credits, fsa_chat)
 }
  + + (do) ->

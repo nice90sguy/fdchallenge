@@ -33,7 +33,7 @@ LIST fsa_chat_activities = fsa_chat_greet
 
     {chat_last_args != ():
         -> p1("Respond") ->
-        -> intent.respond(chat_last_msg, chat_last_t, chat_last_args+cmd_noecho, chat_last_cb) ->
+        -> intent.respond(chat_last_msg, chat_last_t, chat_last_args, chat_last_cb) ->
         ~ chat_last_args = ()
     }
 

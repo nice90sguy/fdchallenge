@@ -114,7 +114,7 @@ VAR grind_return_to = ->error
 ->->
 
 = morning_alarm
-{current_activity == sleep:
+{location == location_apartment and current_activity == sleep:
     {warn()} Your alarm wakes you at {ampm()}.
         -> cont -> grind.build_opts
 }
@@ -147,7 +147,8 @@ VAR prev_interval = FAR_FUTURE
     -0:
         -> day_rollover -> update_hunger_sleepiness ->
     -6: -> update_hunger_sleepiness ->
-    -7: {current_activity==sleep:-> morning_alarm ->}
+    -7: {current_activity==sleep and location == location_apartment:-> morning_alarm}
+    -9: {location == location_hovel:-> Bella.daily_instruction}
     -12: -> update_hunger_sleepiness ->
     -18: 
         -> update_hunger_sleepiness ->

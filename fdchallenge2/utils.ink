@@ -39,7 +39,8 @@ VAR last_displayed_year = 0
 -> END
 
 
-
+=== null_cb
+->->
 
 == function pod_img
 {period_of_day():
