@@ -29,17 +29,45 @@
     
 */
 LIST angie_taunts = angie_taunt_fear
+VAR angie_location = location_angie_apartment
 
-VAR with_angie = false
 === Angie
+// You've just come out of the shower after arriving back from the airport
+= first_call_to_angie
 
+{angie_knows_your_number:
+    You notice that message from {msg_name(ANGIE)} again. She was really cute...  
+    But it might appear a little desperate to respond so soon.  You decide to
+- else:
+ You remember that woman on the plane. {msg_name(ANGIE)}. She was really cute.  Why the fuck did you give her a fake number? 
+ "Well, you can always make the first move and call her yourself, idiot," you say to yourself.
+    But you don't want to sound desperate.  You decide to
+}
+
+
+ * <> stick to your plan, and not{angie_knows_your_number: respond| call her} yet.
+    
+ * <> change your mind, and send her a message right now.
+        {angie_knows_your_number:
+            You reply to her message.
+            {M_wa_S(YOU)} hi {msg_name(ANGIE)}.  :)
+        - else:
+            You send her a bullshitting message:
+            {M_wa_S(YOU)} hi {msg_name(ANGIE)}, this is {YOUR_NAME},  not sure if you tried to call, but I think I might have given you my old number by mistake.  Hope you got home safely.
+        }
+        You see whether the message got delivered. It did, but the ticks don't turn blue. You shrug.  You've sent the message, so at least she knows you're not ignoring her.
+        ->ffa(minute, 2)->
+        -> cont ->
+        -> phone_sex ->
+ -
+->->
 = cafe_meeting_invite
-{_DEBUG:>>> SENT INVITE}
+
     ~ temp meeting_t = next_hm(11,0)
-    >>> {hhmm(meeting_t)}
+
     -> wa.m_cb("Hi there {sq(angie_relationship == high):sexy}. Fancy meeting up for a coffee sometime today? Say, eleven?", WAM_MISS + ANGIE_FULL_NAME + cmd_meet + location_cafe + num2list(meeting_t), ->Angie.meet_in_cafe) ->
 
-    
+{_DEBUG:>>> SENT INVITE FOR {hhmm(meeting_t)}}    
 ->->
 /*
 This is a "callback" that never returns.
@@ -71,7 +99,7 @@ At the beginning, set IN_CALLBACK to false, do stuff, then tunnel on to grind.af
     }
     ~ location = location_cafe
     You walk into the cafe and see her there.  She smiles and waves, and you sit down opposite her. 
-    "I'm so sorry, I just caught up in things, and lost track of time!"
+    "I'm so sorry, I just got caught up in things, and lost track of time!"
     You sit down opposite her, and look at her. 
     ->  slug_cafe_meeting ->
 
@@ -201,7 +229,7 @@ She wipes her mouth with a paper napkin and looks at you, expecting you to say s
     "Yes, you told me on the plane.  Don't you remember anything we talked about?"
     "Well, I was too busy looking at your legs most of the time."
     "I noticed. Well,  you can look at my legs some more."
-    ~ with_angie = true
+
 * [{angel()} ...She's trouble, and you know it...]
     -> angie_stalker 
 * [{devil_happy()} ...So what?  I can take care of myself.]
@@ -209,9 +237,9 @@ She wipes her mouth with a paper napkin and looks at you, expecting you to say s
 -
 
 {angie_stalker:
-    -> Taunt.add(angie_taunt_fear) ->
-    ~ set_timer_cb(RANDOM(10,50) * 60, ->Taunt.do)
-
+>>>
+    -> Taunt.reset(angie_taunt_fear, 12) ->
+>>>
 }
 -> cont ->
 
@@ -220,7 +248,10 @@ She wipes her mouth with a paper napkin and looks at you, expecting you to say s
 
 -> cont ->
 
-You pay the bill, and go back to your place {with_angie:together}.
+You pay the bill, and leave the cafe {angie_yandere: together}.
+{angie_yandere: 
+    ~ angie_location = location_home
+}
 
 ->->
 = plane_meeting
@@ -234,17 +265,11 @@ You reach for your phone in your backpack, but it's not there.  Fuck, did you le
     * [Give her a fake number]
         You give her a fake number. There's something about her that rings alarm bells.
         ~ setstat(angie_relationship, min)
-    * [Give her your real number]
+    *(angie_knows_your_number)[Give her your real number]
         You give her your number, with a vague sense of foreboding.
         -> wa.m_cb("Hi", WAM_SILENT+WAM_MISS+ANGIE_UNKNOWN+WAM_CALLBACK,  ->respond_to_angie_hi) ->
         ~ setstat(angie_relationship, low)
     -
-
-    
-
-
-
-
 ->->
 
 = respond_to_angie_hi
@@ -255,15 +280,12 @@ You reach for your phone in your backpack, but it's not there.  Fuck, did you le
 ->->
 // You've just come out of the shower
 = phone_sex
-You reply to her message.
-{M_wa_S(YOU)} hi {msg_name(ANGIE)}.  :)
-->ffa(minute, 2)->
--> cont ->
+
 You've just finished drying off, when your phone starts buzzing. She's calling you right back! You <>
 -> p1e("answer it") ->
 <>.
 
-"Hello, {YOUR_NAME}! I thought you wouldn't reply to my message," she says.
+"Hello, {YOUR_NAME}! {angie_knows_your_number:I thought you wouldn't reply to my message,"|I was starting to think you might have given me a fake number!"} she says.
 "Now, why would you think that?"
 "Well, I had the feeling you were going to be one of those guys who plays it cool, you know." She laughs.
 "Nah," you say, "I don't play games like that!"
@@ -331,8 +353,9 @@ You know you're expected to reciprocate.  You let the towel drop to the floor, a
 = respond_to_taunt(msg, t, args)
 ~ IN_CALLBACK = false
 {do_taunt_fear:
-    - 1: Thanks for that, Angie. {msg}
-    - else: Please stop.
+    - 1: "Thanks for that, Angie, so damn deep. As deep as a fucking fortune cookie," you say to yourself.
+    - 2: Please stop.
+    - else: >>>  TODO
 }
 -> cont ->
 ->->
@@ -340,6 +363,7 @@ You know you're expected to reciprocate.  You let the towel drop to the floor, a
 
  -> wa.m_cb("{once:
     - Never let fear get the better of you.
+        -> Taunt.set_frequency(6) ->
     - To love at all is to be vulnerable. Love anything and your heart will be wrung and possibly broken.
     - The greatest mistake you can make in life is to be continually fearing you will make one.
     - Love is what we were born with. Fear is what we learned here.
@@ -351,53 +375,13 @@ You know you're expected to reciprocate.  You let the towel drop to the floor, a
  }", ANGIE + WAM_CHOOSE + cmd_cb, ->respond_to_taunt) ->
  
 
-    
-    
-
-->-> 
-/*
-= first_bar_meeting
-
-"Hi there," you say to her, but she's engrossed in her laptop.
-You stand there for a moment, looking at her now from close range, then you remember: Her name's {msg_name(ANGIE)}.  Of course, you sat next to her on the plane!
-
-Now that you're confident that she's not a random stranger, you <>
-+ raise your voice
-+ tap her on the shoulder
-+ shut the lid of her laptop
-- 
-<> and say, "Hi, {msg_name(ANGIE)}."
-~ state_flags += gs_with_angie
-"Hello, {YOUR_NAME}, What a coincidence!"
-You have a nice time with her.
-
-~ setstat(angie_relationship, medium)
-{_DEBUG:>>> {angie_relationship}}
-{_DEBUG: >>> {DispStat(angie_relationship)}}
-    ~deltastat(confidence, 3)
-    ~deltastat(addiction, -3) 
-    ~deltastat(obedience, -3) 
-    -> ffa(hour, 2) ->
-~ state_flags -= gs_with_angie
 ->->
 
-= subsequent_bar_meeting
-~ state_flags += gs_with_angie
-TODO angie  subsequent meetings, might change below stats
-// subsequent meetings
-~ incstat(angie_relationship)
-You hang out with {msg_name(ANGIE)}.
-{_DEBUG: >>> {DispStat(angie_relationship)}}
-~incstat(confidence)
-~decstat(addiction)    
+= first_time_at_your_place
+You have sex for the first time.
 -> ffa(hour, 2) ->
-~ state_flags -= gs_with_angie
-
-
-
-->->
-
-*/
+Angie leaves.
+~ angie_location = location_angie_apartment
 
 ->->
 

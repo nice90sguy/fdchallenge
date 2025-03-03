@@ -173,6 +173,7 @@ VAR prev_interval = FAR_FUTURE
 }
 
 ~ temp forced_activities = check_max_stats()
+
 // If you can't do forced activites at your current location, you need to go home and do them there
 {(possible_activities ^ forced_activities) == ():
     { location != location_home:
@@ -189,7 +190,7 @@ VAR prev_interval = FAR_FUTURE
     }
 
 }
--> cont ->
+    -> cont ->
         ~ location = location_home
         -> grind.build_opts
 }
@@ -423,7 +424,7 @@ Final stat ({path} path):
 // Sleepiness high, unable to work, exercise, go out
 {sq(sleepiness) >= high:
     {current_activity != sleep:You're too tired to go out, or work...}
-    ~ possible_activities -= (exercise, work, hangout_pub)
+    ~ possible_activities -= (exercise, work, hangout_pub, hangout_cafe)
 
 }
 
@@ -443,7 +444,8 @@ Final stat ({path} path):
 
 {path == dom:
     ~ possible_activities -= logon_fansite
-    {with_angie:
+    >>> {angie_location} {location}
+    {angie_location == location:
         ~ possible_activities += angie_sex
     }
 }
@@ -467,6 +469,13 @@ Final stat ({path} path):
 {path == sub and (possible_activities ? messages) and unread_message_count:
 You have to read your messages before anything else.
     ~ possible_activities = messages
+}
+
+// If sex with angie is a possible activity, and you haven't ever done it with her,
+// Force that activity now
+{(possible_activities ? angie_sex) and grind_angie_sex.do == 0:
+ >>> {grind_angie_sex.do}
+    ~ possible_activities = angie_sex
 }
 // Stuck in an endless loop?
 // reset your confidence, and start a new regimen from next Monday!

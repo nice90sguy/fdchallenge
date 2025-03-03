@@ -47,8 +47,11 @@ VAR available_employers = ()
         - silverman:
             -> ffa(second, 1 * about_an_hour()) ->
             You do an hour or so's work. It's tiring.
+            // HACK - stat sensitivity of sleepiness is usually whole_step,
+            // But we only want to increase it by 1/4 a step
+            ~ set_stat_sensitivity(sleepiness, _stat_sensitivity_5)
             ~ incstat(sleepiness)
-
+            ~ set_stat_sensitivity(sleepiness, _stat_sensitivity_whole_step)
             ~ pay = hourly_contract_rate() 
         - food_bank:
             -> ffa(second, 3 * about_an_hour()) ->

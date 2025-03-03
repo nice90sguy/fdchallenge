@@ -1,4 +1,4 @@
-LIST location = location_apartment, location_gym, location_park, location_bar, location_cafe, location_hotel_bar, (location_hotel_room), location_airplane, location_laptop, location_hovel
+LIST location = location_apartment, location_gym, location_park, location_bar, location_cafe, location_hotel_bar, (location_hotel_room), location_airplane, location_laptop, location_hovel, location_angie_apartment
 
 VAR location_home = location_apartment
 == ldtp()
@@ -26,6 +26,7 @@ VAR location_home = location_apartment
     - location_bar: 🍻Prince of Wales Pub
     - location_cafe: ☕Better Caffe Latte Than Never
     - location_laptop:💻 Your Laptop Screen
+    - location_angie_apartment: 🏢 Angie's Apartment
     - else: (Unknown)
 }<>
 
@@ -42,6 +43,7 @@ VAR location_home = location_apartment
     - location_bar: at the pub
     - location_cafe: in the café
     - location_laptop: on your laptop screen
+    - location_angie_apartment: at Angie's place
     - else: (Unknown)
 }<>
 

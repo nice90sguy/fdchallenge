@@ -63,7 +63,7 @@ You wait.
 -> cont ->
 {bella_chat()} yep looks good. Bye
 ~ set_bella_online(false)
--> Taunt.set_frequency(5) -> Taunt.clear -> Taunt.add(bella_taunt_spend) -> Taunt.do
+-> Taunt.reset(bella_taunt_spend, 5) 
 
 
 ->->
@@ -205,7 +205,7 @@ In a daze, you stumble onto the bed, and pass out.
 ~ location_home = location_hovel
 ~ location = location_home
 ~ need_more_money = false
--> Taunt.clear() -> Taunt.add(hovel_taunts) -> Taunt.set_frequency(12) ->
+-> Taunt.reset(hovel_taunts, 12) ->
 
 -> grind.after_activity
 

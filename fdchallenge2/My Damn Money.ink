@@ -60,7 +60,7 @@ INCLUDE taunt.ink
 # author nice90sguy@gmail.com
 # theme dark
 
-VAR _DEBUG = false
+VAR _DEBUG = true
 VAR _LITEROTICA_EXPORT = true
 
 ~ SEED_RANDOM(857)
@@ -76,7 +76,7 @@ VAR _LITEROTICA_EXPORT = true
 // FOO
 
 // -> END
-(Version 0.075)
+(Version 0.075 {_DEBUG: 🐞DEBUG - DO NOT PUBLISH})
 -> main
 
 == main
@@ -84,13 +84,13 @@ VAR _LITEROTICA_EXPORT = true
 *  [Story 😍] 
     {warn()} By committing to play this game, I hereby confirm that:
     + + (T_and_C)->
-        * * * [I'm sexually submissive]
-        * * * [I will be mindfucked, hypnotised, and manipulated] 
-        * * * [My life will be completely controlled by {BELLA_FULL_NAME}]
-        * * * [I will be driven to financial ruin] 
-        * * * [I will be degraded, humiliated and verbally abused, and will enjoy every minute of it] 
+        * * * I'm sexually submissive
+        * * * I will be mindfucked, hypnotised, and manipulated
+        * * * My life will be completely controlled by {BELLA_FULL_NAME}
+        * * * I will be driven to financial ruin 
+        * * * I will be degraded, humiliated and verbally abused, and will enjoy every minute of it
         * * * {CHOICE_COUNT() == 0} ->
-        Good boy. I'll hold you to that.
+        {bella_icon()} Good boy. I'll hold you to that.
     -> cont ->meeting_bella ->back_home ->one_week_later -> tbc
         - - - -> T_and_C
     - -
@@ -129,41 +129,12 @@ VAR _LITEROTICA_EXPORT = true
 
     - - -> main
 
-* {_DEBUG} [🐞DEBUG - slug_cafe_meeting ]  
-    ~ set_dMy(29,July,2024)
-    ~ set_hms(11, 35, 5)
-    -> Angie.slug_cafe_meeting -> tbc
-    
 
-* {_DEBUG} [(🐞DEBUG - Fast-Forward  Game to "Daily Grind"  stage)]  ->
-    ~ set_dMy(26,July,2024)
-    ~ set_hms(6, 35, 5)
-    * * [Sub Path]
-        ~ path = sub
-    * * [Adventure Path]
-        ~ path = adventure
-        -> Angie.plane_meeting ->
-        ~ unlocked_fansite = true
-    * * [Dom Path]
-        ~ path = dom
-        -> Angie.plane_meeting ->
-    - -
-    -> cc.deposit(5000) ->
+-
+>>> Error, should not get here!
+-> END
 
 
-    ~ timestamp_backhome = now()-SECS_DAY
-    -> stats.reset(path) ->
-    ~ setstat(sleepiness, min)
-    ~ current_activity = sleep
-    ~ grind_return_to = ->here
-    -> fansite_credits.add(1000, 1000) ->
-    -> inventory.unlock_item(media_1_, 100) ->
-    -> inventory.unlock_item(media_2_, 100) ->    
-    ~ grind_days = 7
-    -> grind
-    + (here) ->
-    -
-    -> END
 
 == fanlogin
 {bella_icon()} The [Fan Login] option is for Fan Club members Only!  <br>Not in My Fan Club yet? You know what to do!

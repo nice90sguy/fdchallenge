@@ -27,7 +27,7 @@ Relationship stats:<p><>
 
 {DispStat(addiction)}<br><>
 {DispStat(melanie_relationship)}<br><>
-{path==adventure:{DispStat(angie_relationship)}<br><>}
+{DispStat(angie_relationship)}<br><>
 // </p>
 \----------------------------------------------------<br><>
 
@@ -180,6 +180,11 @@ VAR SHOW_STATS=false
 === function decstat(ref p_stat)
     ~ return deltastat(p_stat, -1)
     
+=== function set_stat_sensitivity(ref p_stat, sensitivity)
+~ p_stat -= LIST_ALL(_stat_sensitivity)
+~ p_stat += sensitivity
+~ return 
+
 === function stat_type(_stat)
 ~ return _stat ^ LIST_ALL(stat_t)
 

@@ -31,26 +31,16 @@ You go bed without even looking at your phone{path == dom: again|, and forget al
 
 
 ~ grind_days = 7
-// Set up taunts
 
+// Set up taunts
+// None for dom path until after Angie progress
 {path:
     - sub:
-        -> Taunt.set_frequency(6) ->
-        -> Taunt.add(LIST_ALL(bella_taunts)) ->
-    - dom:
-        -> Taunt.set_frequency(12) ->
-        -> Taunt.add(angie_taunt_fear) ->
+        -> Taunt.reset(LIST_ALL(bella_taunts), 6) ->
     - adventure:
-        -> Taunt.set_frequency(12) ->
-        -> Taunt.add(LIST_ALL(bella_taunts)) ->
+        -> Taunt.reset(LIST_ALL(bella_taunts), 12) ->
 }
 
--> cont ->
-
--> Taunt.do -> // start the loop
-
-
--> cont ->
 
 -> grind
 + (here) ->
@@ -64,17 +54,11 @@ You feel better after your shower. You wipe the steam off the mirror with a towe
 You're jet-lagged. What time is it anyway? You look at your phone to check the time. It's {approx_time(now())}.
 
 
-{path==dom:
-You notice that message from {msg_name(ANGIE)} again. She was really cute...  
-But it might appear a little desperate to respond so soon.  You decide to
+{path==dom: 
+
+-> Angie.first_call_to_angie
 }
 
- * {path==dom} <> stick to your plan, and not respond yet.
-    
- * {path==dom}  <> change your mind, and send her a message right now.
-    -> Angie.phone_sex ->
- * ->
- -
 
 ->->
 

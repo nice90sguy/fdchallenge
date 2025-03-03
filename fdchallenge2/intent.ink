@@ -42,6 +42,17 @@ VAR obeyed_cmd = false
 -
 ->->
 
+= cmd_accept_or_reject(accept_msg, reject_msg, obedience_threshold)
++ [{accept_msg}]
+    ~ obeyed_cmd = true
+    ~incstat(obedience)
++ {obedience < obedience_threshold}[{reject_msg}]
+    ~decstat(obedience)
+    ~ obeyed_cmd = false
+-
+
+
+->->
 = allow_disobey_below_obedience_threshold(threshold)
 -> cmd_adhoc("Obey Her", threshold)
 
@@ -278,10 +289,17 @@ triggers command_greet("Hello", now(), (BELLA))
         ~ incstat(obedience)
 
     - cmds ? cmd_meet:
-        {now()-t > 3600:You know you're late replying, but...}
-        -> M_Y("Sure {msg_name(from)}!") ->
-        -> command_meet(msg, t, args, cb) ->
-        ~ incstat(obedience)
+        {now()-t >= 3600:You know you're late replying, but...}
+        -> cmd_accept_or_reject("Agree to meet her", "Rain Check", low) ->
+        {obeyed_cmd:
+            -> M_Y("Sure {msg_name(from)}!") ->
+            -> command_meet(msg, t, args, cb) ->
+            -> p1e("{msg_name(from)} adds a 💓 sticker to your message.") ->
+        -else:
+            -> M_Y("Sorry, I won't be able to make it. Another time, maybe?") ->
+            -> p1e("{msg_name(from)} adds a 😞 sticker to your message.") ->
+        }
+
         
     - cmds ? cmd_yes:
         {now()-t > 3600:You know you're late replying, but...}
