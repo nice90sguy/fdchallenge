@@ -1,6 +1,8 @@
 LIST _pow2 = _pow2_0=1,_pow2_1=2,_pow2_2=4,_pow2_3=8,_pow2_4=16,_pow2_5=32,_pow2_6=64,_pow2_7=128,_pow2_8=256,_pow2_9=512,_pow2_10=1024,_pow2_11=2048,_pow2_12=4096,_pow2_13=8192,_pow2_14=16384,_pow2_15=32768,_pow2_16=65536,_pow2_17=131072,_pow2_18=262144,_pow2_19=524288,_pow2_20=1048576,_pow2_21=2097152,_pow2_22=4194304,_pow2_23=8388608,_pow2_24=16777216,_pow2_25=33554432,_pow2_26=67108864,_pow2_27=134217728,_pow2_28=268435456,_pow2_29=536870912,_pow2_30=1073741824
 
-
+// If arg is a list and contains _pow2s, return their integer sum.
+// If arg is a list but contains no _pow2s, return 0.
+// If its already an int, return it
 == function list2num(arg)
 
 {typeof(arg) == int_t:
@@ -15,14 +17,16 @@ LIST _pow2 = _pow2_0=1,_pow2_1=2,_pow2_2=4,_pow2_3=8,_pow2_4=16,_pow2_5=32,_pow2
 ~ temp _min = LIST_MIN(arg)
 ~ return LIST_VALUE(_min) + list2num(arg-_min)
 
-
+// If arg is a list, return a list of its _pow2s (if any).
+// Otherwise, return a list containing _pow2s that sum to v (i.e. its list representation)
 == function num2list(v)
 {typeof(v) == lst_t:
     ~ return v ^ LIST_ALL(_pow2)
 }
 ~ temp n = ()
 ~ return _num2list(1, v, n)
-    
+
+// Recursion helper for above
 == function _num2list(cumprod, ref v, ref n)    
 {v == 0:
     ~ return n

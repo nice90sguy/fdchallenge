@@ -5,6 +5,7 @@ VAR _reserve_price = 0
 VAR _haggle_item_desc = ""
 VAR initial_bid = 0
 === haggle(arg_haggle_item_desc, arg_reserve_price, bid)
+
 ~ initial_bid = bid
 ~ _reserve_price = arg_reserve_price
 ~ _haggle_item_desc = arg_haggle_item_desc
@@ -23,7 +24,10 @@ VAR initial_bid = 0
 -> M_B("{&Is {_haggle_item_desc} worth {bid_s} bucks to you?|{bid_sc} dollars would be - what?|So what do you say? Let's start out at {the ridiculously low price of|} {HAGGLE_LAST_BID==bid:your last bid: }{bid_s} bucks...}") ->
 ~ HAGGLE_LAST_BID = 0
 
-+ [Bargain] -> M_Y("That's a bargain.") -> nextround(bid)
++ [Bargain]
+    -> M_Y("That's a bargain.") -> 
+    {YMFAILED(): ->->}
+    -> nextround(bid)
 -
 
 - (play)
@@ -32,6 +36,7 @@ VAR initial_bid = 0
         -> M_B("{Such a big spender {_emo("🙄")}|Cheapskate.|Really? You're quitting already?|Pathetic lol.|} {_emo("😁")}") -> endplay
 
     +  [Bargain] -> M_Y("That's a bargain.") ->
+    {YMFAILED(): ->->}
         -> nextround(bid)
 
     

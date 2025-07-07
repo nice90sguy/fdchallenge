@@ -2,7 +2,8 @@
 = opt
     You're with Angie.
  <><br><>
-+ + (do) [{do:Sex with Angie|Gratuitous Sex Scene}] ->
+ 
++ (do) [{do:Sex with Angie|Gratuitous Sex Scene}] ->
     ~ current_activity = angie_sex
     {do == 1: 
     
@@ -16,6 +17,6 @@
 
 
     ~ activities_done_today += angie_sex
-    
-    -> grind.after_activity
+-    
+->->
 

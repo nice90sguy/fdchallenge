@@ -10,7 +10,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 
 === wa
 = m(msg, args)
-    -> m_cb(msg, args, 0)
+    -> m_cb(msg, args, ->null_cb)
     
 // If there's a callback divert AND a command in the args, the callback will be passed
 // to the intent.respond() command dispatcher, and may be consumed by a command 
@@ -39,7 +39,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 ~ DID_READ_MESSAGE = false
 
 // Must respond if you're very obedient
-{response_type ? WAM_CHOOSE and sq(obedience) >= high:
+{response_type ? WAM_CHOOSE and sv(obedience) >= high:
     ~ response_type -= WAM_CHOOSE
     ~ response_type += WAM_READ
 }
@@ -98,7 +98,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 + {unread_message_count and response_type ? WAM_READ_MISSED} [Read your unread messages now] -> read_missed_messages(true) ->
 + {unread_message_count and response_type ? WAM_READ_MISSED} [Maybe Later] -> 
     
-+ {sq(obedience) <= medium and sq(addiction) <= medium and unread_message_count and response_type ? WAM_READ_MISSED} [Delete them without reading] -> unread_message_log.clear ->
++ {sv(obedience) <= medium and sv(addiction) <= medium and unread_message_count and response_type ? WAM_READ_MISSED} [Delete them without reading] -> unread_message_log.clear ->
 
 + ->
 -

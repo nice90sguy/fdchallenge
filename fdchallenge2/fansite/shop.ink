@@ -8,14 +8,14 @@ VAR favourite_items = ()
 == fansite_shop
 = opt
 
-+ + (do) [Shop 🛒] ->
++  (do) [Shop 🛒] ->
 {do == 1: {hint()} (Some menu items aren't availble in this version)}
     ~ current_activity = fsa_shop
     {_DEBUG:>>> DEBUG: Available items: {available_items}}
     {_DEBUG:>>> Unlocked items: -> disp_titles(owned_items) ->}
-    + + + {available_items != ()} [Unlock item(s)]
+    + + {available_items != ()} [Unlock item(s)]
             {hint()} (Cumming soon)
-    + + + [Search for items]
+    + + [Search for items]
         ~ temp found_items = ()
         -> search_media_dialog(LIST_ALL(search_tags), available_items, found_items) ->
         
@@ -25,24 +25,25 @@ VAR favourite_items = ()
         
         -> disp_titles(found_items) ->
         Add {n_found==1:it|them} to your favourites?
-        + + + + [Yes]
+        + + + [Yes]
             ~ favourite_items += found_items
-        + + + + [No]
-        - - - - -> do
+        + + +  [No]
+        - - - -> do
         -> ffa(minute, 6) ->
-    + + + [Browse for a couple of hours]
+    + + [Browse for a couple of hours]
         {hint()} (Cumming soon)
         -> ffa(second, 2 * about_an_hour()) -> do
-    + + + [Fap to one of your unlocked items]   
+    + + [Fap to one of your unlocked items]   
         ~ temp selected_media = ()
         -> select_with_lookup(owned_items, selected_media, "video", ->media_title) ->
         ~ temp tags = (lum_narr)
         {selected_media:-> lookup_media(selected_media, tags) -> do}
         
-    + + + [Back to My Page]
-    - - - -> fansite.after_activity
+    + + [Back to My Page]
+    - - 
     ~ activities_done_today += fsa_shop
-    -> fansite.after_activity
+-
+->->
 
 = disp_titles(m)
 {m != ():

@@ -27,9 +27,9 @@ VAR last_phrase_to_repeat = ""
 VAR obeyed_cmd = false
 === intent
 
-= command_cb(msg, t, args, ->cb)
+= command_cb(msg, t, args, ->p_cb)
 
--> cb(msg, t, args) ->->
+-> p_cb(msg, t, args) ->->
 
 = cmd_adhoc(msg, obedience_threshold)
 
@@ -57,7 +57,7 @@ VAR obeyed_cmd = false
 -> cmd_adhoc("Obey Her", threshold)
 
 
-= command_meet(msg, t, args, cb)
+= command_meet(msg, t, args, ->p_cb)
 {_DEBUG: >>> CMD INVITE}
 ~ temp where = args ^ LIST_ALL(location)
 ~ temp when = list2num(args) // epoch time
@@ -67,7 +67,7 @@ VAR obeyed_cmd = false
 }
 You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
 
- ~ set_timer_cb(when - epoch_time, cb)
+ ~ set_timer_cb(when - epoch_time, p_cb)
 ->->
 
 = command_repeat_after_me(phrase, t, args)
@@ -141,7 +141,7 @@ You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
     }
 
     
-    {sq(obedience) == max or sq(addiction) == max: -> do_tribute}
+    {sv(obedience) == max or sv(addiction) == max: -> do_tribute}
 
     + (do_tribute) [Send ${tribute_amount}]
         -> cc.pay(BELLA_FULL_NAME, tribute_amount, true) ->
@@ -154,7 +154,7 @@ You arrange to meet {msg_name(with)} {location_name(where)} at {hhmm(when)}.
         }
         ~ last_tribute = tribute_amount
         
-    + {sq(obedience) <= medium}[Resist]
+    + {sv(obedience) <= medium}[Resist]
         You resist.
         ~ last_tribute = 0
         ~ decstat(confidence)
@@ -219,7 +219,7 @@ triggers command_greet("Hello", now(), (BELLA))
 
 
 */
-= respond(msg, t, args, cb)
+= respond(msg, t, args, ->p_cb)
 
 //  {_DEBUG:>>> RESPOND: {msg} {t}, {args}}
 ~ temp gs_flags = args ^ LIST_ALL(state_flags)
@@ -272,17 +272,17 @@ triggers command_greet("Hello", now(), (BELLA))
 
 // NOTE, testing for equality, not inclusion.
 {cmds == cmd_again:
-    -> respond(msg, t, last_args + cmd_again + cmd_noemit, 0) ->
+    -> respond(msg, t, last_args + cmd_again + cmd_noemit, ->null_cb) ->
     ~ last_args -= cmd_again
 - else:
 
     { 
     - cmds == cmd_cb:
-        -> command_cb(msg, t, args, cb) ->
+        -> command_cb(msg, t, args, p_cb) ->
         
-    - cmds ? cmd_logon:
-            You log on to her fan site...
-            -> cont -> fansite
+    // - cmds ? cmd_logon:
+    //         You log on to her fan site...
+    //         -> cont -> fansite
     - cmds ? cmd_greet:
         {now()-t > 60:You know you're late replying, but...}
         ->wa.r3choices("Hi!", "Hello {msg_name(from)}", "🍆 😆",) ->
@@ -293,7 +293,7 @@ triggers command_greet("Hello", now(), (BELLA))
         -> cmd_accept_or_reject("Agree to meet her", "Rain Check", low) ->
         {obeyed_cmd:
             -> M_Y("Sure {msg_name(from)}!") ->
-            -> command_meet(msg, t, args, cb) ->
+            -> command_meet(msg, t, args, p_cb) ->
             -> p1e("{msg_name(from)} adds a 💓 sticker to your message.") ->
         -else:
             -> M_Y("Sorry, I won't be able to make it. Another time, maybe?") ->

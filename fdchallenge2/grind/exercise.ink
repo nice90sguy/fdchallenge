@@ -19,7 +19,8 @@ VAR num_times_actually_did_exercise = 0
             - max: Gotta work out, you need those endorphins!
             }
 }<><br><>
-+  (do) [Exercise] ->
+
++  (do) [Exercise]
     Time for some exercise!
      ~ temp prev_activity = current_activity // in case you change your mind
     ~ current_activity = exercise
@@ -40,12 +41,13 @@ VAR num_times_actually_did_exercise = 0
     - -
 -
     
-    -> grind.after_activity
+->->
     
 === grind_park_running
 = opt
     How about a run?<><br><>
-+  (do) {current_period != night} [Go for a run] ->
+    
++  (do) {current_period != night} [Go for a run]
     You go for a 10K run around the park.  You see trees and people.
     You feel a lot fitter after that.
 
@@ -64,16 +66,16 @@ VAR num_times_actually_did_exercise = 0
         ~ incstat(fitness)
     }
     ~ decstat(addiction)
-- 
-    ~ location = location_home
-    -> grind.after_activity
 
+- 
+
+~ location = location_home
 ->->
 
 === grind_park_walking
 = opt
     Or maybe just a brisk walk today?<><br><>
-+  (do) {current_period != night} [Brisk walk] ->
++  (do) {current_period != night} [Brisk walk]
     You go for a long walk, which clears your mind.
     ~ current_activity = walking
     -> ffa(hour, 2) ->
@@ -92,7 +94,7 @@ VAR num_times_actually_did_exercise = 0
     ~ decstat(addiction)
 - 
     ~ location = location_home
-    -> grind.after_activity
+
 
 ->->
 
@@ -114,9 +116,8 @@ VAR num_times_actually_did_exercise = 0
     ~ deltastat(confidence, 2)
     ~ incstat(fitness)
     ~ decstat(addiction)
-- 
+-
     ~ location = location_home
-    -> grind.after_activity
 
 ->->
 
@@ -141,7 +142,7 @@ VAR num_times_actually_did_exercise = 0
 - 
 
     ~ location = location_home
-    -> grind.after_activity
+
 
 ->->
 
@@ -166,7 +167,7 @@ VAR num_times_actually_did_exercise = 0
 - 
 
     ~ location = location_home
-    -> grind.after_activity
+
 
 ->->
     

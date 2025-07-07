@@ -7,8 +7,10 @@ After every activity, builds a list of options
 
 */
 
+// Where to go after num days has been reached
 
-=== grind
+=== grind(ndays)
+~ grind_days = ndays
 
 // Note to dev: Don't check against this list, use the VARS below
 // depending on your location
@@ -69,8 +71,7 @@ VAR current_t = 0
 VAR grind_days = 0
 VAR grind_start_day = 0
 VAR grind_end_day = 0
-// Where to go after num days has been reached
-VAR grind_return_to = ->error
+
 
 
 
@@ -100,11 +101,22 @@ VAR grind_return_to = ->error
 }
 
 -> build_opts
+
 // end init
 // ------------------------------------------------------
 
-// (Re)init interrupts and alarms which may have been cleared
-
+= _pa(activity_code, ->tunnel_to_run)
+{possible_activities ? activity_code: 
+    ~ temp entryTurnChoice = TURNS()
+    
+    -> tunnel_to_run ->
+    
+    {entryTurnChoice != TURNS():
+        -> cont ->
+        -> grind.after_loop
+    }
+}
+-> DONE 
 
 
 = day_rollover
@@ -116,11 +128,21 @@ VAR grind_return_to = ->error
 = morning_alarm
 {location == location_apartment and current_activity == sleep:
     {warn()} Your alarm wakes you at {ampm()}.
-        -> cont -> grind.build_opts
+        -> cont -> 
+
+        -> grind.after_loop
 }
 ->->
 
 VAR prev_interval = FAR_FUTURE
+
+= cafe_closing
+    The cafe is closing.
+    -> p1("Go Home") -> 
+    ~ location = location_home
+    ~ _ffm(30)
+    -> grind.after_loop
+    
 = on_the_hour
 {num_dick_pics_to_send > 0:
     -> Bella.dick_pic_challenge ->
@@ -147,17 +169,13 @@ VAR prev_interval = FAR_FUTURE
     -0:
         -> day_rollover -> update_hunger_sleepiness ->
     -6: -> update_hunger_sleepiness ->
-    -7: {current_activity==sleep and location == location_apartment:-> morning_alarm}
+    -7: {current_activity==sleep and location == location_apartment:-> morning_alarm ->}
     -9: {location == location_hovel:-> Bella.daily_instruction}
     -12: -> update_hunger_sleepiness ->
     -18: 
         -> update_hunger_sleepiness ->
         {location == location_cafe:
-            The cafe is closing.
-            -> p1("Go Home") -> 
-            ~ location = location_home
-            ~ _ffm(30)
-            -> build_opts
+            -> cafe_closing
         }
         
 }
@@ -176,28 +194,31 @@ VAR prev_interval = FAR_FUTURE
 
 // If you can't do forced activites at your current location, you need to go home and do them there
 {(possible_activities ^ forced_activities) == ():
+// >>> {possible_activities} {forced_activities}
     { location != location_home:
-    {_DEBUG:>>> Need to go home: None of {forced_activities} available at {location}.}
-    {location:
-        - location_gym:
-            You run home as quick as you can, and...
-        - location_park:
-            You run home as quick as you can, and...
-        - location_bar:
-            {forced_activities == sleep:You're too tired to socialize anymore.} You say goodbye and leave the bar, and stagger home...
-        - else:
-            You have to go home now.
+        {_DEBUG:>>> Need to go home: None of {forced_activities} available at {location}.}
+        {location:
+            - location_gym:
+                You run home as quick as you can, and...
+            - location_park:
+                You run home as quick as you can, and...
+            - location_bar:
+                {forced_activities == sleep:You're too tired to socialize anymore.} You say goodbye and leave the bar, and stagger home...
+            - else:
+                You have to go home now.
+        }
+    
     }
+    -> cont ->
+
+    ~ location = location_home
 
 }
-    -> cont ->
-        ~ location = location_home
-        -> grind.build_opts
-}
 // If only one possible activity now, jump to it
-{(LIST_COUNT(possible_activities) == 1) and (possible_activities != current_activity):
-    -> opts
-}
+
+// {(LIST_COUNT(possible_activities) == 1) and (possible_activities != current_activity):
+//     -> grind.opts
+// }
 
 
 ->->
@@ -218,22 +239,42 @@ VAR prev_interval = FAR_FUTURE
 ~ set_interval_cb(FAR_FUTURE,->error)
 // Set the callback, but not the time yet
 ~ set_timer_cb(FAR_FUTURE,->error)
-~ continue_prompt = true
+// ~ continue_prompt = true
 
 
 Final stat ({path} path):
 ~ temp current_show_stats = SHOW_STATS
 ~ SHOW_STATS = true
--> stats.display ->
-~ SHOW_STATS = current_show_stats
-{_DEBUG:>>> RETURN FROM GRIND {grind_return_to}}
+\------------------------------------------------------
+grind: {grind}
+after_loop: {after_loop}
+build_opts: {build_opts}
+morning_alarm: {morning_alarm}
+cafe_closing: {cafe_closing}
+sleep: {grind_sleep}
+on_the_hour: {on_the_hour}
+CALLBACK_STACK: {CALLBACK_STACK}
+day_rollover: {day_rollover}
+\------------------------------------------------------
 
-->grind_return_to
+// -> stats.display ->
+~ SHOW_STATS = current_show_stats
+{_DEBUG:>>> RETURN FROM GRIND}
+
+->->
 
 = build_opts
 
+{CALLBACK_STACK:
+    {_DEBUG: Shouldn't build opts in callback! returning. (Stack={CALLBACK_STACK})}
+    ->->
+}
 // Check whether we've reached the end of grind days
-{day_rollover >= grind_end_day:->end_grind}
+{day_rollover >= grind_end_day: 
+
+->end_grind
+
+}
 
 
 {_DEBUG:>>> LAST_ACTIVITY: {current_activity}}
@@ -248,7 +289,8 @@ Final stat ({path} path):
 
 // Bella's work proposition, after 4 days, before evening, and she hasn't propositioned you already
 {path==adventure and day_rollover>=4 and (current_period < evening) and (not Bella.work_proposition):
--> Bella.work_proposition -> build_opts
+-> Bella.work_proposition ->
+-> grind.build_opts
 }
 
 ~ possible_activities = ()
@@ -335,7 +377,7 @@ Final stat ({path} path):
 
 }
 // No need to jerk off if lust min
-{sq(lust) <= low:
+{sv(lust) <= low:
     ~ possible_activities -= jerk_off
 }
 
@@ -344,7 +386,7 @@ Final stat ({path} path):
 
         ~ possible_activities -= full_days_work
 -else:
-    {sq(addiction) < max: You already ate breakfast{current_period==morning:, you can now get down to a full day's work!|.}}
+    {sv(addiction) < max: You already ate breakfast{current_period==morning:, you can now get down to a full day's work!|.}}
 }
 // Prevent second dinner
 {activities_done_today ? dinner:
@@ -379,7 +421,7 @@ Final stat ({path} path):
 }
 // prevent two consecutive snacks
 {(possible_activities ? snack) and (current_activity ? snack):
-    {sq(hunger) < high:
+    {sv(hunger) < high:
         You can't have another snack now, you're not that hungry!
         ~ possible_activities -= snack
     }
@@ -388,14 +430,14 @@ Final stat ({path} path):
 
 // prevent snack immediately after breakfast
 {(possible_activities ? snack) and (current_activity == breakfast):
-    {sq(hunger) < high:
+    {sv(hunger) < high:
         You can't have a snack straight after breakfast!
         ~ possible_activities -= snack
     }
 
 }
 // If your horniness and addiction is low, and your self-esteem is high, don't allow distraction while working
-{(sq(lust) < medium) and (sq(addiction) < high) and (sq(confidence) > medium) and (current_activity ^ (work, full_days_work)) != ():
+{(sv(lust) < medium) and (sv(addiction) < high) and (sv(confidence) > medium) and (current_activity ^ (work, full_days_work)) != ():
     ~ possible_activities -= porn
     ~ possible_activities -= logon_fansite
 
@@ -414,22 +456,28 @@ Final stat ({path} path):
 }
 
 
-// sq(Sleepiness) < medium, don't sleep
-{sq(sleepiness) < medium:
+// sv(Sleepiness) < medium, don't sleep
+{sv(sleepiness) < medium:
     // You're not sleepy...
     ~ possible_activities -= sleep
 
 }
 
 // Sleepiness high, unable to work, exercise, go out
-{sq(sleepiness) >= high:
-    {current_activity != sleep:You're too tired to go out, or work...}
+{sv(sleepiness) >= high:
+    {current_activity != sleep:You're too tired to go out}
     ~ possible_activities -= (exercise, work, hangout_pub, hangout_cafe)
-
+    // Bugfix:  Allow working for Bella
+    {available_employers == bella_org:
+       <>...
+        ~ possible_activities += work
+    - else:
+        <>, or work...
+    }
 }
 
 // Become introspective if zero confidence
-{sq(confidence) == min:
+{sv(confidence) == min:
     ~ possible_activities += introspect
     // Can't work if confidence is min
     {possible_activities ^ (work, full_days_work) != ():
@@ -457,10 +505,10 @@ Final stat ({path} path):
     {location != location_home:
         {_DEBUG:>>> Need to go home: None of {forced_activities} available at {location}.}
             ~ location = location_home
-            -> grind
+            -> grind.build_opts
     - else:
         ~ possible_activities = forced_activities
-        -> opts
+        
     }
 }
 
@@ -492,53 +540,49 @@ TODO slug_life_reset
     -> grind.build_opts
 }
 
+
+
 {_DEBUG:>>> Possible Activities: {possible_activities}}
-+ (opts) ->
-    ->  build_decision_narrative ->
- + + (do) ->
-    {possible_activities ? angie_sex:<- grind_angie_sex.opt}
-    {possible_activities ? breakfast: <-grind_breakfast.opt}
-    {possible_activities ? full_days_work: <-grind_full_days_work.opt}
-    {possible_activities ? work: <-grind_work.opt}
-    {possible_activities ? hangout_cafe: <-grind_cafe.opt}
-    {possible_activities ? sleep:<- grind_sleep.opt}
-    {possible_activities ? youtube: <-grind_youtube.opt}
-    {possible_activities ? exercise: <-grind_exercise.opt}
-    {possible_activities ? porn: <-grind_porn.opt}
-    {possible_activities ? jerk_off: <-grind_jerk_off.opt}
-    {possible_activities ? coffee: <-grind_cafe_coffee.opt}
-    {possible_activities ? snack: <-grind_snack.opt}
-    {possible_activities ? cafe_return_home: <-grind_cafe_return_home.opt}
-    {possible_activities ? dinner: <-grind_dinner.opt}
-    {possible_activities ? hangout_pub: <-grind_bar.opt}
-    {possible_activities ? logon_fansite: <-grind_logon_fansite.opt}
-    {possible_activities ? banking: <-grind_banking.opt}
-    {possible_activities ? introspect: <-grind_introspect.opt}
-    {possible_activities ? messages: <-grind_messages.opt}
-    
-    {possible_activities ? running: <-grind_park_running.opt}
-    {possible_activities ? walking: <-grind_park_walking.opt}
-    
-    {possible_activities ? swim: <-grind_gym_swim.opt}
-    {possible_activities ? weights: <-grind_gym_weights.opt}
-    {possible_activities ? running_machine: <-grind_gym_running_machine.opt}
-    
-    {possible_activities ? ba_with_al:<- grind_bar_with_al.opt}
-    {possible_activities ? ba_regulars:<- grind_bar_regulars.opt}
-    {possible_activities ? ba_return_home:<- grind_bar_return_home.opt}
+<- slug_build_decision_narrative
 
 
-//  <- opt_esc
+<- _pa(angie_sex, ->grind_angie_sex)
+<- _pa(breakfast, ->grind_breakfast)
+<- _pa(full_days_work, ->grind_full_days_work)
+<- _pa(work, ->grind_work)
+<- _pa(hangout_cafe, ->grind_cafe)
+<- _pa(sleep, ->grind_sleep)
+<- _pa(youtube, ->grind_youtube)
+<- _pa(exercise, ->grind_exercise)
+
+<- _pa(porn, ->grind_porn)
+<- _pa(jerk_off, ->grind_jerk_off)
+<- _pa(coffee, ->grind_cafe_coffee)
+<- _pa(snack, ->grind_snack)
+<- _pa(cafe_return_home, ->grind_cafe_return_home)
+
+<- _pa(dinner,  ->grind_dinner)
+<- _pa(hangout_pub, ->grind_bar)
+<- _pa(logon_fansite, ->grind_logon_fansite)
+<- _pa(banking, ->grind_banking)
+<- _pa(introspect, ->grind_introspect.opt)
+<- _pa(messages,  ->grind_messages)
+
+<- _pa(running, ->grind_park_running)
+<- _pa(walking, ->grind_park_walking)
+
+<- _pa( swim, ->grind_gym_swim)
+<- _pa(weights, ->grind_gym_weights)
+<- _pa(running_machine, ->grind_gym_running_machine)
+
+<- _pa(ba_with_al, -> grind_bar_with_al)
+<- _pa(ba_regulars, -> grind_bar_regulars)
+<- _pa(ba_return_home, -> grind_bar_return_home)
 
 
--
-+ (after_activity) ->
-    -> cont ->
-   -> grind.build_opts
--
-->->
+-> DONE
 
- = build_decision_narrative
+ = slug_build_decision_narrative
  /*
  First of all, look at the max stats, and list the stat-reducing activites for those.
  Then, in no particular order, talk about the high stats, and how to reduce them.
@@ -550,21 +594,21 @@ TODO slug_life_reset
 
  // When any of sleepiness, hunger, lust, addiction are maxed, they will be the only option available, so the narrative can end quickly.
 
- {sq(sleepiness) == max:
-    {current_activity != sleep:You can hardly keep your eyes open...}
-    ->->
+ {sv(sleepiness) == max:
+    {current_activity != sleep:You can hardly keep your eyes open...<><br><>}
+    -> DONE
  }
- {sq(hunger) == max:
-    You can't go on until you eat something. Anything.
-    ->->
+ {sv(hunger) == max:
+    You can't go on until you eat something. Anything.<><br><>
+    -> DONE
  }
-  {sq(lust) == max:
-    If you don't stroke that dick now, you'll die...
-    ->->
+  {sv(lust) == max:
+    If you don't stroke that dick now, you'll die...<><br><>
+    -> DONE
  }
- {sq(addiction) == max:
+ {sv(addiction) == max:
     You need another fix of {BELLA_NAME}...
-    ->->
+    -> DONE
  }
  // ------------------------------------------------------------------
 
@@ -574,33 +618,38 @@ TODO slug_life_reset
 
  // ------------------------------------------------------------------
  // Are you sleepy?
- {sq(sleepiness) >= medium:
- You're feeling{sq(sleepiness) == high: really } {sq(sleepiness) == medium: a little } sleepy{current_period != night:, even though it's still {current_period == evening: a little|way too} early to go to bed}...
+ {sv(sleepiness) >= medium:
+ You're feeling{sv(sleepiness) == high: really } {sv(sleepiness) == medium: a little } sleepy{current_period != night:, even though it's still {current_period == evening: a little|way too} early to go to bed}...<><br><>
  }
-<><br><>
- ->->
 
+-> DONE
+
+= after_loop
+-> build_opts
 
 === function check_max_stats
+
 // If certain stats have reached max, remove every activity from choice except the ones that reduce those stats. The order is decreasing priority
 ~ temp tmp_poss_act = possible_activities
-{sq(hunger) == max or  sq(lust) == max or sq(sleepiness) == max or sq(addiction) == max:
+{_DEBUG:>>> tmp_poss_act = {tmp_poss_act}}
+{sv(hunger) == max or  sv(lust) == max or sv(sleepiness) == max or sv(addiction) == max:
+
     ~ tmp_poss_act = ()
     {
 
     // Hack. Ignore your hunger when you're in the bar
-    - sq(hunger) == max and location != location_bar:
+    - sv(hunger) == max and location != location_bar:
 
-        { sq(confidence) > min:
+        { sv(confidence) > min:
             {
             - possible_activities ? breakfast:
-                Gotta have breakfast <i>now.
+                // Gotta have breakfast <i>now.
                 ~ tmp_poss_act += breakfast
             - possible_activities ? dinner:
-                You need food now.
+                // You need food now.
                 ~ tmp_poss_act += dinner
             - else:
-                Gotta eat something <i>now.
+                // Gotta eat something <i>now.
                 ~ tmp_poss_act += snack
 
             }
@@ -609,19 +658,20 @@ TODO slug_life_reset
             ~ tmp_poss_act += snack
         }
         <><br><>
-    - sq(lust) == max:
-        You need release <i>now.<><br><>
+    - sv(lust) == max:
+        // You need release <i>now.<><br><>
         ~ tmp_poss_act += jerk_off
 
     // If max sleepiness, you have to sleep
-    - sq(sleepiness) == max :
+    - sv(sleepiness) == max :
         ~ tmp_poss_act += sleep
 
     // Over-complex:
     // max addiction and min confidence, not sleeping, and not doing a fansite activity, and evening or night
-    - sq(addiction) == max and sq(confidence) == min and current_activity != sleep  and ("{current_activity}" !? "fsa_" and period_of_day() >= evening):
+    - sv(addiction) == max and sv(confidence) == min and current_activity != sleep  and ("{current_activity}" !? "fsa_" and period_of_day() >= evening):
         ~ tmp_poss_act += logon_fansite
         ~ tmp_poss_act += messages
+        ~ tmp_poss_act += banking  // added to prevent endless loop, when max addiction but no access to fansite
 
     }
 }

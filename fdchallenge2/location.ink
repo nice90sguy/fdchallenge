@@ -6,12 +6,14 @@ VAR location_home = location_apartment
 {location != ():Location: <b>{location_desc()}}</b><br><>
 -> dtp ->->
 
-== SCENE(loc, ->scene)
-{_DEBUG:<i><>}
-{_DEBUG:{scene}}
+== SCENE_START(loc)
 ~ location = loc
 {location != ():Location: <b>{location_desc()}}</b><br><>
--> dtp ->scene -> cont ->->
+-> dtp ->->
+
+== SCENE(loc, ->scene)
+{_DEBUG:{scene}}
+->SCENE_START(loc) -> scene -> cont ->->
 
 == function location_desc
 

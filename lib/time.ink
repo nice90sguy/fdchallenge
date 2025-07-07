@@ -150,9 +150,11 @@ LIST ALARM_TYPE = ALARM_TYPE_INTERVAL, ALARM_TYPE_TIMER
 VAR __next_interval = FAR_FUTURE
 VAR __next_timer = FAR_FUTURE
 VAR _interval = 3600 // default one hour
-VAR _interval_cb = 0
-VAR __timer_cb = 0
+VAR _interval_cb = ->error
+VAR __timer_cb = ->error
 
+VAR alarms_enabled = true
+VAR CALLBACK_STACK = 0
 
 == function _did_stop_ffa_at_alarm_time(ref future_time)
 
@@ -175,7 +177,7 @@ VAR __timer_cb = 0
     {interval == FAR_FUTURE:
         ~ __next_interval = FAR_FUTURE
     -else:
-        {_DEBUG:{IN_CALLBACK:>>> !!! Should not set interval callback within callback {_interval_cb} {cb}}}
+        // {_DEBUG:{CALLBACK_STACK:>>> !!! Should not set interval callback within callback {_interval_cb} {cb}}}
         ~ __next_interval = (epoch_time / _interval) * _interval + _interval
     }
     ~ temp ret = _interval_cb
@@ -188,22 +190,31 @@ VAR __timer_cb = 0
 {seconds_from_now == FAR_FUTURE:
     ~ __next_timer = FAR_FUTURE
 - else: 
-    {_DEBUG:{IN_CALLBACK:>>> !!! Should not set timer callback within callback {__timer_cb}  {cb}}}
+    // {_DEBUG:{CALLBACK_STACK:>>> !!! Should not set timer callback within callback {__timer_cb}  {cb}}}
     ~ __next_timer = epoch_time + seconds_from_now
 }
     ~ temp ret = __timer_cb
     ~ __timer_cb = cb
     ~ return ret
 // Prevent rentry
-VAR IN_CALLBACK = false
 //VAR ff_in_callback_time = 0
 // fast forward time, checking for interrupt
 
+/* 
+Fast-forward time, handling any futre or periodic callbacks that occur between 
+now and the futre time.
+If the callback itself advances time 
+*/
+
  == ffa(units, by)
-~ temp future_time = ft(units, by)
-{IN_CALLBACK:
-{_DEBUG:>>> !!! Should not call ffa from within callback {_interval_cb}. Accruing {future_time-epoch_time}s.}
+{not alarms_enabled:
+    ~ ff(units, by)
+    ->->
 }
+~ temp future_time = ft(units, by)
+// {CALLBACK_STACK:
+// >>> !!! Should not call ffa from within callback {_interval_cb}. Accruing {future_time-epoch_time}s.
+// }
 
     ~ temp extra_time = 0
 
@@ -212,30 +223,33 @@ VAR IN_CALLBACK = false
     ~ temp alarm =_did_stop_ffa_at_alarm_time(stopped_time)
 
     {alarm != ():
-        ~ extra_time = future_time - stopped_time
+        
         {alarm == ALARM_TYPE_INTERVAL:
             ~ __next_interval += _interval
         -else:
             ~ __next_timer = FAR_FUTURE
         }
-        ~ IN_CALLBACK = true
+        ~ CALLBACK_STACK += 1
         ~ epoch_time = gmtime(stopped_time)
-        {alarm==ALARM_TYPE_INTERVAL:-> _interval_cb ->|-> __timer_cb ->}
-
-        ~ IN_CALLBACK = false
-        
-        -> ffa(second + fff_bypass_record, extra_time) ->
+        {alarm==ALARM_TYPE_INTERVAL:
+            -> _interval_cb ->
+        -else:
+            -> __timer_cb ->
+        }       
+        ~ CALLBACK_STACK -= 1
+        // The callback may have advanced time.  If it hasn't advanced it beyond our furture time,
+        // fast forward to future time (the "extra" time)
+        ~ extra_time = future_time - epoch_time
+        {extra_time >= 0: -> ffa(second + fff_bypass_record, extra_time)}
      - else: 
 
-//        ~ ff_in_callback_time = 0
         ~ ff(units, by)
-        ->->
+
     }
 
  ->->
  
- 
- // ff to start of tomorrow (midnight tonight), or wind back to beginning (midnight) of today
+
 === eod 
 -> ffa(day, 1) ->->
 

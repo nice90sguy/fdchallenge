@@ -7,7 +7,7 @@ VAR chat_last_msg = ""
 LIST fsa_chat_activities = fsa_chat_greet
 == fansite_chat
 = opt
-+ + (do) [Chat with Me 💬]
++ (do) [Chat with Me 💬] ->
     ~ current_activity = fsa_chat
     ~ speech_type = speech_type_chat
 
@@ -25,10 +25,13 @@ LIST fsa_chat_activities = fsa_chat_greet
     // Display and respond to any offline messages first
     {chat_offline_messages:
         {chat_offline_messages}
-        ~ chat_offline_messages = ""
+        {path!=adventure or finished_initial_convo:
+            ~ chat_offline_messages = ""
+        }
     }
+
     // First convo if first time chatting
-    {do == 1 and path==adventure:-> adventure_initial_convo -> fansite.after_activity}
+    {path==adventure and not finished_initial_convo:-> adventure_initial_convo ->}
     // Check the last_args for any command
 
     {chat_last_args != ():
@@ -39,46 +42,55 @@ LIST fsa_chat_activities = fsa_chat_greet
 
     {not bella_online(): {BELLA_NAME} isn't online right now. ({ampm()})}
     // Don't wait if we haven't set up the hourly callback, otherwise we might wait forever
-    + + + {(not bella_online()) and grind.on_the_hour}  [Wait for her to come online]
+    + + {(not bella_online()) and _interval_cb == ->grind.on_the_hour}  [Wait for her to come online]
 
         ~ incstat(obedience)
         -> ff2h(1) -> do ->
 
-    + + + [Say Hello]
+    + + [Say Hello]
+
+            
             -> M_Y("{Hello.|Hello|hello {BELLA_NAME}|Hi {BELLA_NAME}|Hi|hi|Hello godddess|hi goddess|goddess}") ->
+        {YMFAILED(): ->->}
 
        {bella_online():
             {RANDOM(1,5) == 5:
                 -> p1("Bella is typing...") ->
                 -> M_B("{~Hello.|Hi|Hi loser.|hi}") ->
                 -> M_B("{~Send.|Tip Me|tribute|pay me, slave|greet me properly}") ->
-         -> intent.command_tribute("{~Send.|Tip Me|}", now(), cmd_tribute +  Confidence + num2list(sqi(addiction))) ->            
+                -> intent.command_tribute("{~Send.|Tip Me|}", now(), cmd_tribute +  Confidence + num2list(sqi(addiction))) ->   
+
                 -> taunt ->
             - else:
                 She's online, but ignores you.
-                You hang around for half an hour, hoping she'll respond.
-                -> ffa(minute, 28) ->
+                You hang around for an hour, hoping she'll respond.
+                -> ffa(minute, 58) ->
             }
         }
-    + + + {sq(obedience) < max}[Leave Chat]
-    - - -
+    + + {sv(obedience) < max}[Leave Chat]
+    - -
 
     ~ activities_done_today += fsa_chat
 
-    -> fansite.after_activity
+-
 ->->
 
 
+// Need to set this at end of initial convo, because user won't complete it the first time (they'll be kicked out  for not having enough credits)
+VAR finished_initial_convo = false
 = adventure_initial_convo
 
 ~ set_bella_online(false) // Should already be false
 -> p1("Respond") ->
+
 -> intent.respond(chat_last_msg, chat_last_t, chat_last_args, chat_last_cb) ->
+{YMFAILED(): ->->}
 ~ chat_last_args = ()
 
 
 You notice she's offline now, so you sit back and wait. You re-read what she typed, and think to yourself, "Maybe I should say hi or something."  Or maybe be a little more polite.  You type:
 -> M_Y("Hello") ->
+{YMFAILED(): ->->}
 -> p1("Wait for her to come online") ->
 -> ffa(second, 63) ->
 You wait for less than a minute, and then...
@@ -88,12 +100,14 @@ The shock of reading her instant reply make you suddenly find yourself unable to
 -> cont ->
 -> M_B("Well? lol") ->
 -> M_Y("sry i couldnt think of what to say lol") ->
+{YMFAILED(): ->->}
 
 You're beginning to wake up to the weird impulsiveness, not to say insanity of what you've done.   Why did you so quickly decide to do this?  And why do you have such a strong impluse to jump to do what she tells you, almost as though her commands are bypassing your brain?
 Does she even remember who you are?
 -> cont ->
 ~decstat(confidence)
 -> M_Y("I dont know if you remember me, I'm the guy {path==adventure:whose oysters you ate!|you met at the hotel the other night!} It was my last night in New York") ->
+{YMFAILED(): ->->}
 -> M_B("ofc I remember") ->
 
 She doesn't continue after that, and you're stumped for what to say.  She's not very talkative!
@@ -106,11 +120,11 @@ Maybe you should ask what you're actually getting from her for your ${FAN_CLUB_S
 You notice that every time you've been sending her chat messages, there's been a little number next to your message:
 
 -> M_YP("There's a number next to my chat messages") ->
-
+{YMFAILED(): ->->}
 -> M_B("thats your credits.") ->
 
 -> M_Y("It's going down by {print_number(cost_per_message)} all the time?") ->
-
+{YMFAILED(): ->->}
 She doesn't respond for a minute, but then types:
 
 -> M_B("type something now") ->
@@ -118,17 +132,20 @@ She doesn't respond for a minute, but then types:
 ~ cost_per_message = 10
 You type
 -> M_Y("hello, world") ->
+{YMFAILED(): ->->}
 -> cont ->
 You type it again, to double-check:
 -> M_Y("hello, world") ->
+{YMFAILED(): ->->}
 -> cont ->
 -> M_B("lol keep talking, {YOUR_NAME}") ->
 -> cont ->
 You figure out that every time you send a message, the site charges you. And that {BELLA_NAME} is seemingly able to change the price!
 -> M_B("type hello world again, you nerd  {YOUR_NAME} lol") ->
 You ignore her, but she types it again!
--> intent.respond("hello world", now(), BELLA+cmd_repeat_after_me, 0) ->
-{obeyed_cmd:-> intent.respond("Good boy. Again.", now(), BELLA+cmd_again, 0) -> }
+-> intent.respond("hello world", now(), BELLA+cmd_repeat_after_me+cmd_noemit, ->null_cb) ->
+{YMFAILED(): ->->}
+{obeyed_cmd:-> intent.respond("Good boy. Again.", now(), BELLA+cmd_again, ->null_cb) -> }
 -> M_B("lol dont worry im setting the price back to only one credit for a message.  You need your credits for more than chatting {devil_happy()}") ->
 ~ cost_per_message = 1
 -> ffa(minute, 1) ->
@@ -138,9 +155,13 @@ You don't know why, but you're kind of turned on by this conversation.
 You wait around to see if she's going to say anything else, but it doesn't look like it.
 You type
 -> M_Y("ty lol") ->
+{YMFAILED(): ->->}
 , and notice that it only cost you one credit, as she promised.
 You sit back, wondering even more than ever who she is, and leave the chat, to explore the rest of her site.
 -> ffa(second, 30) ->
+~ finished_initial_convo = true
+~ chat_offline_messages = ""
+
 ->->
 
 VAR enough_credits = true
@@ -149,7 +170,7 @@ VAR enough_credits = true
     -> M_B("{enough_credits: add credits now|i told u to add credits}") ->
     ~ enough_credits = false
     {warn()} Bella kicks you out of the chat.
-    -> fansite.after_activity
+    ->->
 
 }
 ~ enough_credits = true
@@ -158,13 +179,17 @@ VAR enough_credits = true
 {choice:
 
     -1:
-        -> intent.respond("{Jerk and goon 🤤|UNLOCK IT||Go on.|Unlock|Stroke|Open it}", now(), cmd_send_item+LIST_RANDOM(available_items), 0) ->
+        -> intent.respond("{Jerk and goon 🤤|UNLOCK IT||Go on.|Unlock|Stroke|Open it}", now(), cmd_send_item+LIST_RANDOM(available_items), ->null_cb) -> 
+        {YMFAILED(): ->->}
         -> ffa(minute, 15) ->
     -2:
-        -> intent.respond("{I will obey {BELLA_NAME}|I love you|I'm your slave|You own me|I belong to {BELLA_NAME}}", now(), cmd_repeat_after_me + Submissiveness, 0) ->
+        -> intent.respond("{I will obey {BELLA_NAME}|I love you|I'm your slave|You own me|I belong to {BELLA_NAME}}", now(), cmd_repeat_after_me + Submissiveness, ->null_cb) ->
+        {YMFAILED(): ->->}
     -3:
-        -> intent.respond("{I'm worthless|No escape|I'm your ATM|I'm your paypig|oink}", now(), cmd_repeat_after_me + Confidence, 0) ->
-        -> intent.respond("{Fifty. Now.|Spoil.|Send|spoil me|spoil your Goddess|pay.}", now(), Confidence + cmd_tribute + cmd_noemit + num2list(50), 0) ->
+        -> intent.respond("{I'm worthless|No escape|I'm your ATM|I'm your paypig|oink}", now(), cmd_repeat_after_me + Confidence, ->null_cb) ->
+        {YMFAILED(): ->->}
+        -> intent.respond("{Fifty. Now.|Spoil.|Send|spoil me|spoil your Goddess|pay.}", now(), Confidence + cmd_tribute + cmd_noemit + num2list(50), ->null_cb) ->
+        {YMFAILED(): ->->}
         -> ffa(minute,2) ->
     -4:
         -> M_B("Take off your pants,and get on your knees.") ->
@@ -173,7 +198,8 @@ VAR enough_credits = true
         -> cont ->
         -> M_B("now, start stroking.") ->
 
-        -> intent.respond("I live for {BELLA_NAME}", now(), cmd_repeat_after_me, 0) ->
+        -> intent.respond("I live for {BELLA_NAME}", now(), cmd_repeat_after_me, ->null_cb) ->
+        {YMFAILED(): ->->}
         -> M_B("now, start stroking faster.") ->
         ->p1("speed up") ->
         -> M_B("Faster!") ->
@@ -189,11 +215,13 @@ VAR enough_credits = true
             -> p1e("You cum.") ->
             ~ incstat(addiction)
             ~ decstat(lust)
-            -> M("Thank me.", now(), WAM_PAUSE) ->
+            -> M_BP("Thank me.") ->
             -> M_Y("thank you...") ->
         - else:
              -> p1e("You don't cum.") ->
+        
             ~ deltastat(lust, 5)
+            ->->
         }
 
     -5:
@@ -201,15 +229,18 @@ VAR enough_credits = true
     -6: 
         ~ temp reserve6 = 1000
         ~ temp starting_bid6 = 50
-        ~ speech_type = speech_type_chat
+        // ~ speech_type = speech_type_chat
         -> M_B("{How much would you pay to kiss my ass?|How much is my attention worth to you?}") ->
         -> haggle("{my ass|my attention}", reserve6, starting_bid6) ->
+        {YMFAILED(): ->->}
     -7: 
         -> M_B("I've doubled the price per message for chatting with me. 💵") ->
+        -> cont ->
         ~ cost_per_message = 2 * cost_per_message
     -8: 
         // Exposure
         -> M_B("{send me a photo of your girlfriend|tell me your mother's phone number|give me your boss's email address|upload a scan of your passport|send a baby picture of you|tell me your parents name and address|list the names of every girl you've slept with.|Stand up and shout \"Bella knows all my personal details\"}") ->
+        -> cont ->
         -> intent.allow_disobey_below_obedience_threshold(medium) ->
     -9:
         // Silent
@@ -270,31 +301,37 @@ VAR enough_credits = true
 
 +\ [{phrase1}]
 -> M_Y(phrase1) ->
+{YMFAILED(): ->->}
     {phrase1==phrase:
         ~ right++
     }
 +\ [{phrase2}]
 -> M_Y(phrase2) ->
+{YMFAILED(): ->->}
     {phrase2==phrase:
         ~ right++
     }
 +\ [{phrase3}]
 -> M_Y(phrase3) ->
+{YMFAILED(): ->->}
     {phrase3==phrase:
         ~ right++
     }
 +\ [{phrase4}]
 -> M_Y(phrase4) ->
+{YMFAILED(): ->->}
     {phrase4==phrase:
         ~ right++
     }
 +\ [{phrase5}]
 -> M_Y(phrase5) ->
+{YMFAILED(): ->->}
     {phrase5==phrase:
         ~ right++
     }
 +\ [{phrase6}]
 -> M_Y(phrase6) ->
+{YMFAILED(): ->->}
     {phrase6==phrase:
         ~ right++
     }
@@ -316,3 +353,11 @@ VAR enough_credits = true
 
 ->->
 
+
+// Your message failed
+=== function YMFAILED()
+{(YOU ^ LAST_MSG_RESULT_SUCCESS) == ():
+    {warn()} {bella_online(): Bella has kicked you out the chat!|You're kicked out of the chat.}
+    ~ return true
+}
+~ return false

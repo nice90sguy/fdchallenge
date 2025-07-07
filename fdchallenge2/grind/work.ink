@@ -9,19 +9,19 @@ VAR available_employers = ()
     ~ return
 }
 
-{sq(confidence) >= high:
+{sv(confidence) >= high:
      ~ available_employers += silverman
 - else:
     {available_employers ? silverman:You don't feel up to working for the investment bank today.}
      ~ available_employers -= silverman
 }
-{sq(confidence) >= medium:
+{sv(confidence) >= medium:
      ~ available_employers += food_bank
 - else:
     {available_employers ? food_bank:You don't feel up to working for Al today.}
      ~ available_employers -= food_bank
 }
-{sq(confidence) >= low:
+{sv(confidence) >= low:
      ~ available_employers += own_project
 - else:
     {available_employers ? own_project:You don't even feel up to working on your own stuff today.}
@@ -29,13 +29,11 @@ VAR available_employers = ()
 }
 
 === grind_work
-
-
 = opt
 {CHOICE_COUNT()==0:How about if you do|Or possibly, do} {activities_done_today ? work:another|an} hour's work{current_period == morning and (activities_done_today !? breakfast): before breakfast}{current_period > afternoon: even though it's late}...<br><>
 
 
-+ + (do)[{current_activity==work:Keep working|Work}{employer==bella_org: for {BELLA_NAME}}] ->
++ (do)[{current_activity==work:Keep working|Work}{employer==bella_org: for {BELLA_NAME}}] ->
 
     ~ set_available_employers_based_on_confidence_level()
     ~ current_activity = work
@@ -43,7 +41,7 @@ VAR available_employers = ()
     -> select_employer ->
 
     {employer:
-        - ():->grind.after_activity
+        - ():->->
         - silverman:
             -> ffa(second, 1 * about_an_hour()) ->
             You do an hour or so's work. It's tiring.
@@ -93,11 +91,14 @@ VAR available_employers = ()
 
     {tm_hour >= 18: It's after six, time to stop. }
     
-    + + + + {tm_hour < 18} [Continue Working] -> do
+    + + {tm_hour < 18} [Continue Working] -> do
 
-    + + + + [Stop Work] -> grind.after_activity
+    + + [Stop Work] ->->
+    
+    - -
 
-
+-
+->->
 /* --------------------------------------------------------------------------------
 
 */
@@ -126,9 +127,9 @@ VAR available_employers = ()
 
 === grind_full_days_work
 = opt
-
     Now, you're <i>really</i> going to get down to a full day's work. {hourly_contract_rate>0:You need the money...}    <><br><>
-+ + (do){(silverman, food_bank) ? employer}[Do a Full Day's Work for {employer_name()}] ->
+    
++ (do) {(silverman, food_bank) ? employer}[Do a Full Day's Work for {employer_name()}] ->
 
     You down a coffee, switch on your laptop, and start work.
     ~ current_activity = full_days_work
@@ -141,8 +142,8 @@ VAR available_employers = ()
     You look at time. Wow, {ampm_hm(tm_hour, 0)} already!
     ~ temp pay = daily_contract_rate()
     {pay>0: -> cc.receive(employer_name(), pay, true) ->}
-    -> grind.after_activity
 
+-
     
 ->->
 

@@ -1,14 +1,17 @@
 
 
-LIST fansite_activities = fsa_add_credits, fsa_chat, fsa_shop, fsa_video_session, fsa_tribute, fsa_logout
+LIST fansite_activities = fsa_add_credits, fsa_chat, fsa_shop, fsa_video_session, fsa_tribute, fsa_goon, fsa_logout
 
 
 // This hack is so that "logout" can be called from anywhere.
 // The way the activity builder is designed, it makes it hard to use redirects as tunnel params, because they need to get propagated
-VAR fansite_return_to = ->grind.after_activity
+//VAR fansite_return_to = ->error
 VAR unlocked_fansite = false
+VAR allowed_to_log_out = false
 === fansite
-{fansite == 1 and fansite_return_to == ->grind.after_activity:
+
+//~ fansite_return_to = p_fansite_return_to
+{fansite == 1:
 {bella_icon()} Welcome to My Fan Page! I'm sure you'll be here a lot!
 
 The first thing you need to do is to add some credits, it looks like you don't have any yet!  You won't be able to do much here unless you have plenty of them!
@@ -32,17 +35,35 @@ Welcome, and congratulations for being one of My SUPER FANS!!
 
 }
 
+-> fansite.build_opts
 
 
--> build_opts
+-> error("Shouldnt get here")
 
- {_DEBUG:>>> END FANSITE}
-->->
+= _pa(activity_code, ->tunnel_to_run)
+// allowed_to_log_out: {allowed_to_log_out}
+{possible_activities ? activity_code: 
+    ~ temp entryTurnChoice = TURNS()
+    
+    -> tunnel_to_run ->
+    
+    {entryTurnChoice != TURNS():
+        {allowed_to_log_out:
+            // For next time
+            ~ current_activity -= LIST_ALL(fansite_activities)
+            ~allowed_to_log_out = false
+            ->-> // tunnel out
+        }
+       -> fansite.build_opts
+    }
+}
+->DONE 
 
 = build_opts
+
 Time: {l0(tm_hour)}:{l0(tm_min)} <> ->bella_status-> 
 <i> Credits: {credits}
-+ (opts) ->
+
 ~ possible_activities = ()
 // Always allow logout
 ~ possible_activities += fsa_logout
@@ -56,6 +77,7 @@ Time: {l0(tm_hour)}:{l0(tm_min)} <> ->bella_status->
 {credits >= cost_per_message:
 ~ possible_activities += fsa_chat
 }
+
 {chat_offline_messages != "":
     {warn()} Bella has sent you chat messages while you were offline!
 }
@@ -68,27 +90,33 @@ Time: {l0(tm_hour)}:{l0(tm_min)} <> ->bella_status->
 {not enough_credits:
     {warn()} You need to get credits if you want to chat with {BELLA_NAME}.
     ~ possible_activities = (fsa_logout, fsa_add_credits, fsa_chat)
+    {path==adventure and not finished_initial_convo:
+    ~ possible_activities -= fsa_chat
 }
- + + (do) ->
-
-    {possible_activities ? fsa_chat:<- fansite_chat.opt}
-    {possible_activities ? fsa_add_credits:<- fansite_add_credits.opt}
-    {possible_activities ? fsa_tribute:<- fansite_tribute.opt}
-    {possible_activities ? fsa_shop:<- fansite_shop.opt}
-    {possible_activities ? fsa_logout:<- fansite_logout.opt}
-    
-
- - -
--
-+ (after_activity) ->
-    ~ current_activity -= LIST_ALL(fansite_activities)
-        -> cont ->
-   -> fansite
--
+}
 
 
--> fansite
-->->
+{sv(addiction) >= high:
+    ~ possible_activities += fsa_goon
+}
+
+{path==adventure and not finished_initial_convo:
+    ~ possible_activities -= (fsa_logout, fsa_shop, fsa_goon)
+}
+
+// Need to add this, othewise on_the_hour thinks we need to log on when addiction is max
+~ possible_activities += logon_fansite
+
+
+<- _pa(fsa_chat, ->fansite_chat)
+<- _pa(fsa_goon, ->fansite_goon)
+<- _pa(fsa_add_credits, ->fansite_add_credits)
+<- _pa(fsa_tribute, ->fansite_tribute)
+<- _pa(fsa_shop, ->fansite_shop)
+<- _pa(fsa_logout, ->fansite_logout)
+
+
+->DONE
 
 = bella_status
 {bella_online(): 💗|🩶} <i>{BELLA_NAME} is {bella_online(): online!|offline.}</i><>
@@ -105,50 +133,61 @@ VAR bella_online_now = false
     {hint()} {BELLA_NAME} has {online:come online!|gone offline.}
     ~ bella_online_now = online
 }
-    
+
+
 == fansite_logout
 = opt
-+ + (do) [Log out] ->
-    {chat_offline_messages != "":
-    
-        {warn()} You can't log out until you read your offline messages!
-        -> fansite.after_activity
-        
-    }
-    // If you have any credits, you have to tribute her once per day
-    {credits and not (activities_done_today? fsa_tribute):
-        {warn()} You can't end your first session of the day without tipping her first!
-        -> fansite.after_activity
-    }
-    
-    -> fansite_return_to
-    
+~ temp unread_offline_message = (chat_offline_messages != "")
+~ temp untributed = credits and not (activities_done_today? fsa_tribute)
+
+{unread_offline_message: {warn()} You can't log out until you read your offline messages!}
+{untributed: {warn()} You can't end your first session of the day without tipping her first!}
++ (do) {not unread_offline_message and not untributed} [Log out] ->
+    ~ allowed_to_log_out = true
+-
+
+->->
 
 == fansite_tribute
 = opt
 ~ temp tx_result = ()
 
-+ + (do) [Tip Me! 💵] ->
++ (do) [Tip Me! 💵] ->
     ~ temp tip_amount = sqi(addiction) // quantized addiction level as number
-    + + + [{tip_amount} credits] -> 
-    + + + [{tip_amount * 10} credits] -> 
+    + + [{tip_amount} credits] -> 
+    + + [{tip_amount * 10} credits] -> 
      ~ tip_amount = tip_amount * 10
-    + + +  {credits} [All your credits] -> 
+    + +  {credits} [All your credits ({comma_ify(credits)})] -> 
         ~ tip_amount = credits
 
 
-    - - - -> fansite_credits.pay(tip_amount, tx_result) -> 
+    - - -> fansite_credits.pay(tip_amount, tx_result) -> 
     {tx_result ? FS_TX_SUCCESS:
         {That felt good.|You want to do that again.|Pay more.}
         ~ incstat(addiction)
         ~ decstat(confidence)
-        {sq(addiction) >= high:
+        {sv(addiction) >= high:
             ~ incstat(lust)
         }
 
     }
     ~ activities_done_today = fsa_tribute
-    -> fansite.after_activity
+->->
+
+== fansite_goon
+= opt
+
+
++  (do) [Goon to My profile pics 😵‍💫] ->
+    You stare at her profile pics. You lose track of time....
+    ->ffa(second, 4 * about_an_hour()) ->
+    ~ incstat(lust)
+    ~ incstat(addiction)
     
+    ~ activities_done_today = fsa_goon
+-
+->->
+    
+
 
     

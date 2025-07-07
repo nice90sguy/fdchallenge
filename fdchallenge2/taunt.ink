@@ -39,7 +39,7 @@ VAR _available_taunts = ()
     // -> ffa(minute, 3) ->
     // ->->
     // Dont wake from deep sleep
-    {current_activity == sleep and sq(sleepiness) >= medium:
+    {current_activity == sleep and sv(sleepiness) >= medium:
         ~ response_type = WAM_MISS
     }
 
@@ -88,7 +88,7 @@ VAR _available_taunts = ()
 
 {_taunt_frequency_hours >= 0:
     
-
+    
     ~ set_timer_cb(_taunt_frequency_hours * RANDOM(10,50) * 60, ->_do)
 //   >>> NEXT TAUNT AT {hhmm(__next_timer)}, One of {_available_taunts}
 }

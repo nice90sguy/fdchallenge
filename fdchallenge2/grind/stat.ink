@@ -1,21 +1,17 @@
 === grind_introspect
-= do
-   -> stats.display ->
-->->
 = opt
-+ + [Introspect 💭] ->
++  [Introspect 💭] ->
     You spend a few minutes in contemplation...
     -> ffa(second, about_an_hour() / 3) ->
     ~ decstat(confidence)
     ~ activities_done_today += introspect
     <- narrate 
-    + + + {_DEBUG} [🐞 Reset (adventure) ] -> stats.reset(adventure) ->
-    + + + {_DEBUG} [🐞 Reset (sub) ] -> stats.reset(sub) -> 
-    + + + [Back] -> 
-    - - -
-- -
--> grind.build_opts
-
+    + + {_DEBUG} [🐞 Reset (adventure) ] -> stats.reset(adventure) ->
+    + + {_DEBUG} [🐞 Reset (sub) ] -> stats.reset(sub) -> 
+    + + [Back] -> 
+    - -
+- 
+->->
 
 
 // Present introspection as a narrative
@@ -78,7 +74,7 @@
             You're not keeping up {ex_days_missed > 2:at all|very} well with your daily {~work-outs |exercise }
     }
     <>
-    {sq(fitness):
+    {sv(fitness):
         - max: 
             {good_exercise: and it's paying off. Your vital signs are great|but {?against the odds|} it's not affecting your health at all, which is perfect}
         - high: 
@@ -93,7 +89,7 @@
     <>.
 {think()}
     // Addiction/Submissiveness/Self Esteem
-    {sq(addiction):
+    {sv(addiction):
         - max: 
             But none of that matters to you.  You're spending every waking hour thinking about... Her...
         - high: 
@@ -107,14 +103,14 @@
     }
     <> 
     {
-        - sq(confidence) >= high:
-            ; {sq(addiction) < medium:and|yet somehow} you're feeling {sq(confidence) == max:supremely|really} self-confident! Maybe she's done this to you
-        - sq(confidence) < medium:
+        - sv(confidence) >= high:
+            ; {sv(addiction) < medium:and|yet somehow} you're feeling {sv(confidence) == max:supremely|really} self-confident! Maybe she's done this to you
+        - sv(confidence) < medium:
             . You don't think you can cope without Her in your life
     }
     <>
     
-    {sq(obedience):
+    {sv(obedience):
         - max: 
             . You have no choice; you have no will. It's like she said, it's not up to you anymore
         - high: 

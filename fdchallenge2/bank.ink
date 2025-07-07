@@ -41,9 +41,10 @@ VAR need_more_money = false
 = pay(to, amount, disp_transaction)
 ~ TX_RESULT = TX_FAILED
 {_cc - amount < _limit:
-     {_DEBUG:>>> Transaction failed (Balance {_cc} - Amount {amount} < overdraft limit {_limit})}
+     {_DEBUG:>>> Transaction failed - {to} (Balance {_cc} - Amount {amount} < overdraft limit {_limit})}
     {warn()} Your bank has declined your transaction.
-    You need to get more money!
+
+    {not grind_banking.tried_overdraft_final: You need to get more money!}
     -> cont ->
     ~ need_more_money = true
 

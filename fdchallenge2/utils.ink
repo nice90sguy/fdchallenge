@@ -133,8 +133,8 @@ VAR CRCHOICE = 0
 == cr3choices(choice1,choice2,choice3)
 - (opts)
 <- crchoice(choice1, CHOICE_COUNT()+1, ->opts)
-<- crchoice(choice2, CHOICE_COUNT()+1,  ->opts)
-<- crchoice(choice3, CHOICE_COUNT() +1,->opts)
-* ->
+<- crchoice(choice2, CHOICE_COUNT()+1, ->opts)
+<- crchoice(choice3, CHOICE_COUNT()+1, ->opts)
++ ->
 
-->->
+->DONE

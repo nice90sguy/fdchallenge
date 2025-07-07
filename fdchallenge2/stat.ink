@@ -33,8 +33,6 @@ Relationship stats:<p><>
 
 ->->
 
-
-->->
 = reset(_path)
 {_path:
  - adventure:
@@ -89,7 +87,7 @@ LIST quantized_stat_val = min=10, low=30, medium=50, high=70, max=90
 
 LIST _stat_sensitivity = _stat_sensitivity_0=0, _stat_sensitivity_1, _stat_sensitivity_2, _stat_sensitivity_3, _stat_sensitivity_4, _stat_sensitivity_5, _stat_sensitivity_6, _stat_sensitivity_7, _stat_sensitivity_8, _stat_sensitivity_9, _stat_sensitivity_10, _stat_sensitivity_11, _stat_sensitivity_12, _stat_sensitivity_13, _stat_sensitivity_14, _stat_sensitivity_15, _stat_sensitivity_16, _stat_sensitivity_17, _stat_sensitivity_18, _stat_sensitivity_19, _stat_sensitivity_20, _stat_sensitivity_whole_step=20
 
-LIST stat_t = Sleepiness, Hunger, Lust, Submissiveness, Addiction, Confidence, Fitness, AngieYandere, MelanieRelationship
+LIST stat_t = Sleepiness, Hunger, Lust, Submissiveness, Addiction, Confidence, Fitness, AngieRelationship, MelanieRelationship
 
 // Add stat_name to each var so that for a given stat, when passed to a function, we know what stat we're dealing with, (for display funcs)
 VAR sleepiness = (Sleepiness, _stat_sensitivity_whole_step)
@@ -99,31 +97,39 @@ VAR obedience = (Submissiveness, _stat_sensitivity_1)
 VAR addiction = (Addiction, _stat_sensitivity_1)
 VAR confidence = (Confidence, _stat_sensitivity_1)
 VAR fitness = (Fitness, _stat_sensitivity_2)
-VAR angie_relationship = (AngieYandere, _stat_sensitivity_1)
+VAR angie_relationship = (AngieRelationship, _stat_sensitivity_1)
 VAR melanie_relationship = (MelanieRelationship, _stat_sensitivity_whole_step)
 /*
 stats are designed to be opaque.   You should only read and set their "quantized" values, one of min, low, medium, high, max.
-You can increment and decrement their values, and raise or lower them by a delta value.
-Internally, the increment, decrement and delta functions mutliplier the "real value" change of the stat by its "sensitivity" (one of the constants in LIST _stat_sensitivity).
+
+To set a stat value, use e.g.  setstat(hunger, min)
+To get a stat value, use e.g. {sv(hunger) == min: You're not hungry at all}
+
 The "real value" of a stat is a number between zero and 100, and its quantized value is the quantized_stat_val closest to its real value.
-So if the real value of var is 55, sq(var)  == medium.
+So if the real value of var is 55, sv(var)  == medium.
+
+
+If you want to cheat, and work directory with unquantized values, the set_stat() function  will also accept a number (0-100), and you can call _sv() to get the stat's internal value.
+
+You can increment and decrement stat's values, and raise or lower them by a delta value.
+Internally, the increment, decrement and delta functions mutliply the "real value" delta of the stat by its "sensitivity" (one of the constants in LIST _stat_sensitivity).
 
 
 The purpose of all this complexity is to make stat tuning and balance easier.
 Simply changing the sensitivity of a stat increases or decreases the granularity of the delta(), inc() and dec() functions, which may be scattered all across the game in many files and stitches.  
-You can, of course,  dynamically change a stat's sensitivity in the game.  So you can e.g. simulate onset of PTSD by increasing the sensitivity of the "fear" stat variable!
-
+You can dynamically change a stat's sensitivity in the game.  
+To do this, call e.g. set_stat_sensitivity(lust, _stat_sensitivity_whole_step)
 
 
 */
-// stat value
+// stat value (unquantized, 0..100)
 === function _sv(p_stat)
 
 ~ return list2num(p_stat)
 
 
 // stat quantized value (i.e. one of min..max)
-=== function sq(p_stat)
+=== function sv(p_stat)
 ~ temp val = _sv(p_stat)
 {val == 100:
     ~ return max
@@ -133,9 +139,10 @@ You can, of course,  dynamically change a stat's sensitivity in the game.  So yo
 
 // return quantized_stat value as an int (just gets the LIST_VALUE of the quantized list number)
 === function sqi(p_stat)
-~ return LIST_VALUE(sq(p_stat))
+~ return LIST_VALUE(sv(p_stat))
 
-// set status to a value or quantized value (one of min, low, medium etc.)
+// set status to a numeric value or quantized value (one of min, low, medium etc.)
+// v can be an int, or a list containing _pow2s.
 // value is clamped to [0 <= v <= 100]
 === function setstat(ref p_stat, val)
 {typeof(val) == lst_t:
@@ -153,7 +160,7 @@ You can, of course,  dynamically change a stat's sensitivity in the game.  So yo
     ~ val = 100
 }
 ~ set_val(p_stat, val)
-~ return sq(p_stat)
+~ return sv(p_stat)
 
 
 
@@ -197,17 +204,17 @@ VAR SHOW_STATS=false
     - Lust:  
         Horniness
     - Addiction:  
-        {BELLA_NAME} (Findom addiction)
+        {BELLA_NAME} (Findom)
     - Confidence:  
         Self-esteem
     - Fitness:  
         Physical fitness
     - Submissiveness:  
         Submissiveness
-    - AngieYandere:  
-       {msg_name(ANGIE)} (Yandere)       
+    - AngieRelationship:  
+       {msg_name(ANGIE)} (Mommy Dom)       
     - MelanieRelationship:  
-       {girlfriend_name} (Love Interest)      
+       {girlfriend_name} (BDSM)      
 }
 == function stat_icon(_stat)
 {stat_type(_stat):
@@ -218,17 +225,17 @@ VAR SHOW_STATS=false
     - Lust:  
         🌶️
     - Addiction:  
-        💉
+        👩🏻
     - Confidence:  
         🦚
     - Fitness:  
         💪
     - Submissiveness:  
         🙏
-    - AngieYandere: 
+    - AngieRelationship: 
         👩🏻‍🦰
     - MelanieRelationship:
-        🧍🏻‍♀️
+        👩🏼
         
 }
 === function DispDelta(_stat, delta)

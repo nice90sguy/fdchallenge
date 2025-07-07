@@ -89,9 +89,6 @@ You're too shocked by the timing of her message to reply to it.  Could <i>{girlf
 ->->
 = adventure_choices
 
-~ fansite_return_to = ->adventure_choices_after_fansite
--> fansite
-= adventure_choices_after_fansite
 
 /*
     Bella: Can leave you alone if addiction isn't too high (don't think you reduce it below high during grind though)

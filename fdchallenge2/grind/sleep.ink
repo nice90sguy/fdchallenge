@@ -4,7 +4,7 @@ VAR sleep_hours = 0
 
 = opt
 
-+ + (do)   [Sleep]
+ + (do) [Sleep] 
     You sleep.
     // To make sure you don't wake up prematurely
     ~ deltastat(sleepiness, 1)
@@ -32,9 +32,9 @@ VAR sleep_hours = 0
     -> wake_up
 
 
-- - (wake_up)
+ - (wake_up)
     You wake up <>
-    {sq(sleepiness):
+    {sv(sleepiness):
         - min: feeling refreshed
         - low: feeling ok
         - medium:, but you don't think you've had enough sleep
@@ -42,7 +42,5 @@ VAR sleep_hours = 0
     }<>.
     // Note: Needed to remove it because of edge case of alarm "waking" you after you're asleep
     ~ current_activity -= sleep
--> grind.after_activity
-
 
 ->->

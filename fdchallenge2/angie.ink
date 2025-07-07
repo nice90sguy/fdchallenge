@@ -1,7 +1,8 @@
 
 /*
-    Angie story:
+    Angie story during first 7 day grind:
     Each time you ignore her, her obsession grows
+    
     Dom path
     Meet her on plane, exchange numbers.
     Day 1:
@@ -65,18 +66,18 @@ VAR angie_location = location_angie_apartment
 
     ~ temp meeting_t = next_hm(11,0)
 
-    -> wa.m_cb("Hi there {sq(angie_relationship == high):sexy}. Fancy meeting up for a coffee sometime today? Say, eleven?", WAM_MISS + ANGIE_FULL_NAME + cmd_meet + location_cafe + num2list(meeting_t), ->Angie.meet_in_cafe) ->
+    -> wa.m_cb("Hi there {sv(angie_relationship == high):sexy}. Fancy meeting up for a coffee sometime today? Say, eleven?", WAM_MISS + ANGIE_FULL_NAME + cmd_meet + location_cafe + num2list(meeting_t), ->Angie.meet_in_cafe) ->
 
 {_DEBUG:>>> SENT INVITE FOR {hhmm(meeting_t)}}    
 ->->
 /*
 This is a "callback" that never returns.
-See Angine.cafe_meeting_invite
+See Angie.cafe_meeting_invite
 At the beginning, set IN_CALLBACK to false, do stuff, then tunnel on to grind.after_activity.
 */
 = meet_in_cafe
 
-~ IN_CALLBACK = false
+// ~ IN_CALLBACK = false
 
 {location != location_cafe:
     // Edge case, you're on your way there.
@@ -254,6 +255,10 @@ You pay the bill, and leave the cafe {angie_yandere: together}.
 }
 
 ->->
+/*
+This is your first meeting with Angie.
+*/
+
 = plane_meeting
 A woman sits in the next seat to you.  She's very nice-looking, with a big smile and great legs, which you notice while untangling your seatbelt from hers.  
 She seems familiar.  It turns out she lives not far from you, and goes to the same gym and cafe as you!  That must be where you've seen her, you think.
@@ -273,7 +278,7 @@ You reach for your phone in your backpack, but it's not there.  Fuck, did you le
 ->->
 
 = respond_to_angie_hi
-{_DEBUG: >>> angie_relationship: {list2num(angie_relationship)}% ({sq(angie_relationship)})}
+{_DEBUG: >>> angie_relationship: {list2num(angie_relationship)}% ({sv(angie_relationship)})}
     You look at the time of the message, and figure out it must be from {msg_name(ANGIE)}.  Checking your notepad, you confirm it.
     Great.  But you're not going to call her back.  Wait a couple of days. Play it cool.
     -> cont ->
@@ -345,13 +350,13 @@ You know you're expected to reciprocate.  You let the towel drop to the floor, a
      - -
 * [Engage Sub mode (cock-sucking)]
 >>> TODO
-    
+TODO: Angie shower sub mode    
 -
 ~ setstat(angie_relationship, high)
 ->->
 
 = respond_to_taunt(msg, t, args)
-~ IN_CALLBACK = false
+//~ IN_CALLBACK = false
 {do_taunt_fear:
     - 1: "Thanks for that, Angie, so damn deep. As deep as a fucking fortune cookie," you say to yourself.
     - 2: Please stop.

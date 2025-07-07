@@ -14,19 +14,23 @@ increase.
 
 VAR old_timer_cb = 0
 
-// In hovel, bella wakes you at 9 AM with your instruction for the day
+// In hovel, bella wakes you at 9 AM with your instruction for the day.
 = daily_instruction
-
+// If the ruin ending has been triggered, end the game now
+{ending_ruin.triggered:
+    -> ending_ruin.do
+}
 
 ->p1e("{warn()} It's <b>{l0(tm_hour)}:{l0(tm_min)}. </b> Your phone's ringing!") ->
 ->p1("Answer it 📞") -> 
     You answer it.
 {daily_instruction:
     -1: 
-        -> M_chat("Good morning, slave.", now()-1800, (), ->null_cb ) ->
-        -> M_chat("Here are your instructions for the day:", now()-1700, (), ->null_cb ) ->
-        "Log on now."  You haven't heard her speaking to you since that night in New York.  Her voice instantly triggers you, and you're immediately hard.
-        -> M_chat("Send me your full bank details, including cards, CCW etc, for all yr accounts", now()-1700, cmd_cb, ->obey_1 ) ->
+        "Good morning, slave."
+        "Log on now."  
+        You haven't heard her speaking to you since that night in New York.  Her voice instantly triggers you, and you're immediately hard.
+        ~ temp args = BELLA+cmd_cb
+        -> M_chat("Send me your full bank details, including cards, CCW etc, for all yr accounts", now()-1700, args, ->obey_1) ->
         // exits this stitch here
         -> wa.m("Logon Now.", WAM_CONTINUOUS + cmd_logon + cmd_noemit) 
     -2:
@@ -48,9 +52,9 @@ VAR old_timer_cb = 0
 
 
 = obey_1
-You spend the next ten minutes sending her all you bank details.
+You spend the next ten minutes sending her all your bank details.
 ~ set_bella_online(true)
-{bella_chat()} check its all correct
+{bella_chat()} check its all correct, slave
 -> p1("Check all the details are correct") ->
 ~ cost_per_message = 0
 its all correct, {BELLA_NAME} {you_chat()}
@@ -68,35 +72,41 @@ You wait.
 
 ->->
 // Randomly spending your money
+
 = do_bella_taunt_spend(response_type)
 {not bella_online():
+    
     // Only spend when offline
     { RANDOM(1,12):
 
         -2: 
         // Books
-        -> cc.pay("{~Borders Books|Fetish Comix Store|Jim's Antiquarian Books|Folio Rare Books}", RANDOM(10,50) * RANDOM(5,7), true)
+        -> cc.pay("{~Borders Books|Fetish Comix Store|Jim's Antiquarian Books|Folio Rare Books}", RANDOM(10,50) * RANDOM(5,7), true) ->
         -3:
         // Art
-        -> cc.pay("Sothebys", RANDOM(10,25) * 1000, true) ->    
+        -> cc.pay("Sothebys", RANDOM(10,25) * 1000, true) -> 
         -4 :
         // Misc
-        -> cc.pay("Amazon", RANDOM(10,25) * 23, true) ->   
+        -> cc.pay("Amazon", RANDOM(10,25) * 23, true) -> 
         -5: 
             // Food
-        -> cc.pay("{~Dilshads Deli|Green Fingers|Pole and Line Seafood|Butcher and Baker}", RANDOM(10,20) * RANDOM(2,4), true) 
+        -> cc.pay("{~Dilshads Deli|Green Fingers|Pole and Line Seafood|Butcher and Baker}", RANDOM(10,20) * RANDOM(2,4), true) ->
         -6:
             // Dining Out
-        -> cc.pay("{~Nobu|Nobu|Nobu|Pearl Restaurant|Ginos Sicily|Kerala Rice|Paddys Bar|Paddys Bar|Paddys Bar|Rooftop Bar and Grill}", RANDOM(250, 1000), true)    
+        -> cc.pay("{~Nobu|Nobu|Nobu|Pearl Restaurant|Ginos Sicily|Kerala Rice|Paddys Bar|Paddys Bar|Paddys Bar|Rooftop Bar and Grill}", RANDOM(250, 1000), true) ->
         -7:
             // Beauty
-         -> cc.pay("{~Eve Perfumier|Tiffany|Mac Beauty|Victorias Secret}", 100 * RANDOM(25, 100), true)   
+         -> cc.pay("{~Eve Perfumier|Tiffany|Mac Beauty|Victorias Secret}", 100 * RANDOM(25, 100), true) ->  
          -8:
-              -> cc.pay("{~Saks Fifth Avenue|Embraceable Me Clothing|Dior Paris|Victoria Alperton Couture}", 5 * RANDOM(250, 1000), true)      
+              -> cc.pay("{~Saks Fifth Avenue|Embraceable Me Clothing|Dior Paris|Victoria Alperton Couture}", 5 * RANDOM(250, 1000), true) ->  
+             
         - else:
-            -> cc.pay("{~Starbucks|Peets Coffee|MunchHousen|Cha Cha Chai}", RANDOM(2,3) *5, true) -> do_bella_taunt_spend(response_type)
+            {_cc > 300000:-> cc.pay("Long Island McLaren", 269215, true) ->} /* One-time spend, will never have more than £300,000 fater spending this! */
+            -> cc.pay("{~Starbucks|Peets Coffee|MunchHousen|Cha Cha Chai}", RANDOM(2,3) *5, true) -> do_bella_taunt_spend(response_type) ->
     }
+    {need_more_money and grind_banking.tried_overdraft_final: -> ending_ruin.triggered  ->}
 }
+
 ->->
 = become_her_tenant
 // First call, schedule convo
@@ -106,7 +116,7 @@ You wait.
 {_DEBUG:>> SCHEDULED MESSAGE}
     ->->
 }
-{_DEBUG:>>> TEST {not need_more_money or not grind_banking.remortgage or become_her_tenant> 2:NOT} PASSED TO BECOME BELLA'S TENANT}
+{_DEBUG:>>> TEST {not need_more_money or not grind_banking.tried_overdraft_final or become_her_tenant> 2:NOT} PASSED TO BECOME BELLA'S TENANT}
 
 -> wa.m("We need to talk",WAM_READ+WAM_PAUSE, ) ->
 She sounds serious.  You respond instantly:
@@ -131,11 +141,11 @@ She sounds serious.  You respond instantly:
     -> p1e("You're unable to reply") ->
     <>, you're too stunned by her sudden generous offer.
 * [Inflate the price]
-    ~ price = 350000
+    ~ price = 450000
     {M_wa_S(YOU)}i guess around five hundred thousand.
     -> p1e("{M_wa_S(BELLA)} sell it to me.") ->
     {M_wa_S(YOU)}What??
-    {M_wa_S(BELLA)} I'll offer you 350K for it. cash.
+    {M_wa_S(BELLA)} I'll offer you 450K for it. cash.
     -> p1e("You're unable to reply") ->
     <>, you're too stunned by her sudden offer. And she got its value right on the nose.  She's obviously been doing her research.
 -
@@ -162,7 +172,7 @@ It sounds like she wants to keep you prisoner there, but so what if there's secu
 -> cont ->
 You check your account, and sure enough, she's transferred the money, just like that! How rich is she, actually, to be able to spend that much money as though it was small change to her?  
 
-In a daze, you pack a suitcase and your backpack and pick up the key to her place. To your consternation, it's at a local newsagent.  You tell the guy that {BELLA_FULL_NAME} sent you to collect a package, and he hands you an envelope with a key, and an address. 
+In a daze, you pack a suitcase and your backpack and pick up the key to her place. To your consternation, the address is a local newsagent.  You tell the guy behind the counter that {BELLA_FULL_NAME} has sent you to collect a package and he hands you an envelope containing a key, and a piece of paper with the address. 
 
 You take the tube to a run-down suburb, and find the place. It's a tower block, built in the 1960's, in a state of disrepair.  The elevator works, but stinks of piss.  You notice a syringe on the floor of the lift as it clanks and whines and slowly takes you up to the tenth floor.
 You walk along the outer walkway, passing doors boarded up with metal sheeting, until you get to the place. You walk in.
@@ -190,8 +200,8 @@ You do as she says, and read the label.
 
 -> cont ->
 {M_wa_S(BELLA)}Again.
-You fill up you glass, feeling light-headed, and drink it as a single gulp.
-{M_wa_S(BELLA)}Finish it.  Go on, you deserve it, my Good boy
+You fill up your glass, feeling light-headed, and drink it at a single gulp.
+{M_wa_S(BELLA)}Finish it.  Go on, you deserve it, my Good boy 🐕‍🦺
 You drink again... and again... 
 Unsteadily, you try to put the empty bottle back onto the counter, but you miss, and the bottle falls onto the floor and rolls away.
 In a daze, you stumble onto the bed, and pass out.
@@ -206,9 +216,9 @@ In a daze, you stumble onto the bed, and pass out.
 ~ location = location_home
 ~ need_more_money = false
 -> Taunt.reset(hovel_taunts, 12) ->
-
--> grind.after_activity
-
+-> cont ->
+TEST THIS WORKS
+-> grind.build_opts
  
 = name
 Bella
@@ -333,7 +343,7 @@ Bella
     {response_type ^ (WAM_READ + WAM_CHOOSE):
         -> wa.m("{How hot?|lol i bet your drooling 🤤|Stare and go dumb|So weak...|Complete surrender.}", WAM_CONTPAUSE + Submissiveness) ->
 
-        -> wa.m("{thank you|I love you|I'm {BELLA_NAME}'s loser|No escape.|\{BELLA_NAME\}}", WAM_CONTINUOUS + cmd_repeat_after_me + Confidence) ->
+        -> wa.m("{thank you|I love you|I'm {BELLA_NAME}'s loser|No escape.|{BELLA_NAME}}", WAM_CONTINUOUS + cmd_repeat_after_me + Confidence) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
         -> wa.m("Again.", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}

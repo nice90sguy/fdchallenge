@@ -6,22 +6,22 @@
  {_DEBUG:>>> ASSERT {->opt}: activities_done_today ? breakfast}}
 
 -> why ->
-+ + (do) [Eat breakfast]
++ (do) [Eat breakfast]
     ~ current_activity = breakfast
     You eat a delicious breakfast. The coffee perks you up.
     ~ setstat(hunger,min)
     ~ decstat(sleepiness)
     -> ffa(minute, 30) ->
     ~ activities_done_today += breakfast
-- - -> grind.after_activity
-
+-
+->->
 
 = why
 You haven't had breakfast yet<>
 {
-- sq(hunger) <= low: , but you're not really hungry. Still, it's the most important meal of the day.
-- sq(hunger) < medium:, not that you're particularly hungry.
-- else: , and you're {sq(hunger) == max:desperate to eat something!|{sq(hunger) == high:very|pretty} hungry}.
+- sv(hunger) <= low: , but you're not really hungry. Still, it's the most important meal of the day.
+- sv(hunger) < medium:, not that you're particularly hungry.
+- else: , and you're {sv(hunger) == max:desperate to eat something!|{sv(hunger) == high:very|pretty} hungry}.
 }
 <><br><>
 ->->
@@ -31,13 +31,11 @@ You haven't had breakfast yet<>
 
 = opt
 
-{activities_done_today ? dinner:\
- {_DEBUG:>>> ASSERT {->opt}: activities_done_today ? dinner}}
 
 LIST meal_type = meal_type_unhealthy, meal_type_healthy
-You really ought to eat something{tm_hour >= 21: before it gets too late| now} {sq(hunger) < medium:, even though you're not particulalry hungry}.
+You really ought to eat something{tm_hour >= 21: before it gets too late| now} {sv(hunger) < medium:, even though you're not particulalry hungry}.
 <><br><>
-+ + (do) [Dinner]
++ (do) [Dinner] ->
 // If fit and high confidence, eat healthy
 // If unfit and low confidence, eat unhealthy
 // otherwise, flip a coin
@@ -45,9 +43,9 @@ You really ought to eat something{tm_hour >= 21: before it gets too late| now} {
     ~ current_activity = dinner
     ~ temp what_to_eat = ()
     {
-    - sq(fitness) > medium and sq(confidence) > medium:
+    - sv(fitness) > medium and sv(confidence) > medium:
         ~ what_to_eat = meal_type_healthy
-    - sq(fitness) < medium and sq(confidence) < medium:
+    - sv(fitness) < medium and sv(confidence) < medium:
         ~ what_to_eat = meal_type_unhealthy
     - else: 
         ~ what_to_eat = LIST_RANDOM((meal_type_unhealthy, meal_type_healthy))
@@ -73,5 +71,6 @@ You really ought to eat something{tm_hour >= 21: before it gets too late| now} {
     }
 
     ~ activities_done_today += dinner
-- - -> grind.after_activity
+-
+->->
 

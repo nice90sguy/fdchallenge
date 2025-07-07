@@ -4,6 +4,7 @@ CONST min_video_session_duration = 30
 CONST min_credits_for_video_session = 600
 VAR total_chat_time = 0
 VAR credits = 0
+VAR FS_TX_STATUS = FS_TX_SUCCESS
 CONST max_daily_credits = 200
 
 LIST fs_transaction_goods = fs_unlock_photo, fs_unlock_video, fs_send_message, fs_send_photo, fs_tribute
@@ -11,29 +12,32 @@ LIST fs_transaction_goods = fs_unlock_photo, fs_unlock_video, fs_send_message, f
 LIST fs_tx_status = FS_TX_SUCCESS, FS_TX_FAIL
 == fansite_add_credits
 = opt
-+ + (do) [Add Credits 💳] 
+ + (do) [Add Credits 💳] 
     -> ffa(second, 20) ->
     ~ temp could_chat = credits >= cost_per_message // Could chat before adding
-    + + +  [100 credits for $100]
+    + +  [100 credits for $100]
         -> fansite_credits.add(100, 100) ->
 
-    + + +  [500 credits for $450]
+    + +  [500 credits for $450]
         -> fansite_credits.add(500, 450) ->
     
-    + + +  [5000 credits for $4,000]
+    + +  [5,000 credits for $4,000]
         -> fansite_credits.add(5000, 4000) ->
         
-    + + +  {_cc >= 50000} [50,000 credits for $50,000]
+    + +  [10,000 credits for $8,000]
+        -> fansite_credits.add(10000, 8000) ->
+        
+    + +  {_cc >= 50000} [50,000 credits for $50,000]
         -> fansite_credits.add(50000, 50000) ->
         
-    + + +  [I've changed my mind]
+    + +  [I've changed my mind]
 
-    - - -
+    - -
     {not could_chat && credits >= cost_per_message: 
      {hint()} You can now chat with {BELLA_NAME}!
     }
     ~ enough_credits = (credits >= cost_per_message)
--> fansite.after_activity
+-
 ->->
 
 
@@ -49,9 +53,11 @@ LIST fs_tx_status = FS_TX_SUCCESS, FS_TX_FAIL
     {warn()} You don't have enough credits to do that right now.
     ~decstat(confidence)
     ~ result = FS_TX_FAIL
-    {current_activity ? fsa_chat: {warn()} {bella_online(): Bella has kicked you out the chat!|You're kicked out of the chat.} -> fansite.after_activity}
+    ~ FS_TX_STATUS = FS_TX_FAIL
+
 - else: 
     ~ credits -= price
+    ~ FS_TX_STATUS = FS_TX_SUCCESS
     ~  result = FS_TX_SUCCESS
 }
 ->->
@@ -68,9 +74,22 @@ LIST fs_tx_status = FS_TX_SUCCESS, FS_TX_FAIL
      ~ incstat(addiction)
     }
 ->->
-// Pay credits
-= pc(_credits)
 
 
-->->
+
+=== function fansite_credits_pay_f(price)
+~ temp result = FS_TX_FAIL
+~ temp goods = result ^ LIST_ALL(fs_transaction_goods)
+{credits < price:
+    {warn()} You don't have enough credits to do that right now.
+    ~decstat(confidence)
+    ~ result = FS_TX_FAIL
+
+    {current_activity ? fsa_chat: {warn()} {bella_online(): Bella has kicked you out the chat!|You're kicked out of the chat.}}
+- else: 
+    ~ credits -= price
+    ~  result = FS_TX_SUCCESS
+}
+
+
     

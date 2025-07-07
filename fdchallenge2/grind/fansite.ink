@@ -4,9 +4,9 @@
 You know it's a bad idea, but maybe you could {bella_online():have a "chat" with {BELLA_NAME}, she's probably|see if {BELLA_NAME} might be} online right now... 
 }
 <><br><>
-+ + (do) [Fan Login 💳] ->
++  (do) [Fan Login 💳] ->
     {not unlocked_fansite:{warn()} You don't have a pin code for the Fan Site.}
-    + + + {not unlocked_fansite} [Beg {BELLA_NAME} for access]
+    + +  {not unlocked_fansite} [Beg {BELLA_NAME} for access]
         You send  {BELLA_NAME} a message:
         {M_wa_S(YOU)} Please can I have access to your website Goddess
         You wait for her reply...
@@ -34,12 +34,16 @@ You know it's a bad idea, but maybe you could {bella_online():have a "chat" with
                 }
             }
         }
-        -> grind.after_activity
-    + + + {not unlocked_fansite}[Change your mind]
-        -> grind.after_activity
-    + + + ->
+
+    + +  {not unlocked_fansite}[Change your mind]
+
+    + +  ->
          ~ current_activity = logon_fansite
         
         You log on to {BELLA_NAME}'s fan site!
         
-        -> fansite
+        -> fansite ->
+   - -
+-
+
+->->
