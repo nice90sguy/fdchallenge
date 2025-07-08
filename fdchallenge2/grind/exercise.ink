@@ -3,10 +3,11 @@
 VAR num_times_actually_did_exercise = 0
 === grind_exercise
 = opt
+
 {current_period:
     - night: It's a bit late to go out for exercise.
     - else:
-        {fitness:
+        {sv(fitness):
             - min: You've become really unfit. Maybe today's the day you should try to get back in shape...
             - low: You're not really taking care of your body enough. A bit of exercise would do you good!
             - medium: You're starting to do well with your exercise regimen. You should keep it up!
@@ -47,7 +48,7 @@ VAR num_times_actually_did_exercise = 0
 = opt
     How about a run?<><br><>
     
-+  (do) {current_period != night} [Go for a run]
++  (do) {current_period != night} [Go for a run] ->
     You go for a 10K run around the park.  You see trees and people.
     You feel a lot fitter after that.
 
@@ -66,10 +67,10 @@ VAR num_times_actually_did_exercise = 0
         ~ incstat(fitness)
     }
     ~ decstat(addiction)
-
+    ~ location = location_home
 - 
 
-~ location = location_home
+
 ->->
 
 === grind_park_walking

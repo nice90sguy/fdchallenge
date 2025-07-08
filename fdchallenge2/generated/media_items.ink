@@ -167,7 +167,7 @@ You explode...
         ~ arg += (video, Ass, Worship, Humiliation, Homewrecker)
         {arg ? lum_desc: {media_title(media_5_)}}
         {arg ? lum_narr:
-<i>We're in an "office", on the "boss's" side of a desk.  {BELLA_NAME} walks in, carrying a transparant plastic chair.  She's in the typical porno office attire, white shirt tucked into short black skirt. Bare legs.
+<i>We're in an "office", on the "boss's" side of a desk.  {BELLA_NAME} walks in, carrying a transparent plastic chair.  She's in the typical porno office attire, white shirt tucked into short black skirt. Bare legs.
 "Hi!  I hope you don't mind that I brought my own chair, I just have a weird thing about it in job interviews, it's a sort of superstition."
 <i>She pauses an looks into camera with a keen look, as though you're asking her a question.
 -> cont ->
@@ -207,7 +207,7 @@ You explode...
 -> cont ->
 
 
-<i>A view from the floor, below herchair.  Her ass-cheeks are pressed down onto it, making two pale pink ovals.  As she moves slightly, the ovals change shape.
+<i>A view from the floor, below her chair.  Her ass-cheeks are pressed down onto it, making two pale pink ovals.  As she moves slightly, the ovals change shape.
 "I know you love being below me," she croons. 
 "Worshipping my ass, worshipping my beautiful, perfect-
 ->p1e("She raises herself up, then presses her ass back down on the seat") ->
@@ -259,7 +259,7 @@ You explode...
 
 "Tell you what:"  <i>She stands up, turns around, showing you her ass, her curves, then comes close to the camera.</i>
 
-"Let's put an end to that today.  You'll always been a fuckin' loser, but at least you can try."
+"Let's put an end to that today.  You'll always be a fuckin' loser, but at least you can try."
 
 "So take out your dick, and start stroking."
 -> p1("Keep watching") ->

@@ -15,6 +15,7 @@
     + +  (tried_overdraft_final){need_more_money and tried_overdraft_2 and not tried_overdraft_final} [Remortgage your flat]
         You manage to get $50,000 from the mortgage company.
         -> cc.deposit(50000) -> 
+        // The first call to Bella.become_her_tenant schedules a WhatsApp message for 8 AM next morning
         -> Bella.become_her_tenant ->
 
     + +  ->

@@ -27,12 +27,32 @@ VAR old_timer_cb = 0
 {daily_instruction:
     -1: 
         "Good morning, slave."
-        "Log on now."  
-        You haven't heard her speaking to you since that night in New York.  Her voice instantly triggers you, and you're immediately hard.
-        ~ temp args = BELLA+cmd_cb
-        -> M_chat("Send me your full bank details, including cards, CCW etc, for all yr accounts", now()-1700, args, ->obey_1) ->
-        // exits this stitch here
-        -> wa.m("Logon Now.", WAM_CONTINUOUS + cmd_logon + cmd_noemit) 
+        {not grind_logged_on_to_fansite:
+            "Log on now."  
+            You haven't heard her speaking to you since that night in New York.  Her voice instantly triggers you, and you're immediately hard.
+            -> grind_logon_fansite ->
+        }
+        ~ set_bella_online(true)
+        {bella_chat()} "Send me your full bank details, including cards, CCW etc, for all yr accounts"
+        You spend the next ten minutes sending her all your bank details.
+
+        {bella_chat()} check its all correct, slave
+        -> p1("Check all the details are correct") ->
+        ~ cost_per_message = 0
+        its all correct, {BELLA_NAME} {you_chat()}
+        {bella_chat()} you don't need to type. I can hear you, remember? And see you 🤣
+        {bella_chat()}  one minute i will test 
+        -> ffa(minute, 10) ->
+        You wait.
+        -> cc.pay("Saks Fifth Avenue", 775, true) ->
+        -> cc.pay("Embraceable Me Clothing", 1560, true) ->
+        -> cont ->
+        {bella_chat()} yep looks good. Bye
+        ~ set_bella_online(false)
+        -> Taunt.reset(bella_taunt_spend, 5) ->
+        -> p1("She ends the call.") ->
+        ->->
+
     -2:
         "Good morning, sleepyhead!"
         "Good morning."
@@ -50,27 +70,6 @@ VAR old_timer_cb = 0
 ->->
 
 
-
-= obey_1
-You spend the next ten minutes sending her all your bank details.
-~ set_bella_online(true)
-{bella_chat()} check its all correct, slave
--> p1("Check all the details are correct") ->
-~ cost_per_message = 0
-its all correct, {BELLA_NAME} {you_chat()}
-{bella_chat()} you don't need to type. I can hear you, remember? And see you 🤣
-{bella_chat()}  one minute i will test 
--> ffa(minute, 10) ->
-You wait.
--> cc.pay("Saks Fifth Avenue", 775, true) ->
--> cc.pay("Embraceable Me Clothing", 1560, true) ->
--> cont ->
-{bella_chat()} yep looks good. Bye
-~ set_bella_online(false)
--> Taunt.reset(bella_taunt_spend, 5) 
-
-
-->->
 // Randomly spending your money
 
 = do_bella_taunt_spend(response_type)
@@ -109,14 +108,13 @@ You wait.
 
 ->->
 = become_her_tenant
-// First call, schedule convo
+// First call, just incremement stitch count.
+// (see grind.build_opts for how this is progressed)
 
-{become_her_tenant == 1:
-    ~ old_timer_cb = set_timer_cb(2 * about_an_hour(), ->become_her_tenant)
-{_DEBUG:>> SCHEDULED MESSAGE}
-    ->->
-}
+{become_her_tenant == 1:->->}
+
 {_DEBUG:>>> TEST {not need_more_money or not grind_banking.tried_overdraft_final or become_her_tenant> 2:NOT} PASSED TO BECOME BELLA'S TENANT}
+
 
 -> wa.m("We need to talk",WAM_READ+WAM_PAUSE, ) ->
 She sounds serious.  You respond instantly:
@@ -176,13 +174,20 @@ In a daze, you pack a suitcase and your backpack and pick up the key to her plac
 
 You take the tube to a run-down suburb, and find the place. It's a tower block, built in the 1960's, in a state of disrepair.  The elevator works, but stinks of piss.  You notice a syringe on the floor of the lift as it clanks and whines and slowly takes you up to the tenth floor.
 You walk along the outer walkway, passing doors boarded up with metal sheeting, until you get to the place. You walk in.
--> cont ->
+~ setstat(sleepiness, min)
+~ setstat(hunger, min)
+-> ffa(second, 3 * about_an_hour()) ->
+~ location_home = location_hovel
+~ location = location_home
+~ grind_logged_on_to_fansite = false
+-> ldtp ->
+
 To your surprise, it's not as bad as it looks from the outside.  It's a single, large room, with a single bed in the corner, a kitchen area, and a bathroom.  Although the furniture is basic, it's clean and the fixtures and fittings all work. 
 You feel a sense of gratitude and relief that the place isn't as bad as you feared.
 You investigate the cutlery in the kitchen drawers.  When you open the fridge, it's empty, except for a bottle of Champagne.
 -> wa.m("Take it out", WAM_READ) ->
 You're shocked. How did she know? 
-You look around wildly, expecting to see her there.  Then you notice the cams in the foor corners of the ceiling.  
+You look around wildly, expecting to see her there.  Then you notice the cams in the four corners of the ceiling.  
 {M_wa_S(BELLA)} You saw the cams 📹
 {M_wa_S(BELLA)} Take it out, i said.  Read the label.
 You do as she says, and read the label.
@@ -205,20 +210,20 @@ You fill up your glass, feeling light-headed, and drink it at a single gulp.
 You drink again... and again... 
 Unsteadily, you try to put the empty bottle back onto the counter, but you miss, and the bottle falls onto the floor and rolls away.
 In a daze, you stumble onto the bed, and pass out.
-~ _ffd(1)
-~ current_activity = sleep
-~ setstat(sleepiness, max)
+
+-> grind_sleep.do ->
+
 ~ setstat(addiction, max)
 ~ setstat(obedience, max)
 ~ setstat(confidence, min)
 ~ cost_per_message = cost_per_message * 10
-~ location_home = location_hovel
-~ location = location_home
+
 ~ need_more_money = false
+
 -> Taunt.reset(hovel_taunts, 12) ->
 -> cont ->
-TEST THIS WORKS
--> grind.build_opts
+
+->->
  
 = name
 Bella
@@ -262,6 +267,7 @@ Bella
 ->-> 
 
 = dick_pic_challenge
+~ __interrupt = "dick_pic_challenge"
 ->p1("It's {ampm()}! {Hurry up and send that pic!|You know what you have to do!|Damn...|Oh boy...|Obey!|Just do it.|Oh my God|}") ->
 ~ num_dick_pics_to_send--
 ~ incstat(addiction)
@@ -272,27 +278,25 @@ Bella
     - location_gym: You run into the toilet, push down your gym shorts and take a photo of your dick.
     - location_bar: You run into the toilet, undo your pants and take a photo of your dick.
     - else:
-        {current_activity == sleep:
-            You grab the phone from the bedside table,  and take a photo of your boner.
-        - else: 
-            { num_dick_pics_to_send:
-             -23:  You unzip your fly and haul out your hard dick.  You take a pic and send it.
-             -22: It takes only a few strokes to get hard. You take a photo of your cock.
-             -21: You stroke your cock frantically until it's sort of hard. You're beginning to get an idea that this might be a difficult challenge...
-             -20: How many more to go? (strokes)
-             -19: You pump your dick and do your duty...
-             -12: Like Pavlov's dog, at the sound of the alarm, your cock springs to attention.  You take a photo.
-             -10: You're fully trained now.
-             -8: Obey.
-             -6: I belong to Bella.
-             -4: My cock is no longer under my control.
-             -2: This is my new life.
-             -0: Is this the last one? I don't want to stop.
-             -else: You take another dick pic.
-               
-            }
+
+    { num_dick_pics_to_send:
+     -23:  You unzip your fly and haul out your hard dick.  You take a pic and send it.
+     -22: It takes only a few strokes to get hard. You take a photo of your cock.
+     -21: You stroke your cock frantically until it's sort of hard. You're beginning to get an idea that this might be a difficult challenge...
+     -20: How many more to go? (strokes)
+     -19: You pump your dick and do your duty...
+     -12: Like Pavlov's dog, at the sound of the alarm, your cock springs to attention.  You take a photo.
+     -10: You're fully trained now.
+     -8: Obey.
+     -6: I belong to Bella.
+     -4: My cock is no longer under my control.
+     -2: This is my new life.
+     -0: Is this the last one? I don't want to stop.
+     -else: You take another dick pic.
            
-        }
+        
+    
+    }
         
 }
 {num_dick_pics_to_send == 0: -> p1("Well done, you made it through the challenge! But at what cost?") ->}
@@ -312,7 +316,7 @@ Bella
 = do_taunt_humiliate(response_type)
 
     {response_type ^ (WAM_READ + WAM_CHOOSE):
-     -> wa.m("{kneel|jerk to my pics|say I'm a pathetic loser|kiss my shoes|worship Me|Lie on yr back. {~i want to|beg me to|im gonna} {~piss|shit|spit} in your mouth}", response_type + Confidence + Addiction ) ->
+     -> wa.m("{kneel|Get on yr knees.|jerk to my pics|say I'm a pathetic loser|kiss my shoes|worship Me|Lie on yr back. {~i want to|beg me to|im gonna} {~piss|shit|spit} in your mouth}", response_type + Confidence + Addiction ) ->
         The message triggers you...
         ~incstat(lust)
         -> intent.allow_disobey_below_obedience_threshold(medium) ->
@@ -343,7 +347,7 @@ Bella
     {response_type ^ (WAM_READ + WAM_CHOOSE):
         -> wa.m("{How hot?|lol i bet your drooling 🤤|Stare and go dumb|So weak...|Complete surrender.}", WAM_CONTPAUSE + Submissiveness) ->
 
-        -> wa.m("{thank you|I love you|I'm {BELLA_NAME}'s loser|No escape.|{BELLA_NAME}}", WAM_CONTINUOUS + cmd_repeat_after_me + Confidence) ->
+        -> wa.m("{~I need to be drained|thank you|I love you|I'm {BELLA_NAME}'s loser|No escape.|{BELLA_NAME}|I'm your slave}", WAM_CONTINUOUS + cmd_repeat_after_me + Confidence) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
         -> wa.m("Again.", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
@@ -351,7 +355,7 @@ Bella
         {not obeyed_cmd: ->taunt_disobeyed->->}
         -> wa.m("{Again!|more|and again|Again.}", WAM_CONTINUOUS + cmd_again + Submissiveness) ->
         {not obeyed_cmd: ->taunt_disobeyed->->}
-        -> wa.m("{Good boy.|You 😍 me lol|So fuckin pathetic}", WAM_CONTPAUSE + Submissiveness + Lust + Confidence) ->
+        -> wa.m("{Good boy.|Good boy.|😂|You 😍 me lol|So fuckin pathetic}", WAM_CONTPAUSE + Submissiveness + Lust + Confidence) ->
         
         ~incstat(lust)
         ~incstat(addiction)
@@ -360,7 +364,7 @@ Bella
 
 ->->
 = taunt_disobeyed
--> wa.m("{~Ah sweet, trying to resist 💋|lol You know you can't win|So weak...|Your cock is mine, don't fight it lol|Resistance is futile lol}", WAM_CONTPAUSE) ->
+-> wa.m("{~Ah sweet, trying to resist 💋|lol You know you can't win|So weak...|Your cock is mine, don't fight it lol|Resistance is futile lol|Keep tryin' loser|😂}", WAM_CONTPAUSE) ->
     ~ decstat(obedience)
     ~ incstat(confidence)
     ~ decstat(addiction)
@@ -379,13 +383,13 @@ Bella
 
     ~ temp cmd = cmd_tribute+Submissiveness+ cmd_noemit
     // Tribute round number close to half his assets
-    ~ temp v = _cc / 2
+    ~ temp v = (_cc - _limit) / 2
     ~ v = v / 10
     ~ v = v * 10
 
     {
       - v < 100: 
-        ->-> // don't demand tribute
+        -> wa.m("{I've drained you💸 |Get more money|🤑🤑🤑}", response_type ) ->->
       - v > 10000:
        ~ v = 10000
       - v > 1000:
@@ -395,7 +399,21 @@ Bella
       - else:
         ~ v = v
     }
-    ~ temp msg = "Show me how obedient you are. Send me ${comma_ify(v)} now"
+    
+    ~ temp msg = ""
+    
+    {do_taunt_tribute:
+    -1: 
+        ~msg = "Show me how obedient you are. Send me ${comma_ify(v)} now"
+    -2:
+        ~msg = "Send me ${comma_ify(v)} now"
+    -3:
+        ~msg = "${comma_ify(v)}." 
+    -4:
+        ~msg = "Tribute. ${comma_ify(v)}."    
+    -5:
+        ~msg = "Tribute time! 🤑"  
+    }
     ~incstat(addiction)
  -> wa.m(msg, response_type + num2list(v) + cmd) ->
 
@@ -439,6 +457,10 @@ I have some videos on my site that need their tags checked, there are a lot of t
 ~ employer = bella_org
 -> cont ->
 That seems to be the end of that conversation.
+{grind_logged_on_to_fansite:
+    ->p1e("You log out of her fansite") ->
+    ~grind_logged_on_to_fansite = false
+}
 ~ available_employers = bella_org
 {hint()}  Choose "Work for {BELLA_NAME}" from the activity menu!
 

@@ -153,8 +153,25 @@ VAR _interval = 3600 // default one hour
 VAR _interval_cb = ->error
 VAR __timer_cb = ->error
 
-VAR alarms_enabled = true
+VAR __alarms_enabled = true
 VAR CALLBACK_STACK = 0
+
+
+// Set to non-empty string in a callback if you want it to interrupt flow of time.
+// The caller that gets interrupted can inspect this value to see
+// what interrupted it
+VAR __interrupt = ""
+
+== function enable_callbacks(on_off)
+
+    ~ temp old_val = __alarms_enabled
+    ~ __alarms_enabled = on_off
+
+    {not __alarms_enabled:
+        ~ __interrupt = ""
+        ~ prev_interval = FAR_FUTURE
+    }
+    ~ return old_val
 
 == function _did_stop_ffa_at_alarm_time(ref future_time)
 
@@ -203,11 +220,12 @@ VAR CALLBACK_STACK = 0
 /* 
 Fast-forward time, handling any futre or periodic callbacks that occur between 
 now and the futre time.
-If the callback itself advances time 
+
 */
 
  == ffa(units, by)
-{not alarms_enabled:
+{not __alarms_enabled:
+{_DEBUG: >>> SKIPPING CALLBACKS, alarms disabled}
     ~ ff(units, by)
     ->->
 }
@@ -218,7 +236,8 @@ If the callback itself advances time
 
     ~ temp extra_time = 0
 
-
+    ~ temp cb = ->error
+    
     ~ temp stopped_time = future_time
     ~ temp alarm =_did_stop_ffa_at_alarm_time(stopped_time)
 
@@ -226,17 +245,34 @@ If the callback itself advances time
         
         {alarm == ALARM_TYPE_INTERVAL:
             ~ __next_interval += _interval
+            ~ cb = _interval_cb
         -else:
             ~ __next_timer = FAR_FUTURE
+            ~ cb = __timer_cb
         }
+        
         ~ CALLBACK_STACK += 1
-        ~ epoch_time = gmtime(stopped_time)
-        {alarm==ALARM_TYPE_INTERVAL:
-            -> _interval_cb ->
-        -else:
-            -> __timer_cb ->
-        }       
-        ~ CALLBACK_STACK -= 1
+        ~ __interrupt = ""
+        // epoch_time:  {hhmm(epoch_time)} 
+        // stopped_time:  {hhmm(stopped_time)} 
+        // future_time: {hhmm(future_time)} 
+
+        ~ set_time(stopped_time)
+        -> cb ->
+        
+         ~ CALLBACK_STACK -= 1           
+        /*
+        If the callback set the interrupt flag, pass control back
+        to the caller at the stopped time.
+        The caller can check whether the value of __interrupt is != "", meaning that
+        the caller (of ffa())  has been interrupted.
+        */
+        // {__interrupt != "": INTERRPUT SET: {__interrupt}}
+        {__interrupt != "":->->}
+
+
+        
+
         // The callback may have advanced time.  If it hasn't advanced it beyond our furture time,
         // fast forward to future time (the "extra" time)
         ~ extra_time = future_time - epoch_time

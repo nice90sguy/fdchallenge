@@ -10,8 +10,14 @@
     - min: Masturbation? Nah...
 }<><br><>
 + (do) [{~Jerk off|Relieve yourself|Commit the sin of Onan|Spill some beans|Wank yourself off|Choke the chicken|Spank the monkey|Flog the dolphin|Beat yourself off|Jack off|Buff the banana|Have a wank|Play with yourself|Toot your horn|Fight the purple helmet warrior|Rub the one-eyed snake|Commit spermicide|Take your turn at the self-serve station|Fish with your zipper trout|Beat the shit out of your midget friend|Make some mayo|Polish the family jewels|Test-fire the old meat missle|Wrap your hand around your penis and move it in a thrusting movement} {wanked:again}] ->
-TODO  jerkoff
-    You {~Jerk off|Relieve yourself|Commit the sin of Onan|Spill some beans|Wank yourself off|Choke the chicken|Spank the monkey|Flog the dolphin|Beat yourself off|Jack off|Buff the banana|Have a wank|Play with yourself|Toot your horn|Fight the purple helmet warrior|Rub the one-eyed snake|Commit spermicide|Take your turn at the self-serve station|Fish with your zipper trout|Beat the shit out of your midget friend|Make some mayo|Polish the family jewels|Test-fire the old meat missle|Wrap your hand around your penis and move it in a thrusting movement}.
+{location:
+    -location_home:  You push your pants down over your {~bursting hardon|boner},  grab your dick, and <>
+    -location_bar:  You run into the toilets, find an empty cubicle and <>
+    -location_cafe: You run into the toilet and <>
+    -location_park: It will probably get you arrested, but you run into a clump of bushes, get on your knees, and push down your track suit bottoms. You're too far gone to care if somebody sees you. You <>
+    - else: You <>
+}  <> 
+    {~Jerk off|Relieve yourself|Commit the sin of Onan|Spill some beans|Wank yourself off|Choke the chicken|Spank the monkey|Flog the dolphin|Beat yourself off|Jack off|Buff the banana|Have a wank|Play with yourself|Toot your horn|Fight the purple helmet warrior|Rub the one-eyed snake|Commit spermicide|Take your turn at the self-serve station|Fish with your zipper trout|Beat the shit out of your midget friend|Make some mayo|Polish the family jewels|Test-fire the old meat missle|Wrap your hand around your penis and move it in a thrusting movement}.
     ~ current_activity = jerk_off
      ~decstat(lust)
     ~ activities_done_today += jerk_off

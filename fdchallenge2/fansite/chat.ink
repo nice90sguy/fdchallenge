@@ -57,8 +57,10 @@ LIST fsa_chat_activities = fsa_chat_greet
             {RANDOM(1,5) == 5:
                 -> p1("Bella is typing...") ->
                 -> M_B("{~Hello.|Hi|Hi loser.|hi}") ->
-                -> M_B("{~Send.|Tip Me|tribute|pay me, slave|greet me properly}") ->
-                -> intent.command_tribute("{~Send.|Tip Me|}", now(), cmd_tribute +  Confidence + num2list(sqi(addiction))) ->   
+                -> M_B("{~Send.|Tip Me|tribute|pay me, slave|greet me properly!|Send.|You know what to do.|🤑}") ->
+
+                -> fansite_tribute ->
+                {YMFAILED(): ->->}
 
                 -> taunt ->
             - else:

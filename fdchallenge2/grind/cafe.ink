@@ -7,6 +7,7 @@ How about getting out of the apartment and going to the cafe...
 
     You take your laptop and charger and head to the cafe.
     ->ffa(minute, 30) ->
+    {__interrupt == "cafe_closing": -> grind_cafe_return_home.do}
     You get there, find a table and plug in your laptop.
     ~ location = location_cafe
 -    
@@ -25,10 +26,12 @@ How about getting out of the apartment and going to the cafe...
 +  (do) {sv(sleepiness) > min}[Get {activities_done_today ? coffee:another|a} coffee] ->
     You order a {sleepiness > medium:double espresso|caffe latte}.
     -> cc.pay(CAFE_NAME, 5, true) ->
-    -> ffa(minute, 15) ->
     ~ current_activity = coffee
     ~ activities_done_today += (coffee)
     ~ decstat(sleepiness)
+    -> ffa(minute, 15) ->
+     {__interrupt == "cafe_closing": -> grind_cafe_return_home.do}
+
 
 -
 ->->
@@ -36,6 +39,11 @@ How about getting out of the apartment and going to the cafe...
 === grind_cafe_return_home
 = opt
 + (do) [Go Back Home]
+
+    {grind_logged_on_to_fansite:
+        Reluctantly, you log out of her fansite.
+        ~ grind_logged_on_to_fansite = false
+    }
     You head home.
     ->ffa(minute, 30) ->
 

@@ -41,9 +41,11 @@ You know it's a bad idea, but maybe you could {bella_online():have a "chat" with
          ~ current_activity = logon_fansite
         
         You log on to {BELLA_NAME}'s fan site!
+        ~ grind_logged_on_to_fansite = true
         
         -> fansite ->
    - -
 -
 
 ->->
+

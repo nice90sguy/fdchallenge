@@ -39,13 +39,14 @@ VAR _available_taunts = ()
     // -> ffa(minute, 3) ->
     // ->->
     // Dont wake from deep sleep
-    {current_activity == sleep and sv(sleepiness) >= medium:
+    {current_activity == sleep and sv(sleepiness) > medium:
         ~ response_type = WAM_MISS
+
     }
 
     
     {response_type != WAM_MISS:
-    
+        ~ __interrupt = "taunt"
         {
         - current_activity == sleep:You're woken at {ampm()} by a message:
         
@@ -62,25 +63,27 @@ VAR _available_taunts = ()
             "Who was that?" She asks, smiling.
             "Oh, nothing, just work stuff," you say.
         }
+
+        
+    }
     
+    ~ temp chosen_taunt = LIST_RANDOM(_available_taunts)
+    >>> CHOSEN_TAUNT: {chosen_taunt}
+    {chosen_taunt:
+    
+    - bella_taunt_send_pic_and_repeat_after_me: ->Bella.do_taunt_send_pic_and_repeat_after_me(response_type) ->
+    // - taunt_haggle_game: -> do_taunt_haggle_game(response_type) ->
+    - bella_taunt_tribute: -> Bella.do_taunt_tribute(response_type) ->
+    - bella_taunt_addiction: -> Bella.do_taunt_addiction(response_type) ->
+    - bella_taunt_humiliate: -> Bella.do_taunt_humiliate(response_type) ->
+    - bella_taunt_dick_pics: -> Bella.do_taunt_dick_pics(response_type) ->
+    - bella_taunt_spend: -> Bella.do_bella_taunt_spend(response_type) ->
+    - angie_taunt_fear: -> Angie.do_taunt_fear(response_type) -> 
+        
     }
 
-
-    {LIST_RANDOM(_available_taunts):
-        
-        - bella_taunt_send_pic_and_repeat_after_me: ->Bella.do_taunt_send_pic_and_repeat_after_me(response_type) ->
-        // - taunt_haggle_game: -> do_taunt_haggle_game(response_type) ->
-        - bella_taunt_tribute: -> Bella.do_taunt_tribute(response_type) ->
-        - bella_taunt_addiction: -> Bella.do_taunt_addiction(response_type) ->
-        - bella_taunt_humiliate: -> Bella.do_taunt_humiliate(response_type) ->
-        - bella_taunt_dick_pics: -> Bella.do_taunt_dick_pics(response_type) ->
-        - bella_taunt_spend: -> Bella.do_bella_taunt_spend(response_type) ->
-        - angie_taunt_fear: -> Angie.do_taunt_fear(response_type) -> 
-        
-    }
     ~ decstat(confidence)
-    {current_activity == sleep and response_type != WAM_MISS:You manage to get back to sleep.}
-    
+
 - else:
     {_DEBUG: >>> No taunts availible, rescheduling}
 }

@@ -135,11 +135,11 @@ VAR available_employers = ()
     ~ current_activity = full_days_work
 
 
-    -> ffa(second, next_hm(18,00)-now()) ->
+    -> advance_time_to_six_pm ->
     ~ deltastat(confidence, 3)
     You carry on  working until...
     -> cont ->
-    You look at time. Wow, {ampm_hm(tm_hour, 0)} already!
+    You look at the time. Wow, {ampm_hm(tm_hour, 0)} already!
     ~ temp pay = daily_contract_rate()
     {pay>0: -> cc.receive(employer_name(), pay, true) ->}
 
@@ -147,5 +147,10 @@ VAR available_employers = ()
     
 ->->
 
+= advance_time_to_six_pm
+
+    -> ffa(second, next_hm(18,00)-now()) ->
+    {tm_hour < 18:->advance_time_to_six_pm}
+->->
 
 

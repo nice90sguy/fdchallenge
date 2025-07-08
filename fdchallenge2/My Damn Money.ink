@@ -84,6 +84,27 @@ VAR _LITEROTICA_EXPORT = false
 
 /*
     Changelog:
+    V.077:
+    More Major refactoring of grind and timer callbacks, to prevent recursion.
+    Integrated fansite into main grind loop.  Now much easier to debug, and to reuse activities.
+    grind  doesn't take  a "number of days" argument anymore, but takes an "->until" function pointer, evaluated at every iteration of grind.build_opts. This means that it call be called with different exit criteria (e.g. event triggered, number of days/hours, stat has reached a certain threshold, etc).
+    Fixed handler for insufficient credits.  The caller needs to check after every time YOU send a chat message, whether you've exhausted your credits. This means that flow is easier to track (no recursion)
+    Altered taunt to trigger an interrupt (see below, time) so that, again, recursion is avoided: The caller must handle interrupted attempts to fast-forward time.
+    Fixed tribute taunt to handle YMFAILED(), and to use fansite_tribute instead of over-complex and buggy intent.command stuff. Added some more text to it.
+    Fixed logout/login for fansite. Use grind_logged_on_to_fansite to check if the user is on the fansite or not.
+    Fixed typos in media items
+    Handled cafe closing using __interrupt and cases where you're online at the cafe
+    Fixed bugs in exercise
+    Simplifed the forced activity calculation in grind.build_opts
+    Other bugfixes in activity selection logic
+    Made jerk-off a little less basic, and  available in other locations
+    Fixed sleep to handle interrupts
+    Variety of snacks in cafe, and also available in bar
+    Put pacing pauses and fixed typos in ruin ending
+    Made ffa tunnel-out at stopped time if the callback sets "__interrupt" to a non-empty string.  Any ffa() that NEEDS the time to actually be fast-forwarded by the amount specified in the call, needs to check whether it's been interrupted (by a callback that has set "__interrrupt" to a non-empty string), and if so, call ffa repeatedly (if that's what's wanted.  See work (full day) for how this is implemented.
+    Added enable_callbacks() function, which should be used for forward narrative sections (branching handled explicitly in the weave, rather than via time-based events)
+    
+    
     V.076:
     Added story/ directory and refactored story text/code.  02-plane will develop Angie's storyline in V.077
     
@@ -94,11 +115,11 @@ VAR _LITEROTICA_EXPORT = false
     * grind is now a proper tunnel, no need for return_to.
     * TODO: Make fansite a tunnel too, still uses (->return_to)
     * Fixed ffa so that extra time is accrued properly when a callback calls ffa recursively
-    * Lots of typos
+    * Lots of typos fixed
     
 */
 
-(Version 0.076 {_DEBUG: 🐞DEBUG - DO NOT PUBLISH})
+(Version 0.077 {_DEBUG: 🐞DEBUG - DO NOT PUBLISH})
 -> main
 
 == main

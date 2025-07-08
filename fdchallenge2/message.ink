@@ -152,4 +152,6 @@ VAR MELANIE = MSG_PEOPLE_MELANIE
     ~ args -= LIST_ALL(LAST_MSG_RESULT)
     ~ args += LAST_MSG_RESULT_SUCCESS
 
-
+=== function set_result_insufficient_credits(ref args)
+    ~ args -= LIST_ALL(LAST_MSG_RESULT)
+    ~ args += LAST_MSG_RESULT_INSUFFICIENT_CREDITS

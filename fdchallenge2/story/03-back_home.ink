@@ -56,9 +56,8 @@ You go bed without even looking at your phone{path == dom: again|, and forget al
 }
 
 // Setup the daily grind - 7 days
-
--> grind(3) ->
-TEST_AFTER_GRIND
+~ location = location_apartment
+-> grind(->until_one_week_has_passed) ->
 
 ->->
 
@@ -314,17 +313,18 @@ You do as she says.  For some reason your fingers are trembling as you type the 
 -> cont ->
 -> ffa(second, 30) ->
 
+~ unlocked_fansite = true
+-> grind_logon_fansite ->
 
--> fansite ->
+-> grind(->until_the_first_time_logged_out_of_fansite) ->
+
+// -> grind(1) ->
 You log out, and feel like you've just been in an alternate reality.
 You look around the room, and shut the laptop lid.
 ->p1e("Or maybe this is the alternate reality?") ->
 Automatically you open up the laptop again and... shut it.  You rub your eyes. It's Jet lag. 
 ->p1e("Yeah, it's just jet lag.") ->
 
-~ unlocked_fansite = true
-
-
-
 ->->
+
 

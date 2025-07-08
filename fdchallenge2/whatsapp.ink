@@ -22,6 +22,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
  ~ temp t = now()  // Message has just arrived
  // Default sender is Bella
 {from == ():
+    ~ from = MSG_PEOPLE_BELLA
     ~ args += BELLA
 }
 
@@ -65,6 +66,7 @@ VAR WAM_CONTPAUSE = (WAM_READ, WAM_SILENT, WAM_PAUSE)
 
         -> readit
     - else:
+
         {warn()} New WhatsApp Message from {msg_name(from)}!
         {unread_message_count:<i>You also have {unread_message_count} unread message{unread_message_count!=1:s}.} 
 }

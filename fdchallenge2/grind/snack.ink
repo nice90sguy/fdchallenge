@@ -13,11 +13,15 @@
     }
  {location == location_cafe: <> And the pastries here are so damned delicious!}
 }
-+  (do){current_activity != snack or sv(confidence) == min} [{location == location_cafe:Buy a pastry|Eat a snack}] ->
++  (do){current_activity != snack or sv(confidence) == min} [Snack] ->
     ~ current_activity = snack
-    {location == location_cafe:
-        You buy a pastry.
+    {location:
+     - location_cafe:
+        You {~buy|get} {~a pastry|a croissant|a cream cheese and smoked salmon bagel}.
         -> cc.pay(CAFE_NAME, 5, true) ->
+    - location_bar:
+        You {~buy|grab} {~some pork scratchings|a packet of peanuts|a packet of salt and vinegar crisps} from the bar.
+        -> cc.pay("Prince of Wales Pub", 2, true) ->
     - else:
         You eat <>
         {
@@ -36,3 +40,4 @@
     ~ activities_done_today += snack
 - 
 ->->
+
